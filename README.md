@@ -92,7 +92,9 @@ node scripts/audit-checks.mjs --self-test   # prove the detectors can fail
 node scripts/audit-checks.mjs legal         # and the rest, per GATES.md
 ```
 
-CI runs all three on every push and pull request.
+CI runs the suite, both platform builds, a Simulator install, and every ledger check
+on each push and pull request. The macOS accessibility audit is local-only: it needs
+a GUI session with Accessibility permission, which CI runners do not have.
 
 ## Signing in
 
@@ -147,6 +149,6 @@ is likewise not affiliated with Apple Inc.
 
 ## Roadmap
 
-In priority order: on-device verification (GATES.md G20), an audited OAuth relay or
+In priority order: the remaining on-device verification (GATES.md G22), an audited OAuth relay or
 native PKCE if WakaTime documents one, configurable project widgets, localization,
 and an audio graph for the activity chart.
