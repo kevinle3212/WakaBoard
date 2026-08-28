@@ -154,8 +154,16 @@ silently dropped test fails the gate rather than passing it.
   WakaTime credential were available in this session. Nothing in this repository has
   ever made a live WakaTime request or run on a device.
 
-This gate is deliberately left open rather than reworded to something the desk checks
-could satisfy. Until it is met, the correct description of this project is "verified
+ABANDON: G20 No physical iOS/macOS device, no Apple Developer team for signing, and
+no WakaTime API credential were available in this session, so code signing, App Group
+sharing between the real app and widget, live WidgetKit scheduling, a real API
+response, and an on-device VoiceOver/Dynamic Type/contrast pass cannot be performed
+here by any means. HANDOFF: Kevin must run these on hardware with a signing identity
+and a real WakaTime key. Until then the project must not be described as
+device-verified, and ACCESSIBILITY.md must keep its "partially conformant" wording.
+
+This gate is deliberately abandoned with a handoff rather than reworded to something
+the desk checks could satisfy. Until it is met, the correct description of this project is "verified
 by test and by unsigned build on both platforms", not "verified working".
 
 `ACCESSIBILITY.md` and `docs/AUDIT.md` both state this limitation rather than implying
