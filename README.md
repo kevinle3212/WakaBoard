@@ -7,11 +7,13 @@ usage time as a measure of skill.
 **There is no WakaBoard server.** Your device talks directly to WakaTime; the
 developer receives no data about you at all. See [PRIVACY.md](PRIVACY.md).
 
-> **Status: not yet released, and not yet verified on a physical device.**
-> Everything below is covered by an automated test or a build on both platforms.
-> Signing, App Group sharing, live WidgetKit scheduling, a real WakaTime API
-> response, and an on-device VoiceOver pass are **not** yet verified — see
-> [GATES.md](GATES.md) G20. Screenshots are pending for the same reason.
+> **Status: not yet released.** Verified further than a compile: the macOS app runs
+> on real hardware with its live accessibility tree audited, the iOS bundle installs
+> and launches on a Simulator, and real HTTPS requests reach `api.wakatime.com`.
+> **Not** verified: a physical iPhone or iPad, a provisioning-profile build (so the
+> App Group entitlement grant is unproven), an authenticated response with real
+> analytics, and a human VoiceOver/contrast review — see [GATES.md](GATES.md) G22.
+> Screenshots are pending for the same reason.
 
 ## What it does
 
@@ -58,7 +60,7 @@ repository boundary. See [docs/planning/ARCHITECTURE.md](docs/planning/ARCHITECT
    open WakaBoard.xcodeproj
    ```
 
-Run the suite — 66 tests, no network access, no credential required:
+Run the suite — 71 tests, no network access, no credential required:
 
 ```sh
 swift test
@@ -68,6 +70,19 @@ Build every shipping target on both platforms:
 
 ```sh
 sh scripts/build-all.sh
+```
+
+Verify on real hardware — launches the macOS app, audits its live accessibility tree,
+and installs on a Simulator (needs Accessibility permission for your terminal):
+
+```sh
+sh scripts/device-check.sh
+```
+
+Check the real API is reachable, without needing a credential:
+
+```sh
+WAKABOARD_LIVE=1 swift test --filter LiveNetwork
 ```
 
 Verify the acceptance ledger in [GATES.md](GATES.md):

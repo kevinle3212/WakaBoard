@@ -1,5 +1,6 @@
 import Foundation
 import Observation
+import Security
 import WakaCore
 import WidgetKit
 
@@ -56,6 +57,12 @@ public enum WakaLoadState: Equatable, Sendable {
     case rateLimited(retryAfter: TimeInterval?)
     /// The stored credential was rejected. The user must sign in again.
     case expired
+    /// The Keychain could not be read — locked, corrupt, or missing an entitlement.
+    ///
+    /// Distinct from ``signedOut``: the user may well have a credential stored, and
+    /// telling them they are "not signed in" sends them to re-enter a key that will
+    /// fail to save for the same underlying reason.
+    case credentialUnavailable(String)
     case failed(String)
 }
 
@@ -108,16 +115,46 @@ public final class WakaUIModel {
     /// Total time in the loaded period, for the chart and the header.
     public var dailyDurations: [TimeInterval] { days.sorted { $0.date < $1.date }.map(\.duration) }
 
-    /// Whether a credential is present, deciding sign-in versus dashboard.
-    public var isSignedIn: Bool { state != .signedOut }
+    /// Whether the dashboard should be shown rather than the sign-in screen.
+    public var isSignedIn: Bool {
+        switch state {
+        case .signedOut, .credentialUnavailable: false
+        default: true
+        }
+    }
+
+    /// Reads the stored credential, distinguishing "absent" from "unreadable".
+    ///
+    /// The generated shape (`try? load()`) collapsed those two cases, so a locked
+    /// Keychain was reported to the user as "not signed in".
+    private func storedCredential() -> Result<Credential?, KeychainError> {
+        do { return .success(try environment.credentials.load()) }
+        catch let error as KeychainError { return .failure(error) }
+        catch { return .failure(.unhandled(status: errSecInternalError)) }
+    }
+
+    /// User-facing copy for a Keychain failure.
+    nonisolated static func message(for error: KeychainError) -> String {
+        switch error {
+        case .interactionNotAllowed:
+            "WakaBoard could not read the Keychain. Unlock your device and try again."
+        case .malformedItem:
+            "The saved WakaTime key could not be read. Sign in again to replace it."
+        case .unhandled:
+            "WakaBoard could not reach the Keychain on this device, so it cannot load your saved key."
+        }
+    }
 
     /// Loads stored credentials and performs the first fetch.
     public func start() async {
-        guard ((try? environment.credentials.load()) ?? nil) != nil else {
+        switch storedCredential() {
+        case .success(nil):
             state = .signedOut
-            return
+        case .success:
+            await refresh()
+        case .failure(let error):
+            state = .credentialUnavailable(Self.message(for: error))
         }
-        await refresh()
     }
 
     /// Validates and stores a personal API key, then loads data.
@@ -179,8 +216,15 @@ public final class WakaUIModel {
 
     /// Fetches the selected range, cache-first, and maps every outcome to a state.
     public func refresh() async {
-        guard let credential = (try? environment.credentials.load()) ?? nil else {
+        let credential: Credential
+        switch storedCredential() {
+        case .success(let stored?):
+            credential = stored
+        case .success(nil):
             state = .signedOut
+            return
+        case .failure(let error):
+            state = .credentialUnavailable(Self.message(for: error))
             return
         }
         isBusy = true

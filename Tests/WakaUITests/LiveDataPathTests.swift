@@ -26,6 +26,7 @@ private struct StubHTTPClient: HTTPClient {
 private func makeEnvironment(
     http: any HTTPClient,
     credential: Credential? = .personalAPIKey("test-key"),
+    credentialFailure: KeychainError? = nil,
     cacheURL: URL
 ) -> (WakaEnvironment, WidgetSnapshotStore, String) {
     let client = WakaTimeClient(
@@ -40,7 +41,7 @@ private func makeEnvironment(
     let environment = WakaEnvironment(
         repository: AnalyticsRepository(client: client, cache: JSONCache(fileURL: cacheURL), now: { fixedNow }),
         client: client,
-        credentials: InMemoryCredentialStore(seeded: credential),
+        credentials: InMemoryCredentialStore(seeded: credential, failure: credentialFailure),
         snapshots: snapshots
     )
     return (environment, snapshots, suite)
@@ -162,6 +163,54 @@ struct LiveDataPathTests {
         let snapshot = try #require(snapshots.load(now: fixedNow))
         #expect(snapshot.todayDuration == 5_400)
         #expect(reloaded.wasCalled)
+    }
+
+    @Test("an unreadable Keychain is reported as such, not as being signed out")
+    func keychainFailureIsDistinct() async throws {
+        let url = temporaryURL()
+        defer { try? FileManager.default.removeItem(at: url) }
+        let (environment, _, suite) = makeEnvironment(
+            http: StubHTTPClient(),
+            credentialFailure: .interactionNotAllowed,
+            cacheURL: url
+        )
+        defer { UserDefaults.standard.removePersistentDomain(forName: suite) }
+
+        let model = WakaUIModel(environment: environment, timeZone: .gmt, now: { fixedNow }, reloadWidgets: {})
+        await model.start()
+
+        // Found on real hardware: a `try?` collapsed "Keychain unreadable" into
+        // "not signed in", so the user was sent to re-enter a key that would fail to
+        // save for the same underlying reason.
+        #expect(model.state != .signedOut)
+        guard case .credentialUnavailable(let message) = model.state else {
+            Issue.record("expected .credentialUnavailable, got \(model.state)")
+            return
+        }
+        #expect(message.contains("Unlock"))
+        // Routing still sends the user to the sign-in screen rather than a dashboard
+        // of someone else's stale data.
+        #expect(!model.isSignedIn)
+    }
+
+    @Test("refresh also distinguishes an unreadable Keychain")
+    func refreshKeychainFailure() async throws {
+        let url = temporaryURL()
+        defer { try? FileManager.default.removeItem(at: url) }
+        let (environment, _, suite) = makeEnvironment(
+            http: StubHTTPClient(),
+            credentialFailure: .malformedItem,
+            cacheURL: url
+        )
+        defer { UserDefaults.standard.removePersistentDomain(forName: suite) }
+
+        let model = WakaUIModel(environment: environment, timeZone: .gmt, now: { fixedNow }, reloadWidgets: {})
+        await model.refresh()
+
+        guard case .credentialUnavailable = model.state else {
+            Issue.record("expected .credentialUnavailable, got \(model.state)")
+            return
+        }
     }
 
     @Test("signing out erases everything and returns to the sign-in screen")

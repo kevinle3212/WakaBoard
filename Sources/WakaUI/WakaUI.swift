@@ -50,6 +50,7 @@ public enum WakaAccessibility {
         case .stale(let reason): "Showing saved data. \(reason)"
         case .rateLimited: "Refresh paused at WakaTime's request. Saved data is still shown."
         case .expired: "Your WakaTime key was rejected. Sign in again."
+        case .credentialUnavailable(let message): "Saved sign-in unavailable. \(message)"
         case .failed(let message): "Could not load analytics. \(message)"
         }
     }
@@ -154,7 +155,15 @@ struct WakaSignInView: View {
                 SecureField("WakaTime API key", text: $model.apiKeyInput)
                     .textContentType(.password)
                     .disableAutocorrection(true)
-                    .frame(minHeight: WakaAccessibility.minimumTargetSize)
+                    // The accessibility tree reports the *control's* own frame, so
+                    // outer padding does not count and `.frame(minHeight:)` was
+                    // overridden by the bordered style's intrinsic height. Sizing the
+                    // plain-styled field directly is what actually moves the target.
+                    .textFieldStyle(.plain)
+                    .padding(.horizontal, 10)
+                    .frame(height: WakaAccessibility.minimumTargetSize)
+                    .background(.quaternary.opacity(0.4), in: RoundedRectangle(cornerRadius: 8))
+                    .contentShape(Rectangle())
                     .accessibilityLabel("WakaTime API key")
                     .accessibilityHint("Paste the personal API key from your WakaTime account settings")
                 Button {
@@ -178,8 +187,10 @@ struct WakaSignInView: View {
                      + "to nowhere except wakatime.com.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
-                Link("Open WakaTime account settings", destination: URL(string: "https://wakatime.com/settings/account")!)
-                    .frame(minHeight: WakaAccessibility.minimumTargetSize)
+                WakaExternalLink(
+                    title: "Open WakaTime account settings",
+                    url: URL(string: "https://wakatime.com/settings/account")
+                )
             }
             Section("Your privacy") {
                 Text("WakaBoard has no server. Your analytics are fetched directly by this device and "
@@ -202,6 +213,13 @@ struct WakaDashboardView: View {
                 switch model.state {
                 case .signedOut:
                     WakaStateView(title: "Not connected", message: "Add your WakaTime API key to see your analytics.")
+                case .credentialUnavailable(let message):
+                    WakaStateView(
+                        title: "Saved sign-in unavailable",
+                        message: message,
+                        actionLabel: "Try again",
+                        action: { Task { await model.start() } }
+                    )
                 case .loading:
                     ProgressView("Loading your analytics…")
                         .frame(maxWidth: .infinity, minHeight: 180)
@@ -527,15 +545,41 @@ struct WakaSettingsView: View {
     }
 }
 
+/// An external link with a hit target that actually meets the 44-point minimum.
+///
+/// SwiftUI's `Link` lays out at its text height and ignores `.frame(minHeight:)`, so
+/// every link in this app previously presented a 16-point target. The live
+/// accessibility tree is what revealed it; `scripts/ax-audit.swift` now guards it.
+struct WakaExternalLink: View {
+    @Environment(\.openURL) private var openURL
+
+    let title: String
+    let url: URL?
+    var hint: String?
+
+    var body: some View {
+        Button {
+            if let url { openURL(url) }
+        } label: {
+            Text(title)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.vertical, 14)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(Color.accentColor)
+        .disabled(url == nil)
+        .accessibilityHint(hint ?? "Opens \(title) in your browser")
+    }
+}
+
 /// Opens a bundled legal document, falling back to the public repository copy.
 private struct LegalLink: View {
     let title: String
     let file: String
 
     var body: some View {
-        Link(destination: url) { Text(title) }
-            .frame(minHeight: WakaAccessibility.minimumTargetSize)
-            .accessibilityHint("Opens the \(title) document")
+        WakaExternalLink(title: title, url: url, hint: "Opens the \(title) document")
     }
 
     /// The published copy of the document.

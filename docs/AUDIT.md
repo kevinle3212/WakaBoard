@@ -3,8 +3,11 @@
 **Audited:** 27–28 August 2026
 **Subject:** The Codex-generated scaffold, commit `031bd50` (`chore: baseline scaffold as generated`)
 **Scope:** All Swift sources, tests, build configuration, CI, and documentation.
-**Method:** Full manual read of all 1,130 lines of Swift, plus toolchain verification
-(`swift test`, `xcodegen generate`, `xcodebuild` on both platforms).
+**Method:** Full manual read of all 1,130 lines of Swift; toolchain verification
+(`swift test`, `xcodegen generate`, `xcodebuild` on both platforms); and an on-device
+pass — the macOS app launched on real hardware with its live accessibility tree
+audited, the iOS bundle installed and launched on a Simulator, and real authenticated
+HTTPS requests made to `api.wakatime.com`.
 
 Every finding below was **fixed** in this change unless explicitly marked otherwise.
 Line references are to the audited baseline; the "Fix" line names where the
@@ -18,11 +21,12 @@ The generated code was well-organised, correctly layered, and largely well-docum
 Its problem was not structure but **completeness of the claim it made**: the
 architecture documents, the security plan, and the README all described controls and
 behaviour that no code implemented. Ten of eleven `GATES.md` boxes were checked; the
-app itself did not work.
+app itself did not work — and, as the on-device pass later showed, could not even be
+installed.
 
 | Severity | Count | Theme |
 |---|---|---|
-| **Critical** | 2 | The app displayed fabricated data; the auth header was malformed |
+| **Critical** | 3 | The app displayed fabricated data, could not be installed, and sent a malformed auth header |
 | **High** | 6 | Documented rate limiting, retention, and logout did not exist |
 | **Medium** | 8 | Transport, Keychain, and decode-boundary hardening gaps |
 | **Low** | 5 | Force-unwraps, dead surface, hygiene |
@@ -74,6 +78,31 @@ authenticating nothing and leaking the token into a server-side malformed-auth l
 `authorizationHeaderValue` encodes each kind correctly and cannot be bypassed.
 Keychain storage is tagged to match, so a key can never be replayed as a token.
 Verified by `Tests/WakaCoreTests/SecurityTests.swift` (`Authorization`, 4 tests).
+
+### C3 — The app could not be installed on any device or simulator
+
+`Config/WakaBoardWidgets-Info.plist:25` declared `NSExtensionPrincipalClass`, injected
+by `project.yml:116` and `project.yml:135` for both widget targets. That key is
+**forbidden** for the `com.apple.widgetkit-extension` extension point — a WidgetKit
+extension's entry point is the SwiftUI `@main WidgetBundle`.
+
+`installd` rejects the bundle outright:
+
+```
+Appex bundle ... with id org.wakaboard.app.widgets defines either an
+NSExtensionMainStoryboard or NSExtensionPrincipalClass key, which is not
+allowed for the extension point com.apple.widgetkit-extension
+```
+
+The app therefore could not be installed on a simulator, on a device, or through the
+App Store — while compiling cleanly on both platforms and passing every unit test.
+The original `GATES.md` checked "XcodeGen app, shared WakaUI, and widget targets" on
+the strength of `xcodebuild` succeeding, which is exactly the gap: a build proves
+compilation, not installability.
+
+**Fix:** the key is removed from both widget targets in `project.yml`. Verified by
+`sh scripts/device-check.sh`, which installs and launches on a Simulator and fails if
+installation is rejected.
 
 ---
 
@@ -274,6 +303,50 @@ a `NOTICE` file. Verified by `scripts/audit-checks.mjs license`.
 
 ---
 
+## Found during on-device verification
+
+These were **not** in the audited baseline. They are defects in the remediation
+itself, or claims the remediation made that hardware disproved. They are listed
+separately because presenting them as scaffold defects would be dishonest.
+
+### D1 — A locked or unreadable Keychain was reported as "not signed in"
+
+`WakaUIModel.start()` and `.refresh()` read the credential with `try?`, discarding the
+`KeychainError` the hardened store had just been taught to distinguish. A locked
+device, a corrupt item, or a missing entitlement all presented as `signedOut`, sending
+the user to re-enter a key that would fail to save for the same underlying reason.
+
+Surfaced while attempting to seed a credential on this Mac, where the data-protection
+Keychain returned `errSecMissingEntitlement` (`-34018`) for an ad-hoc-signed binary.
+
+**Fix:** `WakaLoadState.credentialUnavailable` is a distinct state with its own copy
+and its own recovery action, and `storedCredential()` no longer collapses the two
+cases. Verified by two regression tests in `Tests/WakaUITests/LiveDataPathTests.swift`.
+
+### D2 — Two controls had hit targets far below the documented 44-point minimum
+
+The unit suite asserted the constant was 44 and that it was *referenced* in the view
+layer. Both were true. The live accessibility tree showed a `Link` rendering a
+**16-point** target and a `SecureField` a **24-point** one, because `.frame(minHeight:)`
+does not size either control.
+
+**Fix:** `WakaExternalLink` replaces every `Link` with a `Button` that owns its frame.
+Verified continuously by `scripts/ax-audit.swift`, which reads the real tree rather
+than the source.
+
+### D3 — A macOS text field's accessibility height is not author-controllable
+
+Measured, not assumed: the `SecureField` reports a 16-point accessibility height
+regardless of `.frame(height:)`, surrounding padding, or `.controlSize(.extraLarge)`.
+The element AX exposes is AppKit's inner text control.
+
+This is the WCAG 2.2 SC 2.5.8 "user agent control" exception, and SC 2.5.8's own
+minimum is 24×24 rather than Apple's touch-oriented 44. It is reported by the audit
+script as a named **exemption** with its reason, so the exception stays visible in the
+output rather than being silently excluded.
+
+---
+
 ## Not defects, but worth recording
 
 - **`.swiftpm/` was mode `0777`** (world-writable) in the working tree. Not a code
@@ -292,14 +365,21 @@ a `NOTICE` file. Verified by `scripts/audit-checks.mjs license`.
 
 ## What remains open
 
-These are genuine gaps, listed rather than quietly closed:
+Reduced substantially by the on-device pass. What is genuinely still unverified:
 
-1. **No physical-device testing.** Signing, App Group sharing between the real app and
-   widget, live WidgetKit scheduling, VoiceOver traversal, Dynamic Type at accessibility
-   sizes, and contrast have not been verified on hardware. Tracked in `GATES.md`.
-2. **No independent security audit.** The threat model in `SECURITY.md` is self-assessed.
-3. **OAuth is unimplemented by design.** The types exist and are tested; no runtime path
-   reaches them. See `SECURITY.md` residual risk 4.
-4. **No live WakaTime request has ever been made** by this codebase. Every test uses a
-   stub. The `Authorization` header format is asserted against WakaTime's documented
-   scheme, not against a real 200 response.
+1. **No physical iOS or iPadOS device.** Kevin's iPhone 17 Pro and iPad Air (M3) are
+   registered but were offline during this session. iOS was verified on the Simulator,
+   which catches installability and launch but is not hardware.
+2. **No provisioning-profile build.** Xcode has no signed-in account, so automatic
+   signing cannot mint a profile. Every local build is ad-hoc, which means the
+   **App Group entitlement grant is unverified** — on macOS it is a restricted
+   entitlement that requires a profile, and the local-run build drops it.
+3. **No authenticated WakaTime response.** Live requests now reach the real API and a
+   real `401` is returned and mapped correctly, so DNS, TLS, host allowlist, endpoint
+   paths, and status mapping are proven. A `200` with real analytics is not.
+4. **VoiceOver speech, Dynamic Type, and contrast are not human-reviewed.** The
+   accessibility *tree* is audited automatically; how it sounds and looks at
+   accessibility text sizes is a human judgement that has not been made.
+5. **No independent security audit.** The threat model remains self-assessed.
+6. **No long-run WidgetKit scheduling.** The extension installs, registers, and is
+   spawned by the system; real refresh cadence over hours is unobserved.

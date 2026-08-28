@@ -36,8 +36,8 @@ silently dropped test fails the gate rather than passing it.
       surfaces signed-out, loaded, expired, stale, and signed-out-again states from
       actual outcomes rather than assignment.
   CHECK: swift test --filter LiveDataPath 2>&1
-  EXPECT: Test run with 6 tests in 1 suite passed
-  EVIDENCE: exit 0 — 2026-08-28. Found the real timezone defect H6 while being written.
+  EXPECT: Test run with 8 tests in 1 suite passed
+  EVIDENCE: exit 0 — 2026-08-28. Found the real timezone defect H6, and later the Keychain-error defect D1, while being written.
 
 - [x] G4: Outbound requests are rate limited client-side: a token-bucket throttle
       bounds request rate, and retries use bounded exponential backoff with jitter
@@ -115,7 +115,7 @@ silently dropped test fails the gate rather than passing it.
 - [x] G15: The whole suite passes under Swift 6 strict concurrency with warnings as
       errors.
   CHECK: swift test 2>&1
-  EXPECT: Test run with 66 tests in 17 suites passed
+  EXPECT: Test run with 71 tests in 18 suites passed
   EVIDENCE: exit 0 — 2026-08-28. Up from 10 tests in the audited baseline.
 
 - [x] G16: Both shipping app targets and both widget extensions compile, on macOS and
@@ -145,35 +145,56 @@ silently dropped test fails the gate rather than passing it.
 
 ---
 
-## Open gate
+## On-device verification
 
-- [ ] G20: On-device verification — code signing, App Group sharing between the real
-      app and widget, live WidgetKit scheduling, a real WakaTime API response, and a
-      VoiceOver / Dynamic Type / contrast / keyboard pass on hardware.
-  EVIDENCE: **not performed.** No physical device, no Apple Developer team, and no
-  WakaTime credential were available in this session. Nothing in this repository has
-  ever made a live WakaTime request or run on a device.
+- [x] G20: The macOS app launches on real hardware and its **live accessibility tree**
+      — the one VoiceOver reads — contains no unlabelled interactive control and no
+      author-controllable hit target below 44pt; and the iOS bundle installs and
+      launches on a Simulator.
+  CHECK: sh scripts/device-check.sh
+  EXPECT: DEVICE_CHECK_OK
+  EVIDENCE: exit 0 — 2026-08-28. Ran on this Mac (macOS 26.x, Apple silicon) and
+  Simulator `9FAFBA5A…` (iPhone 17 Pro, iOS 26.5). Found three real defects no compile
+  or unit test caught: audit finding **C3** (a forbidden `NSExtensionPrincipalClass`
+  made the app impossible to install anywhere), **D2** (a `Link` with a 16pt hit
+  target), and **D1** (a locked Keychain reported as "not signed in"). Reports one
+  documented WCAG 2.5.8 user-agent-control exemption on every run.
 
-ABANDON: G20 No physical iOS/macOS device, no Apple Developer team for signing, and
-no WakaTime API credential were available in this session, so code signing, App Group
-sharing between the real app and widget, live WidgetKit scheduling, a real API
-response, and an on-device VoiceOver/Dynamic Type/contrast pass cannot be performed
-here by any means. HANDOFF: Kevin must run these on hardware with a signing identity
-and a real WakaTime key. Until then the project must not be described as
-device-verified, and ACCESSIBILITY.md must keep its "partially conformant" wording.
-
-This gate is deliberately abandoned with a handoff rather than reworded to something
-the desk checks could satisfy. Until it is met, the correct description of this project is "verified
-by test and by unsigned build on both platforms", not "verified working".
-
-`ACCESSIBILITY.md` and `docs/AUDIT.md` both state this limitation rather than implying
-it away.
+- [x] G21: Real HTTPS requests reach the live WakaTime API and are mapped correctly,
+      without needing a credential — a bogus key must produce a genuine `401`.
+  CHECK: WAKABOARD_LIVE=1 swift test --filter LiveNetwork 2>&1
+  EXPECT: Test run with 3 tests in 1 suite passed
+  EVIDENCE: exit 0 — 2026-08-28, against `api.wakatime.com`. Proves DNS, TLS 1.2+, the
+  ephemeral session configuration, the host allowlist, endpoint paths, and 401 mapping
+  end to end. Skipped by default so the suite stays hermetic and offline-runnable.
 
 ---
 
-<!--
-Negative/absence gates (G2, G17) are controlled: `node scripts/audit-checks.mjs
---self-test` plants a known violation for each detector and asserts it fires, so a
-detector that silently stopped working is caught at authoring time rather than
-certifying a gate at report time. CI runs the self-test before any other gate.
--->
+## Open gate
+
+- [ ] G22: The parts of on-device verification that need hardware or a credential this
+      session did not have — a physical iPhone or iPad, a provisioning-profile build,
+      an authenticated `200` from WakaTime, App Group read/write between the real app
+      and widget, Lock Screen widget families, real WidgetKit refresh cadence, and a
+      human VoiceOver / Dynamic Type / contrast review.
+  EVIDENCE: **not performed.**
+  - Kevin's iPhone 17 Pro and iPad Air (M3) are registered but were **offline**; iOS
+    was verified on the Simulator only.
+  - Xcode has **no signed-in account**, so automatic signing cannot mint a
+    provisioning profile. Every local build is ad-hoc, and on macOS the App Group is a
+    restricted entitlement that a profile must grant — so the **entitlement grant
+    itself is unverified**, and the local-run build drops it.
+  - No WakaTime API key was supplied, so no authenticated response has ever been
+    received, and every screen behind sign-in is unaudited.
+
+ABANDON: G22 Requires physical iOS hardware that was offline, an Xcode account able to
+issue a provisioning profile, and a real WakaTime API key — none of which exist in
+this session, and none of which can be substituted for. HANDOFF: Kevin must (1) sign
+into Xcode so a profile can be issued, (2) connect an iPhone or iPad, (3) supply a
+WakaTime key, then re-run `sh scripts/device-check.sh` and extend it past the sign-in
+screen. Until then WakaBoard must not be described as fully device-verified, and
+ACCESSIBILITY.md must keep its "partially conformant" wording.
+
+The gate is abandoned with a handoff rather than reworded into something the available
+hardware could satisfy. What *was* reachable this session is not folded in here — it
+is proven separately by G20 and G21, which are real runnable checks.

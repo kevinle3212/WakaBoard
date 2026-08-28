@@ -24,11 +24,12 @@ to native mobile and desktop software.
 **Partially conformant with WCAG 2.2 Level AA.**
 
 "Partially conformant" is the accurate word and is used deliberately. Some success
-criteria are verified automatically on every commit; others require testing on a
-real device with real assistive technology, and those checks have **not yet been
-performed on physical hardware**. Claiming full conformance before that testing
-happens would be exactly the kind of unverified assertion this project avoids
-elsewhere.
+criteria are verified automatically on every commit; some are now verified against the
+live accessibility tree of the app running on real macOS hardware; and the remainder —
+how VoiceOver sounds, how the interface renders at accessibility text sizes, contrast,
+and anything on a physical iPhone or iPad — has **not** been reviewed by a human.
+Claiming full conformance before that review would be exactly the kind of unverified
+assertion this project avoids elsewhere.
 
 ### What is verified automatically
 
@@ -45,27 +46,58 @@ the code that produces what assistive technology actually reads:
 | Error messages are complete sentences that never leak status codes, hosts, or header names | **3.3.1 Error Identification** |
 | An authentication failure routes to a recoverable state rather than a dead end | **3.3.3 Error Suggestion** |
 
-### What is implemented but requires device verification
+### What is now verified on real hardware
+
+`sh scripts/device-check.sh` launches the macOS app on this Mac and walks its **live
+accessibility tree** — the same tree VoiceOver reads — via the `AXUIElement` API. It
+fails the build on any unlabelled interactive control or any hit target below 44
+points.
+
+That pass found and fixed two real violations the unit suite had missed, because the
+unit suite could only assert that the 44-point constant existed and was referenced:
+
+| Control | Was | Now |
+|---|---|---|
+| "Open WakaTime account settings" link | 202×16 pt | replaced with `WakaExternalLink`, a button that owns its frame |
+| Legal document links | 16 pt tall | same fix |
+
+**One documented exemption.** A macOS `SecureField` reports a 16-point accessibility
+height regardless of `.frame(height:)`, surrounding padding, or
+`.controlSize(.extraLarge)` — measured, not assumed. The element exposed to
+accessibility is AppKit's inner text control, which the author cannot size. This is
+the WCAG 2.2 SC 2.5.8 **user agent control** exception, and SC 2.5.8's own minimum is
+24×24 rather than Apple's touch-oriented 44. The audit script reports it as a named
+exemption on every run so the exception stays visible rather than being silently
+dropped.
+
+### What is implemented but still requires human or hardware review
 
 | Implemented | Criterion | Status |
 |---|---|---|
-| Dynamic Type — all text uses relative text styles; no fixed point sizes | **1.4.4 Resize Text** | Needs on-device check at accessibility sizes |
-| Reduce Motion — chart transitions are disabled when the system setting is on | **2.3.3 Animation from Interactions** | Needs on-device check |
-| Colour is never the sole carrier of meaning — every state has a label and an icon | **1.4.1 Use of Color** | Needs visual review |
-| Contrast — semantic system colours in light and dark mode | **1.4.3 Contrast (Minimum)** | Needs measurement |
-| Keyboard operation and focus order on macOS, including the ⌘R refresh command | **2.1.1 Keyboard**, **2.4.3 Focus Order** | Needs on-device check |
-| VoiceOver traversal order across the split-view navigation | **1.3.2 Meaningful Sequence** | Needs on-device check |
-| Widget accessibility labels on Home Screen and Lock Screen | **1.1.1**, **4.1.2** | Needs device with widgets installed |
+| Dynamic Type — all text uses relative text styles; no fixed point sizes | **1.4.4 Resize Text** | Not reviewed at accessibility text sizes |
+| Reduce Motion — chart transitions disabled when the system setting is on | **2.3.3 Animation from Interactions** | Not reviewed with the setting enabled |
+| Colour is never the sole carrier of meaning | **1.4.1 Use of Color** | Not visually reviewed |
+| Contrast in light and dark mode | **1.4.3 Contrast (Minimum)** | Not measured |
+| Keyboard operation and focus order on macOS, including ⌘R | **2.1.1**, **2.4.3** | Not reviewed |
+| How VoiceOver actually *sounds* reading each screen | **1.3.2 Meaningful Sequence** | Tree is audited; speech is not |
+| Widgets on a real Home Screen and Lock Screen | **1.1.1**, **4.1.2** | Requires a physical device |
+
+Only screens reachable without a credential are covered by the automated pass; the
+signed-in dashboard, activity, projects, languages, insights, and settings screens
+have not been walked, because reaching them needs a real WakaTime key.
 
 ### Known gaps
 
-1. **No physical-device accessibility pass has been performed.** This is the single
-   largest gap and the reason conformance is "partial". It is tracked in
-   [GATES.md](GATES.md).
-2. **Charts have no audio graph.** Swift Charts supports `.accessibilityChartDescriptor`
+1. **Only the sign-in screen has been audited on hardware**, because every other
+   screen requires a WakaTime credential. The audit is automated and repeatable
+   (`sh scripts/device-check.sh`), so extending it is a matter of supplying a key.
+2. **No physical iOS or iPadOS device.** iOS was verified on the Simulator, which
+   proves installability and launch but is not hardware, and cannot show a Lock Screen
+   widget. Tracked in [GATES.md](GATES.md).
+3. **Charts have no audio graph.** Swift Charts supports `.accessibilityChartDescriptor`
    for audio graphs; WakaBoard currently provides a text summary only. The text
    alternative satisfies 1.1.1; the audio graph would be an improvement beyond it.
-3. **No localization.** The interface is English only, which affects users who rely
+4. **No localization.** The interface is English only, which affects users who rely
    on a screen reader in another language. This is a functional gap rather than a
    WCAG failure.
 
@@ -81,7 +113,10 @@ the code that produces what assistive technology actually reads:
   size.
 - **Reduce Motion.** Chart animations are suppressed when the system setting is
   enabled.
-- **Target size.** Interactive elements are at least 44×44 points.
+- **Target size.** Interactive elements are at least 44×44 points, verified against
+  the running app's accessibility tree rather than against the source. The one
+  exception — a macOS text field, whose height AppKit owns — is documented in §2 and
+  re-reported on every audit run.
 - **Keyboard.** On macOS, the app is navigable by keyboard and ⌘R refreshes.
 - **No time limits, no flashing.** Nothing expires under you, and nothing flashes,
   so **2.2.1 Timing Adjustable** and **2.3.1 Three Flashes** are satisfied by
@@ -137,7 +172,8 @@ If you would prefer to report publicly, open an issue in the repository.
 ## 6. Assessment method
 
 This statement is based on **self-evaluation**: automated assertions in the test
-suite, plus code review against WCAG 2.2 AA and EN 301 549. It has **not** been
+suite, an automated audit of the live accessibility tree of the running macOS app, and
+code review against WCAG 2.2 AA and EN 301 549. It has **not** been
 audited by an independent third party, and no external accessibility evaluation has
 been commissioned. That limitation is stated plainly because an accessibility
 statement that overclaims is worse than none — a user who relies on it and finds it

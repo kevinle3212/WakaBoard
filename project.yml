@@ -121,8 +121,11 @@ targets:
       properties:
         ITSAppUsesNonExemptEncryption: false
         NSExtension:
+          # WidgetKit extensions use the SwiftUI `@main WidgetBundle` as their entry
+          # point. Declaring NSExtensionPrincipalClass here is not merely redundant —
+          # installd rejects the bundle outright ("not allowed for the extension point
+          # com.apple.widgetkit-extension"), so the app cannot be installed at all.
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
-          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).WakaBoardWidgetsBundle
   WakaBoardWidgets_macOS:
     type: app-extension
     platform: macOS
@@ -143,8 +146,11 @@ targets:
       properties:
         ITSAppUsesNonExemptEncryption: false
         NSExtension:
+          # WidgetKit extensions use the SwiftUI `@main WidgetBundle` as their entry
+          # point. Declaring NSExtensionPrincipalClass here is not merely redundant —
+          # installd rejects the bundle outright ("not allowed for the extension point
+          # com.apple.widgetkit-extension"), so the app cannot be installed at all.
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
-          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).WakaBoardWidgetsBundle
 schemes:
   WakaBoard:
     build:

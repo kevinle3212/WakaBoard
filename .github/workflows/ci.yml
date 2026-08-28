@@ -39,6 +39,30 @@ jobs:
       - name: Build every shipping target on both platforms
         run: sh scripts/build-all.sh
 
+      # A build proves compilation, not installability. The scaffold compiled cleanly
+      # on both platforms while carrying an Info.plist key that made installation
+      # impossible everywhere, so this step installs and launches on a Simulator.
+      # The macOS accessibility audit is not run here: it needs a GUI session with
+      # Accessibility permission, which a CI runner does not have. Run it locally with
+      # `sh scripts/device-check.sh`.
+      - name: Install and launch on an iOS Simulator
+        run: |
+          set -eu
+          SIM=$(xcrun simctl list devices available \
+                | grep -A100 -- '-- iOS' \
+                | grep -oE '[0-9A-F]{8}-[0-9A-F-]{27}' | head -1)
+          xcrun simctl boot "$SIM" || true
+          sleep 8
+          xcodebuild build -project WakaBoard.xcodeproj -scheme WakaBoardApp_iOS \
+            -destination "id=$SIM" -derivedDataPath build-ios \
+            CODE_SIGN_IDENTITY="-" CODE_SIGN_STYLE=Manual \
+            PROVISIONING_PROFILE_SPECIFIER="" DEVELOPMENT_TEAM="" -quiet
+          xcrun simctl install "$SIM" \
+            build-ios/Build/Products/Debug-iphonesimulator/WakaBoardApp_iOS.app
+          xcrun simctl launch "$SIM" org.wakaboard.app
+          sleep 4
+          xcrun simctl spawn "$SIM" launchctl list | grep -q org.wakaboard.app
+
   gates:
     name: Verify the acceptance ledger
     runs-on: macos-15
