@@ -1,0 +1,3 @@
+// Copy to Local.xcconfig for local signing only. Never commit the copy.
+DEVELOPMENT_TEAM =
+WAKABOARD_APP_GROUP = group.org.wakaboard.shared

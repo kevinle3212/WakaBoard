@@ -1,0 +1,153 @@
+name: WakaBoard
+options:
+  minimumXcodeGenVersion: 2.38.0
+  deploymentTarget:
+    iOS: "18.0"
+    macOS: "15.0"
+settings:
+  base:
+    SWIFT_VERSION: 6.0
+    SWIFT_STRICT_CONCURRENCY: complete
+    SWIFT_TREAT_WARNINGS_AS_ERRORS: YES
+    DEVELOPMENT_TEAM: ""
+targets:
+  WakaCore_iOS:
+    type: library.static
+    platform: iOS
+    sources:
+      - path: Sources/WakaCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: org.wakaboard.core
+        PRODUCT_NAME: WakaCore
+        PRODUCT_MODULE_NAME: WakaCore
+  WakaCore_macOS:
+    type: library.static
+    platform: macOS
+    sources:
+      - path: Sources/WakaCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: org.wakaboard.core.macos
+        PRODUCT_NAME: WakaCore
+        PRODUCT_MODULE_NAME: WakaCore
+  WakaUI_iOS:
+    type: library.static
+    platform: iOS
+    sources:
+      - path: Sources/WakaUI
+    dependencies:
+      - target: WakaCore_iOS
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: org.wakaboard.ui
+        PRODUCT_NAME: WakaUI
+        PRODUCT_MODULE_NAME: WakaUI
+  WakaUI_macOS:
+    type: library.static
+    platform: macOS
+    sources:
+      - path: Sources/WakaUI
+    dependencies:
+      - target: WakaCore_macOS
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: org.wakaboard.ui.macos
+        PRODUCT_NAME: WakaUI
+        PRODUCT_MODULE_NAME: WakaUI
+  WakaBoardApp_iOS:
+    type: application
+    platform: iOS
+    sources:
+      - path: Apps/WakaBoardApp
+    dependencies:
+      - target: WakaUI_iOS
+      - target: WakaCore_iOS
+      - target: WakaBoardWidgets_iOS
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: org.wakaboard.app
+        INFOPLIST_KEY_CFBundleDisplayName: WakaBoard
+        CODE_SIGN_ENTITLEMENTS: Config/WakaBoard.entitlements
+    info:
+      path: Config/WakaBoard-Info.plist
+      properties:
+        CFBundleURLTypes:
+          - CFBundleURLName: WakaBoard callback
+            CFBundleURLSchemes: [wakaboard]
+  WakaBoardApp_macOS:
+    type: application
+    platform: macOS
+    sources:
+      - path: Apps/WakaBoardApp
+    dependencies:
+      - target: WakaUI_macOS
+      - target: WakaCore_macOS
+      - target: WakaBoardWidgets_macOS
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: org.wakaboard.app.macos
+        INFOPLIST_KEY_CFBundleDisplayName: WakaBoard
+        CODE_SIGN_ENTITLEMENTS: Config/WakaBoard.entitlements
+    info:
+      path: Config/WakaBoard-Info.plist
+      properties:
+        CFBundleURLTypes:
+          - CFBundleURLName: WakaBoard callback
+            CFBundleURLSchemes: [wakaboard]
+  WakaBoardWidgets_iOS:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: Widgets/WakaBoardWidgets
+    dependencies:
+      - target: WakaUI_iOS
+      - target: WakaCore_iOS
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: org.wakaboard.app.widgets
+        INFOPLIST_KEY_CFBundleDisplayName: WakaBoard Widgets
+        CODE_SIGN_ENTITLEMENTS: Config/WakaBoardWidgets.entitlements
+    info:
+      path: Config/WakaBoardWidgets-Info.plist
+      properties:
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).WakaBoardWidgetsBundle
+  WakaBoardWidgets_macOS:
+    type: app-extension
+    platform: macOS
+    sources:
+      - path: Widgets/WakaBoardWidgets
+    dependencies:
+      - target: WakaUI_macOS
+      - target: WakaCore_macOS
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: org.wakaboard.app.macos.widgets
+        INFOPLIST_KEY_CFBundleDisplayName: WakaBoard Widgets
+        CODE_SIGN_ENTITLEMENTS: Config/WakaBoardWidgets.entitlements
+    info:
+      path: Config/WakaBoardWidgets-Info.plist
+      properties:
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).WakaBoardWidgetsBundle
+schemes:
+  WakaBoard:
+    build:
+      targets:
+        WakaBoardApp_iOS: all
+        WakaBoardApp_macOS: all
+        WakaBoardWidgets_iOS: all
+        WakaBoardWidgets_macOS: all
+  WakaBoardApp_iOS:
+    build:
+      targets:
+        WakaBoardApp_iOS: all
+        WakaBoardWidgets_iOS: all
+  WakaBoardApp_macOS:
+    build:
+      targets:
+        WakaBoardApp_macOS: all
+        WakaBoardWidgets_macOS: all
