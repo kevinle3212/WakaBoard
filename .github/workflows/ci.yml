@@ -58,7 +58,7 @@ jobs:
             CODE_SIGN_IDENTITY="-" CODE_SIGN_STYLE=Manual \
             PROVISIONING_PROFILE_SPECIFIER="" DEVELOPMENT_TEAM="" -quiet
           xcrun simctl install "$SIM" \
-            build-ios/Build/Products/Debug-iphonesimulator/WakaBoardApp_iOS.app
+            build-ios/Build/Products/Debug-iphonesimulator/WakaBoard.app
           xcrun simctl launch "$SIM" org.wakaboard.app
           sleep 4
           xcrun simctl spawn "$SIM" launchctl list | grep -q org.wakaboard.app

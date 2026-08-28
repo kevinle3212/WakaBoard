@@ -69,6 +69,8 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: org.wakaboard.app
         INFOPLIST_KEY_CFBundleDisplayName: WakaBoard
+        # The shipped bundle is WakaBoard.app; the target name is a build detail.
+        PRODUCT_NAME: WakaBoard
         CODE_SIGN_ENTITLEMENTS: Config/WakaBoard.entitlements
     info:
       path: Config/WakaBoard-Info.plist
@@ -92,6 +94,8 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: org.wakaboard.app.macos
         INFOPLIST_KEY_CFBundleDisplayName: WakaBoard
+        # The shipped bundle is WakaBoard.app; the target name is a build detail.
+        PRODUCT_NAME: WakaBoard
         CODE_SIGN_ENTITLEMENTS: Config/WakaBoard.entitlements
     info:
       path: Config/WakaBoard-Info.plist

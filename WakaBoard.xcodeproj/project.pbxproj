@@ -790,6 +790,7 @@
 					"-ObjC",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.wakaboard.app.macos;
+				PRODUCT_NAME = WakaBoard;
 				SDKROOT = macosx;
 			};
 			name = Release;
@@ -946,6 +947,7 @@
 					"-ObjC",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.wakaboard.app.macos;
+				PRODUCT_NAME = WakaBoard;
 				SDKROOT = macosx;
 			};
 			name = Debug;
@@ -1057,6 +1059,7 @@
 					"-ObjC",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.wakaboard.app;
+				PRODUCT_NAME = WakaBoard;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -1100,6 +1103,7 @@
 					"-ObjC",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.wakaboard.app;
+				PRODUCT_NAME = WakaBoard;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

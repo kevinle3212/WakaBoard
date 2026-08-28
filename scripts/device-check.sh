@@ -20,6 +20,12 @@ set -eu
 cd "$(dirname "$0")/.."
 
 DERIVED="${TMPDIR:-/tmp}/WakaBoard-device-check"
+APP_PATH="$DERIVED/Build/Products/Debug/WakaBoard.app"
+# Match the process on the unique derived-data directory name rather than the bundle
+# name or the full path: a stored copy of WakaBoard.app (build/, /Applications) must
+# not be picked up or killed by this script, and macOS resolves /var to /private/var
+# so the absolute path does not match the running process's argv.
+APP_MATCH="WakaBoard-device-check.*MacOS/WakaBoard"
 ENTITLEMENTS="${TMPDIR:-/tmp}/wakaboard-localrun.entitlements"
 
 # The shipping App Group entitlement is a restricted entitlement on macOS and needs a
@@ -33,7 +39,7 @@ cat > "$ENTITLEMENTS" <<'PLIST'
 PLIST
 
 cleanup() {
-    pkill -f "WakaBoardApp_macOS" 2>/dev/null || true
+    pkill -f "$APP_MATCH" 2>/dev/null || true
 }
 trap cleanup EXIT
 
@@ -53,16 +59,15 @@ xcodebuild build \
   CODE_SIGN_ENTITLEMENTS="$ENTITLEMENTS" \
   -quiet
 
-APP="$DERIVED/Build/Products/Debug/WakaBoardApp_macOS.app"
-[ -d "$APP" ] || { echo "macOS app was not produced at $APP"; exit 1; }
+[ -d "$APP_PATH" ] || { echo "macOS app was not produced at $APP_PATH"; exit 1; }
 
 echo "==> Launching on this Mac"
-pkill -f "WakaBoardApp_macOS" 2>/dev/null || true
+pkill -f "$APP_MATCH" 2>/dev/null || true
 sleep 1
-open "$APP"
+open "$APP_PATH"
 sleep 6
 
-PID=$(pgrep -f "WakaBoardApp_macOS" | head -1 || true)
+PID=$(pgrep -f "$APP_MATCH" | head -1 || true)
 [ -n "$PID" ] || { echo "the app did not stay running"; exit 1; }
 echo "    running as pid $PID"
 
@@ -94,7 +99,7 @@ xcodebuild build \
   DEVELOPMENT_TEAM="" \
   -quiet
 
-IOS_APP="$DERIVED-ios/Build/Products/Debug-iphonesimulator/WakaBoardApp_iOS.app"
+IOS_APP="$DERIVED-ios/Build/Products/Debug-iphonesimulator/WakaBoard.app"
 [ -d "$IOS_APP" ] || { echo "iOS app was not produced at $IOS_APP"; exit 1; }
 
 xcrun simctl uninstall "$SIM" org.wakaboard.app >/dev/null 2>&1 || true
