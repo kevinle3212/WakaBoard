@@ -9,9 +9,10 @@
 /* Begin PBXBuildFile section */
 		04A500F7A075CC07D949800B /* libWakaUI_macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1332E258C6C6172ABDD390A0 /* libWakaUI_macOS.a */; };
 		09C0D55EA62193EA201B072E /* libWakaUI_iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D787D43FCB4D1D53965FEA6 /* libWakaUI_iOS.a */; };
-		10163C207B9D7B9441183A73 /* Fixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F91B03D868885B29AABE04 /* Fixtures.swift */; };
+		1256CDEBBCF9F8C22A3A145D /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 863D0DD4C832763A4C5402CA /* PrivacyInfo.xcprivacy */; };
 		15B01EC6BB8C929C9CF1A441 /* WakaBoardApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81C6E2BF0B99E542DBAE4FEC /* WakaBoardApp.swift */; };
 		170036BE28D169983FD5FD80 /* libWakaUI_iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D787D43FCB4D1D53965FEA6 /* libWakaUI_iOS.a */; };
+		2398045028703FC52780A79B /* RateLimiting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D51FCDA6848961E431A52B1 /* RateLimiting.swift */; };
 		2FBA2870D50EF69EE9E8581E /* WakaUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23686512529000071F80FBB0 /* WakaUI.swift */; };
 		319C3F65A064D59BC8F57FA8 /* WakaBoardWidgets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949286D7F50152857127A4A1 /* WakaBoardWidgets.swift */; };
 		3CF6A8F4CB9BDDCA4E79C3A4 /* CacheRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FD0B89D517DE64566CA2F7D /* CacheRepository.swift */; };
@@ -22,18 +23,25 @@
 		4D7B552FCD6848F35C0CE0DE /* WakaUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23686512529000071F80FBB0 /* WakaUI.swift */; };
 		5044FA76EDCE6ACF98A0A081 /* Networking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7453C53E08B6C77365296E3E /* Networking.swift */; };
 		53669B7F3957AA837DF9FF5F /* libWakaCore_macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA8C780682935871239B99D4 /* libWakaCore_macOS.a */; };
+		7B2CD226FF543719307486E5 /* RateLimiting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D51FCDA6848961E431A52B1 /* RateLimiting.swift */; };
 		808F09347995A1B548239C4E /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = E592C76190218E39991A0BCE /* Models.swift */; };
 		84C7A3C8180A46EC27ADE782 /* Networking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7453C53E08B6C77365296E3E /* Networking.swift */; };
 		8E66A7757982EBDE2D8B04F6 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = E592C76190218E39991A0BCE /* Models.swift */; };
 		927956A18389CD0E29F1CAC8 /* Security.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB3FC904E3CEA93816B91B9F /* Security.swift */; };
+		9A5571C7AB488C6212F5EAF4 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 3DEFD171F9E15B779A9BD298 /* PrivacyInfo.xcprivacy */; };
 		AAAA4C4FBEEDA1F53AEF50E1 /* CacheRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FD0B89D517DE64566CA2F7D /* CacheRepository.swift */; };
 		AF8361E03B4E6D5CD007C676 /* WakaBoardApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81C6E2BF0B99E542DBAE4FEC /* WakaBoardApp.swift */; };
 		B3EEC3919A8442E6680147D3 /* libWakaUI_macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1332E258C6C6172ABDD390A0 /* libWakaUI_macOS.a */; };
+		B6A6E7858CF16A1945099E0D /* WakaUIModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC54424A6C39E0C86A5CB4F /* WakaUIModel.swift */; };
+		BAFB96BCCF3D341E946B1ACE /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F147625003C40641BE28B8A /* Environment.swift */; };
 		CC2C08392D3994AFE8AAAC84 /* WakaBoardWidgets_iOS.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 4F0244C402978C742EA7466D /* WakaBoardWidgets_iOS.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		CC9F4324185B91B4676C435D /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F147625003C40641BE28B8A /* Environment.swift */; };
+		CE9A1F1074E289366A9A17D8 /* WakaUIModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC54424A6C39E0C86A5CB4F /* WakaUIModel.swift */; };
 		D35E74AE004659FDC483A05C /* Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20FD6A5A5290DD3557E6D0C /* Analytics.swift */; };
 		DBDC65395A4C053DB33C3787 /* libWakaCore_macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA8C780682935871239B99D4 /* libWakaCore_macOS.a */; };
-		E2A3D9542FD906C58B997FD5 /* Fixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F91B03D868885B29AABE04 /* Fixtures.swift */; };
+		E42A5A979CCC050D1A101E81 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 863D0DD4C832763A4C5402CA /* PrivacyInfo.xcprivacy */; };
 		EB0CBABB04FB6ADA3C01EB8B /* libWakaCore_iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 520E1AD72821C921C8CCBC8E /* libWakaCore_iOS.a */; };
+		F469760707FE588488796BCD /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 3DEFD171F9E15B779A9BD298 /* PrivacyInfo.xcprivacy */; };
 		FA9EA5A23977A479FD9CE311 /* WakaBoardWidgets_macOS.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 474D547068DE9FAD4B00B81A /* WakaBoardWidgets_macOS.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
@@ -150,17 +158,21 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0D51FCDA6848961E431A52B1 /* RateLimiting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RateLimiting.swift; sourceTree = "<group>"; };
 		1332E258C6C6172ABDD390A0 /* libWakaUI_macOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libWakaUI_macOS.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		16789045EA812BDD39F284F1 /* WakaBoardApp_macOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WakaBoardApp_macOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		23686512529000071F80FBB0 /* WakaUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WakaUI.swift; sourceTree = "<group>"; };
+		3DEFD171F9E15B779A9BD298 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		474D547068DE9FAD4B00B81A /* WakaBoardWidgets_macOS.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WakaBoardWidgets_macOS.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		4CC54424A6C39E0C86A5CB4F /* WakaUIModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WakaUIModel.swift; sourceTree = "<group>"; };
 		4F0244C402978C742EA7466D /* WakaBoardWidgets_iOS.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = WakaBoardWidgets_iOS.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		520E1AD72821C921C8CCBC8E /* libWakaCore_iOS.a */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = archive.ar; path = libWakaCore_iOS.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		5FD0B89D517DE64566CA2F7D /* CacheRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheRepository.swift; sourceTree = "<group>"; };
 		7453C53E08B6C77365296E3E /* Networking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Networking.swift; sourceTree = "<group>"; };
 		81C6E2BF0B99E542DBAE4FEC /* WakaBoardApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WakaBoardApp.swift; sourceTree = "<group>"; };
-		81F91B03D868885B29AABE04 /* Fixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fixtures.swift; sourceTree = "<group>"; };
+		863D0DD4C832763A4C5402CA /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; name = PrivacyInfo.xcprivacy; path = "PrivacyInfo-Widgets.xcprivacy"; sourceTree = "<group>"; };
 		8D787D43FCB4D1D53965FEA6 /* libWakaUI_iOS.a */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = archive.ar; path = libWakaUI_iOS.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		8F147625003C40641BE28B8A /* Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
 		8FD99EBA82AF9875A0773A80 /* WakaBoardApp_iOS.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = WakaBoardApp_iOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		949286D7F50152857127A4A1 /* WakaBoardWidgets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WakaBoardWidgets.swift; sourceTree = "<group>"; };
 		B20FD6A5A5290DD3557E6D0C /* Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Analytics.swift; sourceTree = "<group>"; };
@@ -209,6 +221,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1B15CAE5C3335F683D289889 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				3DEFD171F9E15B779A9BD298 /* PrivacyInfo.xcprivacy */,
+				863D0DD4C832763A4C5402CA /* PrivacyInfo.xcprivacy */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
 		2D585D1D7C57F02875E26AB5 /* WakaBoardWidgets */ = {
 			isa = PBXGroup;
 			children = (
@@ -232,9 +253,10 @@
 			children = (
 				B20FD6A5A5290DD3557E6D0C /* Analytics.swift */,
 				5FD0B89D517DE64566CA2F7D /* CacheRepository.swift */,
-				81F91B03D868885B29AABE04 /* Fixtures.swift */,
+				8F147625003C40641BE28B8A /* Environment.swift */,
 				E592C76190218E39991A0BCE /* Models.swift */,
 				7453C53E08B6C77365296E3E /* Networking.swift */,
+				0D51FCDA6848961E431A52B1 /* RateLimiting.swift */,
 				BB3FC904E3CEA93816B91B9F /* Security.swift */,
 			);
 			name = WakaCore;
@@ -245,6 +267,7 @@
 			isa = PBXGroup;
 			children = (
 				23686512529000071F80FBB0 /* WakaUI.swift */,
+				4CC54424A6C39E0C86A5CB4F /* WakaUIModel.swift */,
 			);
 			name = WakaUI;
 			path = Sources/WakaUI;
@@ -253,6 +276,7 @@
 		ADA0A84CD530DC054AED8D4A = {
 			isa = PBXGroup;
 			children = (
+				1B15CAE5C3335F683D289889 /* Config */,
 				3156B786CDB54B081E3B6155 /* WakaBoardApp */,
 				2D585D1D7C57F02875E26AB5 /* WakaBoardWidgets */,
 				62288A5CE0C4688E10D5A4D6 /* WakaCore */,
@@ -284,6 +308,7 @@
 			buildConfigurationList = 12EC63C270AB51E4A6569D1A /* Build configuration list for PBXNativeTarget "WakaBoardApp_macOS" */;
 			buildPhases = (
 				F6715D7358FF597D3FACFDB4 /* Sources */,
+				D5029662F6CD424881EDA72E /* Resources */,
 				C952E35777AAEF36090173C3 /* Frameworks */,
 				26E76A0AEE1948E6F753466F /* Embed Foundation Extensions */,
 			);
@@ -306,6 +331,7 @@
 			buildConfigurationList = 4936C8DDC117668906160F75 /* Build configuration list for PBXNativeTarget "WakaBoardApp_iOS" */;
 			buildPhases = (
 				84B06353B6C4E88673CF08E8 /* Sources */,
+				6F6A72BD23F8DD0C86C95BE8 /* Resources */,
 				EB0838ACDA05D403599180FC /* Frameworks */,
 				88C132865BE05A8E25E42FD0 /* Embed Foundation Extensions */,
 			);
@@ -328,6 +354,7 @@
 			buildConfigurationList = 474EBEBF457040AD873D2D2F /* Build configuration list for PBXNativeTarget "WakaBoardWidgets_iOS" */;
 			buildPhases = (
 				99DE8DEEC972C6CD017AA1EE /* Sources */,
+				F41D3406BC4DE8CE0A170DF3 /* Resources */,
 				50050215A93DCFADBA91F932 /* Frameworks */,
 			);
 			buildRules = (
@@ -422,6 +449,7 @@
 			buildConfigurationList = 5B32743C89189F0F2B4FCB33 /* Build configuration list for PBXNativeTarget "WakaBoardWidgets_macOS" */;
 			buildPhases = (
 				44D35B84E59508A3D0213A2D /* Sources */,
+				F056977E86D5AA73BCD836C2 /* Resources */,
 				A2A79E7E0FDCE41ED4B80A27 /* Frameworks */,
 			);
 			buildRules = (
@@ -498,6 +526,41 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		6F6A72BD23F8DD0C86C95BE8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F469760707FE588488796BCD /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D5029662F6CD424881EDA72E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9A5571C7AB488C6212F5EAF4 /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F056977E86D5AA73BCD836C2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E42A5A979CCC050D1A101E81 /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F41D3406BC4DE8CE0A170DF3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1256CDEBBCF9F8C22A3A145D /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXShellScriptBuildPhase section */
 		07850A5BC97567B463FEFE07 /* Copy Swift Objective-C Interface Header */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -572,9 +635,10 @@
 			files = (
 				D35E74AE004659FDC483A05C /* Analytics.swift in Sources */,
 				3CF6A8F4CB9BDDCA4E79C3A4 /* CacheRepository.swift in Sources */,
-				10163C207B9D7B9441183A73 /* Fixtures.swift in Sources */,
+				BAFB96BCCF3D341E946B1ACE /* Environment.swift in Sources */,
 				8E66A7757982EBDE2D8B04F6 /* Models.swift in Sources */,
 				5044FA76EDCE6ACF98A0A081 /* Networking.swift in Sources */,
+				7B2CD226FF543719307486E5 /* RateLimiting.swift in Sources */,
 				448959570B74DACAF666E0CC /* Security.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -592,6 +656,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4D7B552FCD6848F35C0CE0DE /* WakaUI.swift in Sources */,
+				B6A6E7858CF16A1945099E0D /* WakaUIModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -601,9 +666,10 @@
 			files = (
 				472F06AF15C7EF9FC964F0E8 /* Analytics.swift in Sources */,
 				AAAA4C4FBEEDA1F53AEF50E1 /* CacheRepository.swift in Sources */,
-				E2A3D9542FD906C58B997FD5 /* Fixtures.swift in Sources */,
+				CC9F4324185B91B4676C435D /* Environment.swift in Sources */,
 				808F09347995A1B548239C4E /* Models.swift in Sources */,
 				84C7A3C8180A46EC27ADE782 /* Networking.swift in Sources */,
+				2398045028703FC52780A79B /* RateLimiting.swift in Sources */,
 				927956A18389CD0E29F1CAC8 /* Security.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -629,6 +695,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2FBA2870D50EF69EE9E8581E /* WakaUI.swift in Sources */,
+				CE9A1F1074E289366A9A17D8 /* WakaUIModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

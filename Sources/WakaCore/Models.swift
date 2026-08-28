@@ -9,9 +9,18 @@ public struct ActivityDay: Codable, Hashable, Sendable, Identifiable {
 
     public var id: Date { date }
 
+    /// Clamps a duration into a finite, non-negative value.
+    ///
+    /// `max(0, .nan)` evaluates to `.nan` because every comparison against NaN is
+    /// false, so a non-finite value must be replaced rather than clamped.
+    static func sanitized(_ duration: TimeInterval) -> TimeInterval {
+        guard duration.isFinite else { return 0 }
+        return max(0, duration)
+    }
+
     public init(date: Date, duration: TimeInterval, projects: [Usage] = [], languages: [Usage] = []) {
         self.date = date
-        self.duration = max(0, duration)
+        self.duration = Self.sanitized(duration)
         self.projects = projects
         self.languages = languages
     }
@@ -26,7 +35,7 @@ public struct Usage: Codable, Hashable, Sendable, Identifiable {
 
     public init(name: String, duration: TimeInterval) {
         self.name = name
-        self.duration = max(0, duration)
+        self.duration = ActivityDay.sanitized(duration)
     }
 }
 
@@ -78,17 +87,45 @@ public struct DurationFormatter: Sendable {
 }
 
 /// A credential-free, minimal representation safe for widget persistence.
+///
+/// Every field is an aggregate. There is deliberately no field capable of holding
+/// a credential, a username, or a raw API response, so the App Group container
+/// cannot leak one even if a future caller is careless.
 public struct WidgetSnapshot: Codable, Hashable, Sendable {
+    /// Longest daily series carried, matching the widest widget family.
+    public static let maximumDailyValues = 7
+
     public let generatedAt: Date
     public let todayDuration: TimeInterval
     public let weekDuration: TimeInterval
     public let topProject: String?
+    /// Recent daily totals, oldest first, for the weekly widget's bar row.
+    public let dailyDurations: [TimeInterval]
 
-    public init(generatedAt: Date, todayDuration: TimeInterval, weekDuration: TimeInterval, topProject: String?) {
+    public init(
+        generatedAt: Date,
+        todayDuration: TimeInterval,
+        weekDuration: TimeInterval,
+        topProject: String?,
+        dailyDurations: [TimeInterval] = []
+    ) {
         self.generatedAt = generatedAt
-        self.todayDuration = max(0, todayDuration)
-        self.weekDuration = max(0, weekDuration)
-        self.topProject = topProject
+        self.todayDuration = ActivityDay.sanitized(todayDuration)
+        self.weekDuration = ActivityDay.sanitized(weekDuration)
+        self.topProject = topProject.map { String($0.prefix(ResponseBounds.maximumNameLength)) }
+        self.dailyDurations = dailyDurations.suffix(Self.maximumDailyValues).map(ActivityDay.sanitized)
+    }
+
+    /// Decodes tolerantly so a snapshot written by an older build still renders.
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.init(
+            generatedAt: try container.decode(Date.self, forKey: .generatedAt),
+            todayDuration: try container.decode(TimeInterval.self, forKey: .todayDuration),
+            weekDuration: try container.decode(TimeInterval.self, forKey: .weekDuration),
+            topProject: try container.decodeIfPresent(String.self, forKey: .topProject),
+            dailyDurations: try container.decodeIfPresent([TimeInterval].self, forKey: .dailyDurations) ?? []
+        )
     }
 }
 
@@ -114,8 +151,13 @@ public enum DeepLink: Hashable, Sendable {
         }
     }
 
-    public func url(scheme: String) -> URL {
-        URL(string: "\(scheme)://open/\(path)")!
+    /// Builds the canonical link for this route.
+    ///
+    /// Returns `nil` rather than trapping on a scheme that cannot form a URL: the
+    /// scheme is a constant today, but a force-unwrap here would turn any future
+    /// configuration mistake into a crash on launch.
+    public func url(scheme: String) -> URL? {
+        URL(string: "\(scheme)://open/\(path)")
     }
 
     private var path: String {

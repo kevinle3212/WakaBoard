@@ -22,7 +22,7 @@ Dependencies point inward: app/widgets → UI → core. Raw WakaTime DTOs stop a
 3. `WakaTimeClient` requests only the required ranges and maps typed DTOs into normalized days.
 4. `AnalyticsEngine` derives overview, shares, comparisons, streaks, and insights locally.
 5. A versioned actor-backed JSON cache writes atomically. Authentication credentials remain in Keychain.
-6. `WidgetSnapshotStore` is the App Group-only, credential-free handoff. The widget reads it now; the live repository-to-store write and targeted `WidgetCenter` reload are an explicit remaining integration gate.
+6. `WidgetSnapshotStore` is the App Group-only, credential-free handoff. `WakaUIModel.publishWidgetSnapshot()` writes it after every successful load and reloads timelines. The snapshot is built in the data's own timezone, not the device's.
 
 The widget reads shared cached values and does not require credentials. Its timeline uses best-effort reload policies; Apple explicitly does not guarantee exact refresh times and applies per-widget budgets ([Apple: Keeping a widget up to date](https://developer.apple.com/documentation/widgetkit/keeping-a-widget-up-to-date/)).
 
@@ -44,7 +44,8 @@ Summaries are the primary normalized source for daily/project/language/editor/OS
 - Percentage change is absent when the previous value is zero; the UI never renders infinity or a fabricated percentage.
 - A streak day requires at least 15 minutes of coding. The threshold is a product convention, not a WakaTime metric.
 - Consistency is labeled “Consistency score” and equals `100 × (1 - population standard deviation / mean)`, clamped to 0...100, for positive daily totals; insufficient samples return no score.
-- Cache freshness is five minutes in the foreground and content remains usable when stale. Rate-limit retry timing honors `Retry-After`; only safe `GET` requests may retry.
+- Cache freshness is five minutes in the foreground and content remains usable when stale. Cached days are pruned at 90 days and widget snapshots at 7; see `RetentionPolicy` and `RETENTION.md`.
+- A client-side token bucket bounds outbound request rate. Retries use bounded exponential backoff with full jitter, honor a clamped `Retry-After`, and apply only to safe `GET` requests and only to retryable failure categories.
 
 ## Configuration
 
@@ -52,8 +53,8 @@ Bundle IDs, App Group ID, callback scheme, and signing team use local/generated 
 
 ## Verification
 
-- [x] `swift test` passes core logic, API decoding/error, cache, date/DST, and snapshot tests — verified 2026-08-27 (10 tests).
+- [x] `swift test` passes core, transport, rate-limiting, retention, untrusted-input, live-data-path, and accessibility tests — verified 2026-08-28 (66 tests in 17 suites).
 - [x] `xcodegen generate` produces the project from `project.yml` — verified 2026-08-27.
 - [x] macOS and generic iOS Simulator app/widget schemes build with strict concurrency warnings treated as errors — verified 2026-08-27.
-- [x] Source inspection finds no raw API DTO consumed by views and no credential in App Group persistence — verified 2026-08-27 by source and encoded-snapshot test.
-- [ ] Device checks verify signing, App Group sharing, real WidgetKit scheduling, VoiceOver, and callback behavior.
+- [x] Source inspection finds no raw API DTO consumed by views and no credential in App Group persistence — verified 2026-08-28 by source and encoded-snapshot test, and enforced continuously by `scripts/audit-checks.mjs no-fixture-leak`.
+- [ ] Device checks verify signing, App Group sharing, real WidgetKit scheduling, VoiceOver, and callback behavior. **Still open — see GATES.md G20.**

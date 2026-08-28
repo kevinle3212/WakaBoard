@@ -1,0 +1,48 @@
+WakaBoard
+Copyright 2026 Kevin Le
+
+This product includes software developed by Kevin Le and the WakaBoard
+contributors.
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+--------------------------------------------------------------------------------
+Third-party notices
+--------------------------------------------------------------------------------
+
+WakaBoard ships with no third-party runtime dependencies. The shipping binary
+links only against frameworks provided by Apple as part of the operating system
+(Foundation, SwiftUI, Swift Charts, WidgetKit, Security, and OSLog), which are
+governed by the Apple SDK license and are not redistributed by this project.
+
+XcodeGen (https://github.com/yonaskolb/XcodeGen, MIT License) is used at
+development time to generate the Xcode project from `project.yml`. It is a build
+tool only: no XcodeGen code is compiled into, linked against, or distributed with
+WakaBoard.
+
+--------------------------------------------------------------------------------
+Trademarks
+--------------------------------------------------------------------------------
+
+WakaBoard is an independent client that uses the WakaTime public API. WakaBoard
+is not affiliated with, endorsed by, sponsored by, or otherwise associated with
+WakaTime. "WakaTime" is a trademark of its respective owner and is used here
+only nominatively, to identify the third-party service this client connects to.
+
+"Apple", "macOS", "iOS", "iPadOS", "Xcode", "Swift", "App Store", "TestFlight",
+and "VoiceOver" are trademarks of Apple Inc., used nominatively to describe
+platform compatibility. WakaBoard is not affiliated with or endorsed by
+Apple Inc.
+
+The Apache Software Foundation name and the Apache License are used solely to
+identify the license terms; this project is not an Apache Software Foundation
+project and is not endorsed by it.

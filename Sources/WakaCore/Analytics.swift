@@ -82,12 +82,29 @@ public enum AnalyticsEngine {
 }
 
 public extension WidgetSnapshot {
+    /// Builds the widget handoff from the days the app just loaded.
+    ///
+    /// - Parameter generatedAt: The moment the app produced this snapshot. The
+    ///   widget uses it to decide whether the data is still inside the retention
+    ///   window, so it must be the real write time, not the newest day's date.
     init(days: [ActivityDay], generatedAt: Date, calendar: Calendar = .current) {
         let today = calendar.startOfDay(for: generatedAt)
-        let weekStart = calendar.date(byAdding: .day, value: -6, to: today)!
+        // `.day` arithmetic can legitimately fail across some calendars; fall back to
+        // today rather than trapping, which is what the previous force-unwrap did.
+        let weekStart = calendar.date(byAdding: .day, value: -6, to: today) ?? today
         let current = days.filter { $0.date >= today }.reduce(0) { $0 + $1.duration }
         let week = days.filter { $0.date >= weekStart && $0.date <= generatedAt }.reduce(0) { $0 + $1.duration }
         let project = AnalyticsEngine.aggregate(days.flatMap(\.projects)).max(by: { $0.duration < $1.duration })?.name
-        self.init(generatedAt: generatedAt, todayDuration: current, weekDuration: week, topProject: project)
+        let series = days
+            .filter { $0.date >= weekStart }
+            .sorted { $0.date < $1.date }
+            .map(\.duration)
+        self.init(
+            generatedAt: generatedAt,
+            todayDuration: current,
+            weekDuration: week,
+            topProject: project,
+            dailyDurations: series
+        )
     }
 }

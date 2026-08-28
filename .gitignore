@@ -19,6 +19,10 @@ Secrets.xcconfig
 *.secrets.xcconfig
 *.local.xcconfig
 
+# Backups taken before destructive edits; never committed
+*.bak-*
+*.tar.gz
+
 # Local working state
 tmp/
 NOTES.local.md

@@ -33,16 +33,16 @@ If WakaTime adds documented PKCE/public-client support, prefer direct native PKC
 
 ## Error and abuse handling
 
-Map 401 to reauthentication, 403 to permission failure, 404 to unavailable resource, 429 to rate limiting with bounded `Retry-After`, 5xx to service unavailability, and transport/decoding failures separately. Coalesce duplicate reads. Retry only idempotent GETs with a small bounded backoff and cancellation support.
+Map 401 to reauthentication, 403 to permission failure, 404 to unavailable resource, 429 to rate limiting with bounded `Retry-After`, 5xx to service unavailability, and transport/decoding failures separately. Coalesce duplicate reads. Retry only idempotent GETs with a small bounded backoff and cancellation support. **Implemented** in `Sources/WakaCore/RateLimiting.swift`; a 401 is explicitly not retried.
 
 ## Release gates
 
-- [ ] Unit tests cover state mismatch/replay, callback route rejection, Keychain error mapping, unsafe base URL rejection, 401/403/404/429/5xx, malformed JSON, and secret-redaction behavior.
-- [ ] Repository scan finds no token/key/secret, `.env`, private response, owner signing identity, or authorization header literal with a real value.
-- [ ] App Group snapshot model cannot encode credentials.
-- [ ] Logout removes Keychain credentials and private cache; remote revoke is attempted only when safely configured and local logout still succeeds.
-- [ ] Manual review verifies least scopes, Keychain accessibility, OSLog privacy, CI permissions/action pins, and no unreviewed dependency.
-- [ ] Device review validates authentication callback and universal/custom link behavior.
+- [x] Unit tests cover state mismatch/replay, callback route rejection, Keychain error mapping, unsafe base URL rejection, 401/403/404/429/5xx, malformed JSON, and secret-redaction behavior — verified 2026-08-28 (66 tests).
+- [x] Repository scan finds no token/key/secret, `.env`, private response, owner signing identity, or authorization header literal with a real value — enforced continuously by `scripts/audit-checks.mjs hygiene`, whose detector is controlled by `--self-test`.
+- [x] App Group snapshot model cannot encode credentials — verified by `WidgetSnapshotTests.privacy`, which asserts the encoded form against six credential-shaped keys.
+- [x] Logout removes Keychain credentials and private cache — `WakaEnvironment.signOut()`, verified by `RetentionTests.signOutErasesEverything`. Remote revoke is not attempted, as no OAuth path exists in this build.
+- [x] Manual review verifies least scopes, Keychain accessibility, OSLog privacy, CI permissions/action pins, and no unreviewed dependency — 2026-08-28; CI pinning is additionally enforced by `scripts/audit-checks.mjs ci`.
+- [ ] Device review validates authentication callback and universal/custom link behavior. **Still open — see GATES.md G20.**
 
 ## Residual risks
 

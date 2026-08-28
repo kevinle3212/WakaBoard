@@ -13,7 +13,7 @@ struct WakaWidgetEntry: TimelineEntry {
 }
 
 struct WakaWidgetProvider: TimelineProvider {
-    private let snapshotStore = WidgetSnapshotStore(suiteName: "group.org.wakaboard.shared")
+    private let snapshotStore = WidgetSnapshotStore(suiteName: WakaIdentifiers.appGroup)
 
     func placeholder(in context: Context) -> WakaWidgetEntry {
         WakaWidgetEntry(date: .now, todayMinutes: 0, weekMinutes: 0, topProject: nil, dailyMinutes: [], placeholder: true)
@@ -32,9 +32,14 @@ struct WakaWidgetProvider: TimelineProvider {
         guard !isPlaceholder, let snapshot = snapshotStore.load() else {
             return WakaWidgetEntry(date: .now, todayMinutes: 0, weekMinutes: 0, topProject: nil, dailyMinutes: [], placeholder: true)
         }
-        return WakaWidgetEntry(date: snapshot.generatedAt, todayMinutes: Int((snapshot.todayDuration / 60).rounded()),
-                               weekMinutes: Int((snapshot.weekDuration / 60).rounded()), topProject: snapshot.topProject,
-                               dailyMinutes: [], placeholder: false)
+        return WakaWidgetEntry(
+            date: snapshot.generatedAt,
+            todayMinutes: Int((snapshot.todayDuration / 60).rounded()),
+            weekMinutes: Int((snapshot.weekDuration / 60).rounded()),
+            topProject: snapshot.topProject,
+            dailyMinutes: snapshot.dailyDurations.map { Int(($0 / 60).rounded()) },
+            placeholder: false
+        )
     }
 }
 
@@ -43,12 +48,12 @@ private func duration(_ minutes: Int) -> String {
 }
 
 private struct WidgetRoot<Content: View>: View {
-    let route: String
+    let route: DeepLink
     @ViewBuilder let content: Content
 
     var body: some View {
         content
-            .widgetURL(URL(string: "wakaboard://open/\(route)"))
+            .widgetURL(route.url(scheme: WakaIdentifiers.urlScheme))
             .containerBackground(.fill.tertiary, for: .widget)
     }
 }
@@ -56,7 +61,7 @@ private struct WidgetRoot<Content: View>: View {
 private struct TodayWidgetView: View {
     let entry: WakaWidgetEntry
     var body: some View {
-        WidgetRoot(route: "overview") {
+        WidgetRoot(route: .overview) {
             VStack(alignment: .leading, spacing: 6) {
                 Text("Today").font(.headline)
                 Text(duration(entry.todayMinutes)).font(.title2.bold()).monospacedDigit()
@@ -71,7 +76,7 @@ private struct TodayWidgetView: View {
 private struct WeekWidgetView: View {
     let entry: WakaWidgetEntry
     var body: some View {
-        WidgetRoot(route: "activity") {
+        WidgetRoot(route: .activity) {
             VStack(alignment: .leading, spacing: 8) {
                 HStack { Text("This week").font(.headline); Spacer(); Text(duration(entry.weekMinutes)).font(.headline).monospacedDigit() }
                 HStack(alignment: .bottom, spacing: 5) {
@@ -90,7 +95,7 @@ private struct WeekWidgetView: View {
 private struct OverviewWidgetView: View {
     let entry: WakaWidgetEntry
     var body: some View {
-        WidgetRoot(route: "projects") {
+        WidgetRoot(route: .projects) {
             VStack(alignment: .leading, spacing: 8) {
                 Text("Coding overview").font(.headline)
                 HStack {

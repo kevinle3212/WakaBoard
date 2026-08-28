@@ -60,6 +60,7 @@ targets:
     platform: iOS
     sources:
       - path: Apps/WakaBoardApp
+      - path: Config/PrivacyInfo.xcprivacy
     dependencies:
       - target: WakaUI_iOS
       - target: WakaCore_iOS
@@ -72,6 +73,8 @@ targets:
     info:
       path: Config/WakaBoard-Info.plist
       properties:
+        # Only OS-provided encryption (TLS via URLSession, the Keychain) is used.
+        ITSAppUsesNonExemptEncryption: false
         CFBundleURLTypes:
           - CFBundleURLName: WakaBoard callback
             CFBundleURLSchemes: [wakaboard]
@@ -80,6 +83,7 @@ targets:
     platform: macOS
     sources:
       - path: Apps/WakaBoardApp
+      - path: Config/PrivacyInfo.xcprivacy
     dependencies:
       - target: WakaUI_macOS
       - target: WakaCore_macOS
@@ -92,6 +96,8 @@ targets:
     info:
       path: Config/WakaBoard-Info.plist
       properties:
+        # Only OS-provided encryption (TLS via URLSession, the Keychain) is used.
+        ITSAppUsesNonExemptEncryption: false
         CFBundleURLTypes:
           - CFBundleURLName: WakaBoard callback
             CFBundleURLSchemes: [wakaboard]
@@ -100,6 +106,8 @@ targets:
     platform: iOS
     sources:
       - path: Widgets/WakaBoardWidgets
+      - path: Config/PrivacyInfo-Widgets.xcprivacy
+        name: PrivacyInfo.xcprivacy
     dependencies:
       - target: WakaUI_iOS
       - target: WakaCore_iOS
@@ -111,6 +119,7 @@ targets:
     info:
       path: Config/WakaBoardWidgets-Info.plist
       properties:
+        ITSAppUsesNonExemptEncryption: false
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
           NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).WakaBoardWidgetsBundle
@@ -119,6 +128,8 @@ targets:
     platform: macOS
     sources:
       - path: Widgets/WakaBoardWidgets
+      - path: Config/PrivacyInfo-Widgets.xcprivacy
+        name: PrivacyInfo.xcprivacy
     dependencies:
       - target: WakaUI_macOS
       - target: WakaCore_macOS
@@ -130,6 +141,7 @@ targets:
     info:
       path: Config/WakaBoardWidgets-Info.plist
       properties:
+        ITSAppUsesNonExemptEncryption: false
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
           NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).WakaBoardWidgetsBundle

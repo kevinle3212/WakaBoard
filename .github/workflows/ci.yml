@@ -1,16 +1,81 @@
 name: CI
+
 on:
   pull_request:
   push:
     branches: [main]
+
+# Least privilege: this workflow only ever reads the repository.
 permissions:
   contents: read
+
+# A superseded run has nothing useful left to say; cancel it rather than pay for it.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
+    name: Test and build
     runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      # actions/checkout v4.2.2, pinned by commit SHA so a moved tag cannot change
+      # what runs here.
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          # This job never pushes; leaving a token in .git/config would be an
+          # unnecessary credential on disk for every later step to reach.
+          persist-credentials: false
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Run the core and UI test suites
+        run: swift test
+
+      # `swift test` covers only the two library targets. Without this step CI would
+      # pass while the app and widget extensions failed to compile.
+      - name: Build every shipping target on both platforms
+        run: sh scripts/build-all.sh
+
+  gates:
+    name: Verify the acceptance ledger
+    runs-on: macos-15
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-      - name: Test core
-        run: swift test
-      - name: Generate Xcode project
-        run: xcodegen generate
+        with:
+          persist-credentials: false
+
+      # Proves the absence detectors can still see a planted violation. A detector
+      # that silently stopped working would otherwise certify every gate it guards.
+      - name: Self-test the audit detectors
+        run: node scripts/audit-checks.mjs --self-test
+
+      - name: Audit report anchors resolve
+        run: node scripts/audit-checks.mjs audit
+
+      - name: No fixture data in shipping code
+        run: node scripts/audit-checks.mjs no-fixture-leak
+
+      - name: Legal documents complete
+        run: node scripts/audit-checks.mjs legal
+
+      - name: Privacy disclosures cover every regime
+        run: node scripts/audit-checks.mjs compliance
+
+      - name: Accessibility claim is backed by assertions
+        run: node scripts/audit-checks.mjs accessibility
+
+      - name: Apple submission requirements met
+        run: node scripts/audit-checks.mjs apple
+
+      - name: Licence is complete and attributed
+        run: node scripts/audit-checks.mjs license
+
+      - name: No secrets, force-unwraps, or world-writable paths
+        run: node scripts/audit-checks.mjs hygiene
+
+      - name: CI enforces what it claims
+        run: node scripts/audit-checks.mjs ci
