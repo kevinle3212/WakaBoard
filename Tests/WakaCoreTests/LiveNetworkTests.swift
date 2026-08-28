@@ -62,3 +62,68 @@ struct LiveNetworkTests {
         #expect(response.url?.host == "api.wakatime.com")
     }
 }
+
+/// Opt-in tests that use the **real stored credential** to make an authenticated
+/// request.
+///
+/// Separate from ``LiveNetworkTests`` because those need no credential and these do.
+/// Nothing here prints a key, a project name, or any other analytic content: the
+/// assertions are structural, so the output is safe to paste into an issue.
+///
+/// ```sh
+/// WAKABOARD_LIVE_AUTH=1 swift test --filter LiveAuthenticated
+/// ```
+@Suite("LiveAuthenticated", .enabled(if: ProcessInfo.processInfo.environment["WAKABOARD_LIVE_AUTH"] == "1"))
+struct LiveAuthenticatedTests {
+    private func storedCredential() throws -> Credential {
+        let store = KeychainCredentialStore(service: WakaIdentifiers.keychainService)
+        guard let credential = try store.load() else {
+            Issue.record("no stored credential; sign in through the app first")
+            throw WakaTimeError.unauthenticated
+        }
+        return credential
+    }
+
+    @Test("the stored credential is accepted by the real WakaTime API")
+    func credentialIsAccepted() async throws {
+        let client = WakaTimeClient(http: URLSessionHTTPClient(), retryPolicy: .none)
+        // A throw here is the whole assertion; nothing about the account is printed.
+        try await client.verifyCredential(try storedCredential())
+    }
+
+    @Test("a real summaries response decodes into bounded, finite analytics")
+    func summariesDecode() async throws {
+        let client = WakaTimeClient(http: URLSessionHTTPClient(), retryPolicy: .none)
+        let range = ActivityRange(start: .now.addingTimeInterval(-6 * 86_400), end: .now, timeZone: .current)
+        let days = try await client.summaries(range: range, credential: try storedCredential(), timeZone: .current)
+
+        // Structure only — never the values themselves.
+        #expect(!days.isEmpty, "the API returned no days for the last week")
+        #expect(days.count <= ResponseBounds.maximumDays)
+        for day in days {
+            #expect(day.duration.isFinite)
+            #expect(day.duration >= 0)
+            #expect(day.duration <= ResponseBounds.maximumDailySeconds)
+            for bucket in day.projects + day.languages {
+                #expect(bucket.duration.isFinite)
+                #expect(bucket.name.count <= ResponseBounds.maximumNameLength)
+            }
+        }
+    }
+
+    @Test("a snapshot built from real data carries aggregates and no credential")
+    func snapshotFromRealData() async throws {
+        let client = WakaTimeClient(http: URLSessionHTTPClient(), retryPolicy: .none)
+        let range = ActivityRange(start: .now.addingTimeInterval(-6 * 86_400), end: .now, timeZone: .current)
+        let days = try await client.summaries(range: range, credential: try storedCredential(), timeZone: .current)
+
+        let snapshot = WidgetSnapshot(days: days, generatedAt: .now)
+        let encoded = try JSONEncoder().encode(snapshot)
+        let text = try #require(String(data: encoded, encoding: .utf8))
+        for forbidden in ["authorization", "apikey", "bearer", "password", "secret"] {
+            #expect(!text.localizedCaseInsensitiveContains(forbidden))
+        }
+        #expect(snapshot.dailyDurations.count <= WidgetSnapshot.maximumDailyValues)
+        #expect(snapshot.todayDuration.isFinite && snapshot.weekDuration.isFinite)
+    }
+}

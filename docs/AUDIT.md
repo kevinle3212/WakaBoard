@@ -345,6 +345,58 @@ minimum is 24×24 rather than Apple's touch-oriented 44. It is reported by the a
 script as a named **exemption** with its reason, so the exception stays visible in the
 output rather than being silently excluded.
 
+### D4 — Hardening the Keychain made sign-in impossible
+
+The most serious defect in the remediation, reported by Kevin: pasting a key and
+pressing Connect appeared to do nothing.
+
+Adding `kSecUseDataProtectionKeychain: true` unconditionally was correct on iOS and
+wrong on macOS. That keychain requires an entitlement granted by a provisioning
+profile; a locally-signed or ad-hoc build does not carry it. Measured on this machine:
+
+```
+dataProtection=true   SecItemAdd -> -34018   (errSecMissingEntitlement)
+dataProtection=false  SecItemAdd -> 0
+```
+
+The failure chain: the key verified against WakaTime, `save()` threw, the generic
+`catch` blamed the network ("check your connection"), `state = .failed` made
+`isSignedIn` true so the shell swapped to the dashboard, whose `.task` re-read the
+Keychain, failed again, and swapped straight back to sign-in. Visually: nothing.
+
+**Fix:** `KeychainCredentialStore` now tries the data-protection keychain first and
+falls back to the legacy keychain on `errSecMissingEntitlement`, so a provisioned
+build still gets the stronger store. Sign-out deletes from both. Verified by
+`Tests/WakaCoreTests/RealKeychainTests.swift`, which exercises the **real** system
+keychain rather than a double — no test against a double could have caught this.
+
+### D5 — A failed sign-in was expressed as a load state
+
+`signIn()` reported failure by setting `state = .failed`, but `isSignedIn` treats
+every state except `signedOut` as signed in, so the sign-in screen was replaced by
+the dashboard the moment sign-in failed.
+
+**Fix:** a dedicated `signInError` property, leaving `state` alone. Sign-in failures
+now stay on the sign-in screen with a message that distinguishes a rejected key from
+a storage failure. Four regression tests.
+
+### D6 — Signing out of the sidebar made the app look broken
+
+While signed out, every sidebar row rendered the sign-in form, so Settings was
+unreachable and the sidebar appeared inert.
+
+**Fix:** Settings is always reachable; other data screens show a "Not connected"
+state with an action that returns to Overview.
+
+### D7 — Three Settings buttons and the period picker had sub-44pt targets
+
+Found once a real credential made those screens reachable to the audit. The Settings
+buttons were 24pt — `.frame(minHeight:)` does not size a `Button` any more than it
+sizes a `Link`. `WakaFormButton` pads the label instead, measured at 44pt.
+
+The segmented picker is 28pt and stays that way: AppKit owns it. It passes WCAG 2.2
+AA (24×24) and is recorded as an exemption, not silently ignored.
+
 ---
 
 ## Not defects, but worth recording
@@ -365,21 +417,24 @@ output rather than being silently excluded.
 
 ## What remains open
 
-Reduced substantially by the on-device pass. What is genuinely still unverified:
+The on-device pass, a real credential, and an authenticated round trip have closed
+most of this. What is genuinely still unverified:
 
 1. **No physical iOS or iPadOS device.** Kevin's iPhone 17 Pro and iPad Air (M3) are
-   registered but were offline during this session. iOS was verified on the Simulator,
-   which catches installability and launch but is not hardware.
-2. **No provisioning-profile build.** Xcode has no signed-in account, so automatic
-   signing cannot mint a profile. Every local build is ad-hoc, which means the
-   **App Group entitlement grant is unverified** — on macOS it is a restricted
-   entitlement that requires a profile, and the local-run build drops it.
-3. **No authenticated WakaTime response.** Live requests now reach the real API and a
-   real `401` is returned and mapped correctly, so DNS, TLS, host allowlist, endpoint
-   paths, and status mapping are proven. A `200` with real analytics is not.
-4. **VoiceOver speech, Dynamic Type, and contrast are not human-reviewed.** The
-   accessibility *tree* is audited automatically; how it sounds and looks at
-   accessibility text sizes is a human judgement that has not been made.
-5. **No independent security audit.** The threat model remains self-assessed.
-6. **No long-run WidgetKit scheduling.** The extension installs, registers, and is
-   spawned by the system; real refresh cadence over hours is unobserved.
+   registered but were offline. iOS is verified on the Simulator: it installs,
+   launches, and stays running. That is not hardware, and it cannot show a Lock Screen
+   widget or real WidgetKit scheduling.
+2. **No provisioning-profile build.** Xcode has no signed-in account, so the
+   **App Group entitlement grant remains unverified**. On macOS the handoff is
+   confirmed working through the shared `UserDefaults` suite — the snapshot is written
+   after every fetch and contains five aggregate fields and no credential — but that
+   works because a non-sandboxed app can reach the suite without the entitlement. A
+   sandboxed or App Store build needs the real grant.
+3. **VoiceOver speech, Dynamic Type, and contrast are not human-reviewed.** The
+   accessibility tree of all six screens is audited automatically; how it sounds, and
+   how it renders at accessibility text sizes, is a human judgement not yet made.
+4. **No independent security audit.** The threat model remains self-assessed.
+5. **The authenticated suite is slow.** `LiveAuthenticated` took ~82 seconds against
+   the live API. It passed well inside the 20-second per-request timeout, so this is
+   WakaTime's own latency for computing summaries, not a client defect — but it is
+   worth knowing before wiring it into anything time-sensitive.

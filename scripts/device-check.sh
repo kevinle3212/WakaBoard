@@ -72,7 +72,10 @@ PID=$(pgrep -f "$APP_MATCH" | head -1 || true)
 echo "    running as pid $PID"
 
 echo "==> Auditing the live accessibility tree"
-swift scripts/ax-audit.swift "$PID"
+# --all-screens navigates the sidebar and audits every screen. Auditing only whichever
+# screen happened to be showing missed three real violations in Settings and three in
+# Activity, because a fresh launch opens on Overview.
+swift scripts/ax-audit.swift "$PID" --all-screens
 
 echo "==> Installing on an iOS Simulator"
 SIM=$(xcrun simctl list devices available 2>/dev/null \

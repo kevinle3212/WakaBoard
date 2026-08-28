@@ -213,6 +213,84 @@ struct LiveDataPathTests {
         }
     }
 
+    @Test("a Keychain that cannot store the key says so, and stays on sign-in")
+    func signInStorageFailure() async throws {
+        let url = temporaryURL()
+        defer { try? FileManager.default.removeItem(at: url) }
+        // The key is accepted by WakaTime (200) but the store rejects it — exactly the
+        // shape of the -34018 failure that made Connect appear to do nothing.
+        let (environment, _, suite) = makeEnvironment(
+            http: StubHTTPClient(),
+            credential: nil,
+            credentialFailure: .unhandled(status: -34018),
+            cacheURL: url
+        )
+        defer { UserDefaults.standard.removePersistentDomain(forName: suite) }
+
+        let model = WakaUIModel(environment: environment, timeZone: .gmt, now: { fixedNow }, reloadWidgets: {})
+        model.apiKeyInput = "a-valid-looking-key"
+        await model.signIn()
+
+        let message = try #require(model.signInError)
+        // The old copy blamed the network for a storage failure.
+        #expect(!message.contains("connection"))
+        #expect(message.contains("could not save"))
+        // Crucially the screen must not flip to the dashboard and back.
+        #expect(!model.isSignedIn)
+        #expect(model.state == .signedOut)
+    }
+
+    @Test("a rejected key reports the rejection without leaving the sign-in screen")
+    func signInRejected() async throws {
+        let url = temporaryURL()
+        defer { try? FileManager.default.removeItem(at: url) }
+        let (environment, _, suite) = makeEnvironment(http: StubHTTPClient(status: 401), credential: nil, cacheURL: url)
+        defer { UserDefaults.standard.removePersistentDomain(forName: suite) }
+
+        let model = WakaUIModel(environment: environment, timeZone: .gmt, now: { fixedNow }, reloadWidgets: {})
+        model.apiKeyInput = "bad-key"
+        await model.signIn()
+
+        #expect(model.signInError != nil)
+        #expect(!model.isSignedIn)
+    }
+
+    @Test("a successful sign-in stores the key, clears the field, and hides it again")
+    func signInSuccess() async throws {
+        let url = temporaryURL()
+        defer { try? FileManager.default.removeItem(at: url) }
+        let json = summariesJSON(dates: ["2027-01-15"], seconds: [3_600])
+        let (environment, _, suite) = makeEnvironment(http: StubHTTPClient(json: json), credential: nil, cacheURL: url)
+        defer { UserDefaults.standard.removePersistentDomain(forName: suite) }
+
+        let model = WakaUIModel(environment: environment, timeZone: .gmt, now: { fixedNow }, reloadWidgets: {})
+        model.apiKeyInput = "good-key"
+        model.isKeyVisible = true
+        await model.signIn()
+
+        #expect(model.signInError == nil)
+        #expect(model.apiKeyInput.isEmpty)
+        // A revealed key must not stay revealed for the next person to open Settings.
+        #expect(!model.isKeyVisible)
+        #expect(try environment.credentials.load() == .personalAPIKey("good-key"))
+        #expect(model.isSignedIn)
+    }
+
+    @Test("a key with stray whitespace is trimmed rather than rejected")
+    func signInTrimsWhitespace() async throws {
+        let url = temporaryURL()
+        defer { try? FileManager.default.removeItem(at: url) }
+        let (environment, _, suite) = makeEnvironment(http: StubHTTPClient(), credential: nil, cacheURL: url)
+        defer { UserDefaults.standard.removePersistentDomain(forName: suite) }
+
+        let model = WakaUIModel(environment: environment, timeZone: .gmt, now: { fixedNow }, reloadWidgets: {})
+        // Pasting from a browser commonly picks up a trailing newline.
+        model.apiKeyInput = "  waka_key-123\n"
+        await model.signIn()
+
+        #expect(try environment.credentials.load() == .personalAPIKey("waka_key-123"))
+    }
+
     @Test("signing out erases everything and returns to the sign-in screen")
     func signOutClearsState() async throws {
         let url = temporaryURL()

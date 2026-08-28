@@ -82,6 +82,17 @@ public final class WakaUIModel {
 
     /// Bound to the sign-in field. Cleared as soon as the key reaches the Keychain.
     public var apiKeyInput = ""
+
+    /// Whether the sign-in field reveals the key. Off by default.
+    public var isKeyVisible = false
+
+    /// The last sign-in failure, shown on the sign-in screen.
+    ///
+    /// Deliberately separate from ``state``: expressing a sign-in failure as
+    /// `.failed` made ``isSignedIn`` true, which swapped the sign-in screen for the
+    /// dashboard, whose own load then failed and swapped it back — so a failed
+    /// sign-in looked like the Connect button doing nothing at all.
+    public private(set) var signInError: String?
     public var selectedRange: RangeOption = .week {
         didSet { if oldValue != selectedRange { Task { await refresh() } } }
     }
@@ -163,9 +174,10 @@ public final class WakaUIModel {
     /// the Keychain, so a typo fails immediately with a clear message instead of
     /// being persisted and failing on every later refresh.
     public func signIn() async {
+        signInError = nil
         let credential = Credential.personalAPIKey(apiKeyInput.trimmingCharacters(in: .whitespacesAndNewlines))
         guard credential.isWellFormed else {
-            state = .failed("That does not look like a WakaTime API key. Check for stray spaces or line breaks.")
+            signInError = "That does not look like a WakaTime API key. Check for stray spaces or line breaks."
             return
         }
         isBusy = true
@@ -174,11 +186,20 @@ public final class WakaUIModel {
             try await environment.client.verifyCredential(credential)
             try environment.credentials.save(credential)
             apiKeyInput = ""
+            isKeyVisible = false
             await refresh()
         } catch let error as WakaTimeError {
-            state = .failed(Self.message(for: error))
+            signInError = Self.message(for: error)
+        } catch let error as KeychainError {
+            // Previously collapsed into "check your connection", which was actively
+            // misleading: the key had already been accepted by WakaTime and it was
+            // storage that failed.
+            signInError = "Your key was accepted by WakaTime, but WakaBoard could not save it. "
+                + Self.message(for: error)
+        } catch is CancellationError {
+            return
         } catch {
-            state = .failed("Could not verify that key. Check your connection and try again.")
+            signInError = "Could not verify that key. Check your connection and try again."
         }
     }
 
@@ -192,6 +213,8 @@ public final class WakaUIModel {
         overview = nil
         insights = []
         apiKeyInput = ""
+        isKeyVisible = false
+        signInError = nil
         do {
             try await environment.signOut()
             state = .signedOut

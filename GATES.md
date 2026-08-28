@@ -36,8 +36,8 @@ silently dropped test fails the gate rather than passing it.
       surfaces signed-out, loaded, expired, stale, and signed-out-again states from
       actual outcomes rather than assignment.
   CHECK: swift test --filter LiveDataPath 2>&1
-  EXPECT: Test run with 8 tests in 1 suite passed
-  EVIDENCE: exit 0 — 2026-08-28. Found the real timezone defect H6, and later the Keychain-error defect D1, while being written.
+  EXPECT: Test run with 12 tests in 1 suite passed
+  EVIDENCE: exit 0 — 2026-08-28. Found timezone defect H6, Keychain-error defect D1, and sign-in defects D4/D5 while being written.
 
 - [x] G4: Outbound requests are rate limited client-side: a token-bucket throttle
       bounds request rate, and retries use bounded exponential backoff with jitter
@@ -68,8 +68,8 @@ silently dropped test fails the gate rather than passing it.
 - [x] G8: Credentials use the data-protection Keychain, carry device-only
       accessibility on create *and* update, and map OSStatus to distinguishable errors.
   CHECK: swift test --filter Keychain 2>&1
-  EXPECT: Test run with 5 tests in 1 suite passed
-  EVIDENCE: exit 0 — 2026-08-28. Keychain *queries* are asserted, not a live Keychain write; see G20.
+  EXPECT: Test run with 10 tests in 2 suites passed
+  EVIDENCE: exit 0 — 2026-08-28. Now includes `RealKeychain`, which writes to the **actual** system keychain. A double could not have caught defect D4.
 
 - [x] G9: The published retention policy is enforced in code: cached days past the
       window are pruned on read and write, and sign-out erases the credential, the
@@ -115,7 +115,7 @@ silently dropped test fails the gate rather than passing it.
 - [x] G15: The whole suite passes under Swift 6 strict concurrency with warnings as
       errors.
   CHECK: swift test 2>&1
-  EXPECT: Test run with 71 tests in 18 suites passed
+  EXPECT: Test run with 83 tests in 20 suites passed
   EVIDENCE: exit 0 — 2026-08-28. Up from 10 tests in the audited baseline.
 
 - [x] G16: Both shipping app targets and both widget extensions compile, on macOS and
@@ -148,17 +148,20 @@ silently dropped test fails the gate rather than passing it.
 ## On-device verification
 
 - [x] G20: The macOS app launches on real hardware and its **live accessibility tree**
-      — the one VoiceOver reads — contains no unlabelled interactive control and no
-      author-controllable hit target below 44pt; and the iOS bundle installs and
-      launches on a Simulator.
+      — the one VoiceOver reads — contains, across **all six screens**, no unlabelled
+      interactive control, nothing below the WCAG 2.2 AA 24pt minimum, and no
+      author-sized control below 44pt; and the iOS bundle installs and launches on a
+      Simulator.
   CHECK: sh scripts/device-check.sh
   EXPECT: DEVICE_CHECK_OK
   EVIDENCE: exit 0 — 2026-08-28. Ran on this Mac (macOS 26.x, Apple silicon) and
   Simulator `9FAFBA5A…` (iPhone 17 Pro, iOS 26.5). Found three real defects no compile
   or unit test caught: audit finding **C3** (a forbidden `NSExtensionPrincipalClass`
   made the app impossible to install anywhere), **D2** (a `Link` with a 16pt hit
-  target), and **D1** (a locked Keychain reported as "not signed in"). Reports one
-  documented WCAG 2.5.8 user-agent-control exemption on every run.
+  target), and **D1** (a locked Keychain reported as "not signed in"). Extended to
+  drive the sidebar and audit every screen, which then found **D7** (three 24pt
+  Settings buttons). Reports two documented WCAG 2.5.8 user-agent-control exemptions
+  on every run.
 
 - [x] G21: Real HTTPS requests reach the live WakaTime API and are mapped correctly,
       without needing a credential — a bogus key must produce a genuine `401`.
@@ -168,33 +171,47 @@ silently dropped test fails the gate rather than passing it.
   ephemeral session configuration, the host allowlist, endpoint paths, and 401 mapping
   end to end. Skipped by default so the suite stays hermetic and offline-runnable.
 
+- [x] G23: A real WakaTime credential is stored, accepted by the live API, and the
+      resulting analytics decode within bounds and produce a credential-free widget
+      snapshot.
+  CHECK: WAKABOARD_LIVE_AUTH=1 swift test --filter LiveAuthenticated 2>&1
+  EXPECT: Test run with 3 tests in 1 suite passed
+  EVIDENCE: exit 0 — 2026-08-28, against `api.wakatime.com` with Kevin's own key. The
+  first authenticated `200` this codebase has ever received. The app rendered real
+  analytics (36h 41m across 7 days, 5 active) and wrote a 202-byte snapshot to the
+  App Group suite containing exactly five aggregate fields and no credential.
+  Assertions are structural only — no key, project name, or duration is printed.
+  Took ~82s: WakaTime's own latency for computing summaries, well inside the
+  20-second per-request timeout.
+
 ---
 
 ## Open gate
 
-- [ ] G22: The parts of on-device verification that need hardware or a credential this
-      session did not have — a physical iPhone or iPad, a provisioning-profile build,
-      an authenticated `200` from WakaTime, App Group read/write between the real app
-      and widget, Lock Screen widget families, real WidgetKit refresh cadence, and a
-      human VoiceOver / Dynamic Type / contrast review.
+- [ ] G22: The parts of on-device verification that need hardware or provisioning this
+      session did not have — a physical iPhone or iPad, a provisioning-profile build
+      granting the App Group entitlement, Lock Screen widget families, real WidgetKit
+      refresh cadence, and a human VoiceOver / Dynamic Type / contrast review.
   EVIDENCE: **not performed.**
   - Kevin's iPhone 17 Pro and iPad Air (M3) are registered but were **offline**; iOS
-    was verified on the Simulator only.
+    was verified on the Simulator only, which cannot show a Lock Screen widget.
   - Xcode has **no signed-in account**, so automatic signing cannot mint a
-    provisioning profile. Every local build is ad-hoc, and on macOS the App Group is a
-    restricted entitlement that a profile must grant — so the **entitlement grant
-    itself is unverified**, and the local-run build drops it.
-  - No WakaTime API key was supplied, so no authenticated response has ever been
-    received, and every screen behind sign-in is unaudited.
+    provisioning profile. The macOS widget handoff is confirmed working through the
+    shared `UserDefaults` suite, but that succeeds because a non-sandboxed app reaches
+    the suite without the entitlement — a sandboxed or App Store build needs the real
+    grant, and that **remains unverified**.
+  - VoiceOver speech, Dynamic Type at accessibility sizes, and contrast are human
+    judgements that have not been made. The tree is audited; the experience is not.
 
-ABANDON: G22 Requires physical iOS hardware that was offline, an Xcode account able to
-issue a provisioning profile, and a real WakaTime API key — none of which exist in
-this session, and none of which can be substituted for. HANDOFF: Kevin must (1) sign
-into Xcode so a profile can be issued, (2) connect an iPhone or iPad, (3) supply a
-WakaTime key, then re-run `sh scripts/device-check.sh` and extend it past the sign-in
-screen. Until then WakaBoard must not be described as fully device-verified, and
-ACCESSIBILITY.md must keep its "partially conformant" wording.
+ABANDON: G22 Requires a physical iOS device that was offline, an Xcode account able to
+issue a provisioning profile, and human sensory review — none of which exist in this
+session, and none of which can be substituted for. HANDOFF: Kevin must (1) sign into
+Xcode so a profile can be issued and the App Group entitlement verified, (2) connect
+an iPhone or iPad and install a signed build, (3) enable VoiceOver and the largest
+Dynamic Type size and walk all six screens. Until then WakaBoard must not be described
+as fully device-verified, and ACCESSIBILITY.md must keep its "partially conformant"
+wording.
 
 The gate is abandoned with a handoff rather than reworded into something the available
-hardware could satisfy. What *was* reachable this session is not folded in here — it
-is proven separately by G20 and G21, which are real runnable checks.
+hardware could satisfy. What *was* reachable is not folded in here — it is proven
+separately by G20, G21, and G23, which are real runnable checks.

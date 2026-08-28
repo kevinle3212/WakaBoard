@@ -149,23 +149,41 @@ struct WakaSignInView: View {
     var body: some View {
         Form {
             Section("Connect WakaTime") {
-                // `SecureField` so the key is not shown on screen or captured in a
-                // screenshot, and autocorrect/capitalisation are off because they
-                // silently corrupt a pasted key.
-                SecureField("WakaTime API key", text: $model.apiKeyInput)
-                    .textContentType(.password)
-                    .disableAutocorrection(true)
-                    // The accessibility tree reports the *control's* own frame, so
-                    // outer padding does not count and `.frame(minHeight:)` was
-                    // overridden by the bordered style's intrinsic height. Sizing the
-                    // plain-styled field directly is what actually moves the target.
+                HStack(spacing: 8) {
+                    Group {
+                        if model.isKeyVisible {
+                            TextField("WakaTime API key", text: $model.apiKeyInput)
+                        } else {
+                            SecureField("WakaTime API key", text: $model.apiKeyInput)
+                        }
+                    }
                     .textFieldStyle(.plain)
-                    .padding(.horizontal, 10)
-                    .frame(height: WakaAccessibility.minimumTargetSize)
-                    .background(.quaternary.opacity(0.4), in: RoundedRectangle(cornerRadius: 8))
-                    .contentShape(Rectangle())
+                    .disableAutocorrection(true)
+                    #if os(iOS)
+                    .textInputAutocapitalization(.never)
+                    #endif
                     .accessibilityLabel("WakaTime API key")
                     .accessibilityHint("Paste the personal API key from your WakaTime account settings")
+
+                    Button {
+                        model.isKeyVisible.toggle()
+                    } label: {
+                        Image(systemName: model.isKeyVisible ? "eye.slash" : "eye")
+                            .frame(
+                                width: WakaAccessibility.minimumTargetSize,
+                                height: WakaAccessibility.minimumTargetSize
+                            )
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    // The label alone would read as "eye"; state and effect matter more.
+                    .accessibilityLabel(model.isKeyVisible ? "Hide API key" : "Show API key")
+                    .accessibilityHint("Toggles whether the key is displayed as plain text")
+                }
+                .padding(.horizontal, 10)
+                .frame(minHeight: WakaAccessibility.minimumTargetSize)
+                .background(.quaternary.opacity(0.4), in: RoundedRectangle(cornerRadius: 8))
+
                 Button {
                     Task { await model.signIn() }
                 } label: {
@@ -175,7 +193,10 @@ struct WakaSignInView: View {
                 .buttonStyle(.borderedProminent)
                 .disabled(model.apiKeyInput.isEmpty || model.isBusy)
 
-                if case .failed(let message) = model.state {
+                // Reads `signInError`, not `state`. Driving this from `state` meant a
+                // failed sign-in flipped the app to the dashboard and back, so the
+                // message never stayed on screen long enough to be read.
+                if let message = model.signInError {
                     Label(message, systemImage: "exclamationmark.triangle")
                         .foregroundStyle(.red)
                         .accessibilityLabel("Sign-in failed. \(message)")
@@ -255,7 +276,6 @@ struct WakaDashboardView: View {
                     .accessibilityHint("Loads the latest available analytics from WakaTime")
             }
         }
-        .task { await model.start() }
         .refreshable { await model.refresh() }
     }
 
@@ -344,6 +364,7 @@ struct WakaActivityView: View {
                     }
                 }
                 .pickerStyle(.segmented)
+                .controlSize(.large)
                 .frame(minHeight: WakaAccessibility.minimumTargetSize)
                 .accessibilityLabel("Analytics period")
                 .accessibilityHint("Changes the period shown on every screen")
@@ -475,9 +496,11 @@ struct WakaSettingsView: View {
             Section("Account") {
                 LabeledContent("Connection", value: model.isSignedIn ? "Connected" : "Not connected")
                 if model.isSignedIn {
-                    Button("Sign out and erase local data", role: .destructive) { confirmingSignOut = true }
-                        .frame(minHeight: WakaAccessibility.minimumTargetSize)
-                        .accessibilityHint("Removes your API key, cached analytics, and widget data from this device")
+                    WakaFormButton(
+                        title: "Sign out and erase local data",
+                        role: .destructive,
+                        hint: "Removes your API key, cached analytics, and widget data from this device"
+                    ) { confirmingSignOut = true }
                 }
                 Text("WakaBoard signs in with a personal API key stored in the system Keychain on this "
                      + "device only. It is never synced to iCloud and never included in a device backup.")
@@ -486,11 +509,15 @@ struct WakaSettingsView: View {
             }
 
             Section("Data") {
-                Button("Refresh analytics") { Task { await model.refresh() } }
-                    .disabled(model.isBusy)
-                    .frame(minHeight: WakaAccessibility.minimumTargetSize)
-                Button("Clear local cache", role: .destructive) { confirmingClear = true }
-                    .frame(minHeight: WakaAccessibility.minimumTargetSize)
+                WakaFormButton(title: "Refresh analytics", hint: "Fetches the latest analytics from WakaTime") {
+                    Task { await model.refresh() }
+                }
+                .disabled(model.isBusy)
+                WakaFormButton(
+                    title: "Clear local cache",
+                    role: .destructive,
+                    hint: "Deletes cached analytics from this device; you stay signed in"
+                ) { confirmingClear = true }
                 Text("Cached analytics are kept on this device for up to 90 days and are deleted "
                      + "automatically after that. Widget data is kept for up to 7 days.")
                     .font(.footnote)
@@ -542,6 +569,32 @@ struct WakaSettingsView: View {
         } message: {
             Text("WakaBoard will refetch your analytics on the next refresh. You stay signed in.")
         }
+    }
+}
+
+/// A form row button with a hit target that actually meets the 44-point minimum.
+///
+/// `Button(...) { }.frame(minHeight: 44)` does not work: the frame wraps the button
+/// rather than sizing it, and the accessibility tree reported 24-point targets for
+/// every Settings action. Padding the *label* is what moves the control's own frame.
+struct WakaFormButton: View {
+    let title: String
+    var role: ButtonRole?
+    var hint: String?
+    let action: () -> Void
+
+    var body: some View {
+        Button(role: role, action: action) {
+            Text(title)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                // 14, not 12: a 16-point line plus 24 points of padding measured 40 in
+                // the live accessibility tree, four short of the 44-point target.
+                .padding(.vertical, 14)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(role == .destructive ? Color.red : Color.accentColor)
+        .accessibilityHint(hint ?? "")
     }
 }
 
@@ -663,8 +716,21 @@ public struct WakaShellView: View {
     }
 
     @ViewBuilder private var detail: some View {
-        if !model.isSignedIn {
-            WakaSignInView(model: model)
+        // Settings stays reachable when signed out, and each data screen explains
+        // itself rather than the whole app collapsing into the sign-in form — which
+        // made the sidebar look broken.
+        if !model.isSignedIn, selection != .settings {
+            switch selection {
+            case .overview, nil:
+                WakaSignInView(model: model)
+            default:
+                WakaStateView(
+                    title: "Not connected",
+                    message: "Connect your WakaTime account to see \((selection ?? .overview).rawValue.lowercased()).",
+                    actionLabel: "Connect WakaTime",
+                    action: { selection = .overview }
+                )
+            }
         } else {
             switch selection {
             case .overview: WakaDashboardView(model: model)

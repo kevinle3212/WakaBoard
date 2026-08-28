@@ -110,23 +110,36 @@ public struct KeychainCredentialStore: CredentialStore {
     }
 
     public func load() throws -> Credential? {
-        var query = baseQuery
-        query[kSecReturnData as String] = true
-        query[kSecMatchLimit as String] = kSecMatchLimitOne
-        var result: CFTypeRef?
-        let status = SecItemCopyMatching(query as CFDictionary, &result)
-        if status == errSecItemNotFound { return nil }
-        guard status == errSecSuccess else {
-            let error = KeychainError.from(status)
-            WakaLog.credentialStoreFailure(error)
-            throw error
+        var lastError: KeychainError?
+        for base in queryVariants {
+            var query = base
+            query[kSecReturnData as String] = true
+            query[kSecMatchLimit as String] = kSecMatchLimitOne
+            var result: CFTypeRef?
+            let status = SecItemCopyMatching(query as CFDictionary, &result)
+
+            if status == errSecItemNotFound { continue }
+            if status == errSecMissingEntitlement {
+                lastError = .from(status)
+                continue
+            }
+            guard status == errSecSuccess else {
+                let error = KeychainError.from(status)
+                WakaLog.credentialStoreFailure(error)
+                throw error
+            }
+            guard let data = result as? Data, let encoded = String(data: data, encoding: .utf8),
+                  let credential = Self.decode(encoded) else {
+                WakaLog.credentialStoreFailure(.malformedItem)
+                throw KeychainError.malformedItem
+            }
+            return credential
         }
-        guard let data = result as? Data, let encoded = String(data: data, encoding: .utf8),
-              let credential = Self.decode(encoded) else {
-            WakaLog.credentialStoreFailure(.malformedItem)
-            throw KeychainError.malformedItem
-        }
-        return credential
+        // Every variant said "not found" — that is genuinely no stored credential.
+        // An entitlement failure on every variant is a real error and must not be
+        // reported as "signed out", which would send the user to re-enter a key.
+        if let lastError { throw lastError }
+        return nil
     }
 
     public func save(_ credential: Credential) throws {
@@ -136,41 +149,86 @@ public struct KeychainCredentialStore: CredentialStore {
             kSecValueData as String: data,
             kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
         ]
-        let status = SecItemUpdate(baseQuery as CFDictionary, attributes as CFDictionary)
-        if status == errSecItemNotFound {
-            var add = baseQuery
-            add.merge(attributes) { _, new in new }
-            let addStatus = SecItemAdd(add as CFDictionary, nil)
-            guard addStatus == errSecSuccess else {
+
+        var lastError: KeychainError?
+        for base in queryVariants {
+            let status = SecItemUpdate(base as CFDictionary, attributes as CFDictionary)
+            if status == errSecSuccess { return }
+
+            if status == errSecItemNotFound {
+                var add = base
+                add.merge(attributes) { _, new in new }
+                let addStatus = SecItemAdd(add as CFDictionary, nil)
+                if addStatus == errSecSuccess { return }
                 let error = KeychainError.from(addStatus)
+                lastError = error
+                if addStatus == errSecMissingEntitlement { continue }
                 WakaLog.credentialStoreFailure(error)
                 throw error
             }
-            return
-        }
-        guard status == errSecSuccess else {
+
             let error = KeychainError.from(status)
+            lastError = error
+            if status == errSecMissingEntitlement { continue }
             WakaLog.credentialStoreFailure(error)
             throw error
         }
+        let error = lastError ?? .unhandled(status: errSecInternalError)
+        WakaLog.credentialStoreFailure(error)
+        throw error
     }
 
     public func remove() throws {
-        let status = SecItemDelete(baseQuery as CFDictionary)
-        guard status == errSecSuccess || status == errSecItemNotFound else {
-            let error = KeychainError.from(status)
-            WakaLog.credentialStoreFailure(error)
-            throw error
+        // Delete from every variant, so signing out cannot leave a credential behind
+        // in the keychain this build happens not to be using.
+        var lastError: KeychainError?
+        var removedOrAbsent = false
+        for base in queryVariants {
+            let status = SecItemDelete(base as CFDictionary)
+            if status == errSecSuccess || status == errSecItemNotFound {
+                removedOrAbsent = true
+                continue
+            }
+            lastError = .from(status)
+        }
+        if let lastError, !removedOrAbsent {
+            WakaLog.credentialStoreFailure(lastError)
+            throw lastError
         }
     }
 
-    private var baseQuery: [String: Any] {
-        [
+    /// Keychain query variants, tried in order of preference.
+    ///
+    /// iOS has only the data-protection keychain. macOS has both, and the
+    /// data-protection keychain requires an entitlement that is granted by a
+    /// provisioning profile — a locally-signed or ad-hoc build does not carry it and
+    /// every operation returns `errSecMissingEntitlement` (-34018).
+    ///
+    /// Measured on this machine: `SecItemAdd` returns `-34018` with
+    /// `kSecUseDataProtectionKeychain` set and `0` without it. Requiring the
+    /// data-protection keychain unconditionally therefore made sign-in impossible in
+    /// any build without a profile — the key verified against WakaTime, failed to
+    /// save, and the user was bounced back to the sign-in screen with no explanation.
+    ///
+    /// The preferred variant is still tried first, so a properly provisioned build
+    /// gets the stronger keychain. The fallback only engages where the strong one is
+    /// unavailable, and it is the standard store for a non-sandboxed macOS app.
+    private var queryVariants: [[String: Any]] {
+        #if os(macOS)
+        [baseQuery(dataProtection: true), baseQuery(dataProtection: false)]
+        #else
+        [baseQuery(dataProtection: true)]
+        #endif
+    }
+
+    private func baseQuery(dataProtection: Bool) -> [String: Any] {
+        var query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
-            kSecAttrAccount as String: account,
-            kSecUseDataProtectionKeychain as String: true
+            kSecAttrAccount as String: account
         ]
+        if dataProtection { query[kSecUseDataProtectionKeychain as String] = true }
+        return query
     }
 
     // MARK: - Tagged encoding

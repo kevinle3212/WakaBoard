@@ -10,9 +10,11 @@ developer receives no data about you at all. See [PRIVACY.md](PRIVACY.md).
 > **Status: not yet released.** Verified further than a compile: the macOS app runs
 > on real hardware with its live accessibility tree audited, the iOS bundle installs
 > and launches on a Simulator, and real HTTPS requests reach `api.wakatime.com`.
+> Signing in with a real key works, real analytics render, and the widget snapshot is
+> written and verified credential-free.
 > **Not** verified: a physical iPhone or iPad, a provisioning-profile build (so the
-> App Group entitlement grant is unproven), an authenticated response with real
-> analytics, and a human VoiceOver/contrast review — see [GATES.md](GATES.md) G22.
+> App Group entitlement grant is unproven), Lock Screen widgets, and a human
+> VoiceOver / Dynamic Type / contrast review — see [GATES.md](GATES.md) G22.
 > Screenshots are pending for the same reason.
 
 ## What it does
@@ -60,7 +62,7 @@ repository boundary. See [docs/planning/ARCHITECTURE.md](docs/planning/ARCHITECT
    open WakaBoard.xcodeproj
    ```
 
-Run the suite — 71 tests, no network access, no credential required:
+Run the suite — 83 tests, no network access, no credential required:
 
 ```sh
 swift test
@@ -83,6 +85,13 @@ Check the real API is reachable, without needing a credential:
 
 ```sh
 WAKABOARD_LIVE=1 swift test --filter LiveNetwork
+```
+
+Check your *stored* key against the live API (sign in through the app first). Nothing
+is printed but pass/fail — no key, project name, or duration:
+
+```sh
+WAKABOARD_LIVE_AUTH=1 swift test --filter LiveAuthenticated
 ```
 
 Verify the acceptance ledger in [GATES.md](GATES.md):

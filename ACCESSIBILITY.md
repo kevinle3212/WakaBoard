@@ -58,17 +58,29 @@ unit suite could only assert that the 44-point constant existed and was referenc
 
 | Control | Was | Now |
 |---|---|---|
-| "Open WakaTime account settings" link | 202×16 pt | replaced with `WakaExternalLink`, a button that owns its frame |
+| "Open WakaTime account settings" link | 202×16 pt | `WakaExternalLink`, a button whose label owns the frame |
 | Legal document links | 16 pt tall | same fix |
+| "Refresh analytics" (Settings) | 128×24 pt | `WakaFormButton`, 44 pt |
+| "Clear local cache" (Settings) | 128×24 pt | same fix |
+| "Sign out and erase local data" (Settings) | 200×24 pt | same fix |
 
-**One documented exemption.** A macOS `SecureField` reports a 16-point accessibility
-height regardless of `.frame(height:)`, surrounding padding, or
-`.controlSize(.extraLarge)` — measured, not assumed. The element exposed to
-accessibility is AppKit's inner text control, which the author cannot size. This is
-the WCAG 2.2 SC 2.5.8 **user agent control** exception, and SC 2.5.8's own minimum is
-24×24 rather than Apple's touch-oriented 44. The audit script reports it as a named
-exemption on every run so the exception stays visible rather than being silently
-dropped.
+**Two documented exemptions.** A macOS `SecureField` reports a 16-point accessibility
+height, and a segmented `Picker` 28 points, regardless of `.frame(height:)`,
+surrounding padding, or `.controlSize(.large)` — measured, not assumed. The elements
+exposed to accessibility are AppKit's own controls, which the author cannot size.
+
+This is the WCAG 2.2 SC 2.5.8 **user agent control** exception. It matters that
+SC 2.5.8's Level AA minimum is **24×24**, not 44: 44 is Apple's touch guidance and
+WCAG's Level AAA (SC 2.5.5). The picker at 28 points therefore *passes* the AA bar
+this document claims. The audit script encodes exactly that distinction — anything
+below 24 fails outright, anything an author sizes must reach 44, and only
+AppKit-sized controls between the two are exempted, with their reason printed on
+every run.
+
+The audit walks **all six screens** — Overview, Activity, Projects, Languages,
+Insights, and Settings — by driving the sidebar. Auditing only the screen that
+happened to be open missed six real violations, because a fresh launch shows
+Overview.
 
 ### What is implemented but still requires human or hardware review
 
@@ -88,16 +100,13 @@ have not been walked, because reaching them needs a real WakaTime key.
 
 ### Known gaps
 
-1. **Only the sign-in screen has been audited on hardware**, because every other
-   screen requires a WakaTime credential. The audit is automated and repeatable
-   (`sh scripts/device-check.sh`), so extending it is a matter of supplying a key.
-2. **No physical iOS or iPadOS device.** iOS was verified on the Simulator, which
+1. **No physical iOS or iPadOS device.** iOS was verified on the Simulator, which
    proves installability and launch but is not hardware, and cannot show a Lock Screen
    widget. Tracked in [GATES.md](GATES.md).
-3. **Charts have no audio graph.** Swift Charts supports `.accessibilityChartDescriptor`
+2. **Charts have no audio graph.** Swift Charts supports `.accessibilityChartDescriptor`
    for audio graphs; WakaBoard currently provides a text summary only. The text
    alternative satisfies 1.1.1; the audio graph would be an improvement beyond it.
-4. **No localization.** The interface is English only, which affects users who rely
+3. **No localization.** The interface is English only, which affects users who rely
    on a screen reader in another language. This is a functional gap rather than a
    WCAG failure.
 
@@ -113,10 +122,12 @@ have not been walked, because reaching them needs a real WakaTime key.
   size.
 - **Reduce Motion.** Chart animations are suppressed when the system setting is
   enabled.
-- **Target size.** Interactive elements are at least 44×44 points, verified against
-  the running app's accessibility tree rather than against the source. The one
-  exception — a macOS text field, whose height AppKit owns — is documented in §2 and
-  re-reported on every audit run.
+- **Target size.** Every control WakaBoard lays out itself is at least 44×44 points,
+  verified against the running app's accessibility tree rather than against the
+  source. Controls AppKit sizes — the text field and the period picker — meet the
+  WCAG 2.2 AA minimum of 24×24 but not Apple's 44-point touch guidance, because their
+  height is not the author's to set. Both are re-reported as named exemptions on
+  every audit run rather than hidden.
 - **Keyboard.** On macOS, the app is navigable by keyboard and ⌘R refreshes.
 - **No time limits, no flashing.** Nothing expires under you, and nothing flashes,
   so **2.2.1 Timing Adjustable** and **2.3.1 Three Flashes** are satisfied by
