@@ -189,13 +189,21 @@ public struct ShareChart: View {
                 )
                 .chartLegend(position: .trailing, alignment: .top, spacing: WakaDesign.Spacing.tight)
                 .frame(height: WakaDesign.ChartHeight.regular)
-                .overlay {
-                    VStack(spacing: 0) {
-                        Text(DurationFormatter().string(total)).font(.wakaMetricNumeral)
-                        Text("Total").font(.wakaCaption).foregroundStyle(.secondary)
+                .chartOverlay { proxy in
+                    GeometryReader { geometry in
+                        if let plotFrame = proxy.plotFrame {
+                            VStack(spacing: WakaDesign.Spacing.hairline) {
+                                Text(DurationFormatter().string(total)).font(.wakaMetricNumeral)
+                                Text("Total").font(.wakaCaption).foregroundStyle(.secondary)
+                            }
+                            .position(
+                                x: geometry[plotFrame].midX,
+                                y: geometry[plotFrame].midY
+                            )
+                        }
                     }
-                    .accessibilityHidden(true)
                 }
+                .accessibilityHidden(true)
             }
         }
     }
@@ -245,6 +253,17 @@ public struct ComparisonChart: View {
                             .monospacedDigit()
                             // Text wears text tokens, never the series colour.
                             .foregroundStyle(.secondary)
+                    }
+                }
+                .chartYAxis {
+                    AxisMarks(position: .leading) { value in
+                        AxisValueLabel {
+                            if let name = value.as(String.self) {
+                                Text(name)
+                                    .lineLimit(1)
+                                    .truncationMode(.tail)
+                            }
+                        }
                     }
                 }
                 .chartXAxisLabel(unit.axisTitle)

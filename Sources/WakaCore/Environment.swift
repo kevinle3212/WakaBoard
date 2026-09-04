@@ -42,7 +42,10 @@ public struct WakaEnvironment: Sendable {
     public static func live() -> WakaEnvironment {
         let client = WakaTimeClient()
         return WakaEnvironment(
-            repository: AnalyticsRepository(client: client, cache: JSONCache(fileURL: Self.cacheURL())),
+            repository: AnalyticsRepository(
+                client: client,
+                cache: JSONCache(fileURL: Self.cacheURL(), version: AnalyticsRepository.cacheSchemaVersion)
+            ),
             client: client,
             credentials: KeychainCredentialStore(service: WakaIdentifiers.keychainService),
             snapshots: WidgetSnapshotStore(suiteName: WakaIdentifiers.appGroup)

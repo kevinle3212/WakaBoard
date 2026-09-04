@@ -25,7 +25,21 @@ public enum WakaAccessibility {
 
     /// One row of a ranked list, spoken with its unit and its share.
     public static func usageLabel(name: String, duration: TimeInterval, percentage: Int) -> String {
-        "\(name), \(DurationFormatter().string(duration)), \(percentage) percent of the selected period"
+        "\(name), \(DurationFormatter().string(duration)), \(percentage)% of the selected period"
+    }
+
+    /// A compact share that distinguishes genuine activity below one percent
+    /// from an actual zero without adding spoken word clutter.
+    public static func sharePercentage(duration: TimeInterval, total: TimeInterval) -> String {
+        guard duration > 0, total > 0 else { return "0%" }
+        let rounded = Int((duration / total * 100).rounded())
+        return rounded > 0 ? "\(rounded)%" : "<1%"
+    }
+
+    /// One ranked row using the calculated compact share.
+    public static func usageLabel(name: String, duration: TimeInterval, total: TimeInterval) -> String {
+        "\(name), \(DurationFormatter().string(duration)), "
+            + "\(sharePercentage(duration: duration, total: total)) of the selected period"
     }
 
     /// Text alternative for the activity chart.
@@ -54,7 +68,8 @@ public enum WakaAccessibility {
         guard !usage.isEmpty, total > 0 else { return "\(title): nothing recorded in this period." }
         let formatter = DurationFormatter()
         let leaders = usage.prefix(spoken).map { item in
-            "\(item.name), \(formatter.string(item.duration)), \(Int((item.duration / total * 100).rounded())) percent"
+            "\(item.name), \(formatter.string(item.duration)), "
+                + sharePercentage(duration: item.duration, total: total)
         }
         let remainder = usage.count - min(spoken, usage.count)
         let tail = remainder > 0 ? " Plus \(remainder) more." : ""

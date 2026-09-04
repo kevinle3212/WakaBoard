@@ -6,6 +6,12 @@ public struct ActivityDay: Codable, Hashable, Sendable, Identifiable {
     public let duration: TimeInterval
     public let projects: [Usage]
     public let languages: [Usage]
+    /// Editors the day's coding time was spent in.
+    public let editors: [Usage]
+    /// Operating systems the day's coding time was spent on.
+    public let operatingSystems: [Usage]
+    /// WakaTime's own activity categories — coding, debugging, building, and so on.
+    public let categories: [Usage]
 
     public var id: Date { date }
 
@@ -18,11 +24,101 @@ public struct ActivityDay: Codable, Hashable, Sendable, Identifiable {
         return max(0, duration)
     }
 
-    public init(date: Date, duration: TimeInterval, projects: [Usage] = [], languages: [Usage] = []) {
+    public init(
+        date: Date,
+        duration: TimeInterval,
+        projects: [Usage] = [],
+        languages: [Usage] = [],
+        editors: [Usage] = [],
+        operatingSystems: [Usage] = [],
+        categories: [Usage] = []
+    ) {
         self.date = date
         self.duration = Self.sanitized(duration)
         self.projects = projects
         self.languages = languages
+        self.editors = editors
+        self.operatingSystems = operatingSystems
+        self.categories = categories
+    }
+
+    /// Decodes tolerantly so a cache written before the three extra dimensions
+    /// existed still loads.
+    ///
+    /// The cache schema version is bumped alongside this, so in practice an old
+    /// envelope is discarded rather than read. This is the belt to that braces: a
+    /// day that reaches here from any other source — a future format, a hand-written
+    /// fixture — decodes rather than throwing, and simply has no editors.
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.init(
+            date: try container.decode(Date.self, forKey: .date),
+            duration: try container.decode(TimeInterval.self, forKey: .duration),
+            projects: try container.decodeIfPresent([Usage].self, forKey: .projects) ?? [],
+            languages: try container.decodeIfPresent([Usage].self, forKey: .languages) ?? [],
+            editors: try container.decodeIfPresent([Usage].self, forKey: .editors) ?? [],
+            operatingSystems: try container.decodeIfPresent([Usage].self, forKey: .operatingSystems) ?? [],
+            categories: try container.decodeIfPresent([Usage].self, forKey: .categories) ?? []
+        )
+    }
+}
+
+/// One of the dimensions WakaBoard can rank and chart a period by.
+///
+/// A single enum rather than five near-identical screens: the ranked list, the
+/// share chart, and the comparison chart all take a dimension and read the matching
+/// field, so adding a sixth dimension later is one case and no new view.
+public enum ActivityDimension: String, CaseIterable, Identifiable, Sendable {
+    case projects
+    case languages
+    case editors
+    case operatingSystems
+    case categories
+
+    public var id: Self { self }
+
+    /// The Title Cased name shown as a heading or a picker segment.
+    public var title: String {
+        switch self {
+        case .projects: "Projects"
+        case .languages: "Languages"
+        case .editors: "Editors"
+        case .operatingSystems: "Operating Systems"
+        case .categories: "Categories"
+        }
+    }
+
+    /// A sentence explaining what the dimension measures, shown under the heading.
+    public var explanation: String {
+        switch self {
+        case .projects: "Sorted by coding time in the selected period."
+        case .languages: "Usage time is not a measure of proficiency."
+        case .editors: "Where you were typing, as reported by your WakaTime plugins."
+        case .operatingSystems: "The systems your coding time was recorded on."
+        case .categories: "WakaTime's own split of coding, debugging, building, and the rest."
+        }
+    }
+
+    /// The SF Symbol that stands for this dimension throughout the app.
+    public var icon: String {
+        switch self {
+        case .projects: "folder"
+        case .languages: "chevron.left.forwardslash.chevron.right"
+        case .editors: "macwindow"
+        case .operatingSystems: "desktopcomputer"
+        case .categories: "square.grid.3x3"
+        }
+    }
+
+    /// This dimension's buckets for one day.
+    public func usage(in day: ActivityDay) -> [Usage] {
+        switch self {
+        case .projects: day.projects
+        case .languages: day.languages
+        case .editors: day.editors
+        case .operatingSystems: day.operatingSystems
+        case .categories: day.categories
+        }
     }
 }
 
@@ -63,6 +159,17 @@ public struct ActivityRange: Codable, Hashable, Sendable {
         return (formatter.string(from: start), formatter.string(from: end))
     }
 
+    /// The identity of this range for caching and request coalescing.
+    ///
+    /// Defined once here rather than assembled at each call site: the cache and the
+    /// coalescer have to agree on what "the same request" means, and two string
+    /// interpolations that drift apart is exactly how a period switch starts
+    /// returning the previous period's numbers.
+    public var cacheKey: String {
+        let dates = queryDates()
+        return "\(dates.start)-\(dates.end)-\(timeZoneIdentifier)"
+    }
+
     /// Counts inclusive calendar days instead of elapsed 24-hour windows, so DST does not distort averages.
     public func calendarDayCount(calendar: Calendar = .current) -> Int {
         var calendar = calendar
@@ -79,6 +186,7 @@ public struct DurationFormatter: Sendable {
 
     public func string(_ duration: TimeInterval) -> String {
         let seconds = max(0, Int(duration.rounded()))
+        if seconds > 0, seconds < 60 { return "<1m" }
         let hours = seconds / 3_600
         let minutes = (seconds % 3_600) / 60
         if hours > 0 { return "\(hours)h \(minutes)m" }
@@ -133,6 +241,7 @@ public struct WidgetSnapshot: Codable, Hashable, Sendable {
 public enum DeepLink: Hashable, Sendable {
     case overview
     case activity
+    case breakdown
     case projects
     case languages
     case insights
@@ -143,11 +252,25 @@ public enum DeepLink: Hashable, Sendable {
         switch url.path {
         case "/overview": self = .overview
         case "/activity": self = .activity
+        case "/breakdown": self = .breakdown
         case "/projects": self = .projects
         case "/languages": self = .languages
         case "/insights": self = .insights
         case "/settings": self = .settings
         default: return nil
+        }
+    }
+
+    /// The dimension this link asks the breakdown screen to open on, if any.
+    ///
+    /// `/projects` and `/languages` predate the breakdown screen and are still live
+    /// in shipped widgets, so they keep working: they land on the same screen with
+    /// their own dimension already selected rather than 404-ing into the overview.
+    public var dimension: ActivityDimension? {
+        switch self {
+        case .projects: .projects
+        case .languages: .languages
+        default: nil
         }
     }
 
@@ -162,8 +285,9 @@ public enum DeepLink: Hashable, Sendable {
 
     private var path: String {
         switch self {
-        case .overview: "overview"; case .activity: "activity"; case .projects: "projects"
-        case .languages: "languages"; case .insights: "insights"; case .settings: "settings"
+        case .overview: "overview"; case .activity: "activity"; case .breakdown: "breakdown"
+        case .projects: "projects"; case .languages: "languages"; case .insights: "insights"
+        case .settings: "settings"
         }
     }
 }

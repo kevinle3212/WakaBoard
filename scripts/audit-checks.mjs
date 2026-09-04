@@ -111,6 +111,22 @@ function findFixtureLeaks(text) {
   return hits;
 }
 
+/** First-party links that confuse the owner's GitHub and LinkedIn handles. */
+function findOwnerLinkIssues(text) {
+  const issues = [];
+  if (/github\.com\/lekevin1(?:\/|\b)/i.test(text)) {
+    issues.push("the LinkedIn handle lekevin1 is incorrectly used as a GitHub owner");
+  }
+  return issues;
+}
+
+/** String literals that spell out a percentage instead of using the compact symbol. */
+function findSpelledPercentStrings(text) {
+  return [...text.matchAll(/"([^"\\]*(?:\\.[^"\\]*)*)"/g)]
+    .map((match) => match[1])
+    .filter((value) => /\bpercent\b/i.test(value));
+}
+
 
 // --- detectors for the multi-platform and design gates ---------------------
 
@@ -427,6 +443,8 @@ function accessibility() {
   // Every chart carries a text alternative, on every platform.
   check(gate, /accessibilityLabel/.test(read("Sources/WakaUI/WakaCharts.swift")),
     "the charts carry no accessibility labels");
+  check(gate, findSpelledPercentStrings(read("Sources/WakaUI/WakaAccessibility.swift")).length === 0,
+    "an accessibility label spells out percent instead of using %");
   finish("ACCESSIBILITY_OK");
 }
 
@@ -691,6 +709,19 @@ function attribution() {
     "Settings does not link the attribution document");
   check(gate, (settings.match(/WakaTimeCredit\(/g) ?? []).length >= 4,
     "the WakaTime credit does not appear on enough screens");
+  const readme = read("README.md");
+  check(gate, readme.includes("https://github.com/kevinle3212"),
+    "README.md does not credit Kevin's canonical GitHub profile");
+  check(gate, readme.includes("https://www.linkedin.com/in/lekevin1"),
+    "README.md does not credit Kevin's canonical LinkedIn profile");
+  check(gate, components.includes("https://github.com/kevinle3212/WakaBoard"),
+    "legal links do not resolve to the canonical public repository");
+  check(gate, settings.includes("https://github.com/kevinle3212")
+    && settings.includes("https://www.linkedin.com/in/lekevin1"),
+    "the app's About section does not credit both canonical owner profiles");
+  for (const file of ["README.md", "Sources/WakaUI/WakaComponents.swift", "Sources/WakaUI/WakaScreens.swift"]) {
+    for (const issue of findOwnerLinkIssues(read(file))) fail(gate, `${file}: ${issue}`);
+  }
   const widgets = read("Widgets/WakaBoardWidgets/WakaBoardWidgets.swift");
   check(gate, (widgets.match(/WakaTime/g) ?? []).length >= 3,
     "the widgets do not credit WakaTime");
@@ -827,6 +858,12 @@ function design() {
   check(gate, /minWidth: 640/.test(shell), "the macOS window has no minimum size");
   check(gate, /windowResizability/.test(read("Apps/WakaBoardApp/WakaBoardApp.swift")),
     "the macOS window can be resized below its content");
+  const screens = read("Sources/WakaUI/WakaScreens.swift");
+  const settings = screens.slice(screens.indexOf("struct WakaSettingsView"), screens.indexOf("// MARK: - Shared scaffolding"));
+  check(gate, !/\bForm\s*\{/.test(settings),
+    "Settings still uses platform Form columns that detach headings from their content on macOS");
+  check(gate, /SettingsSection\(/.test(settings),
+    "Settings does not use the app's grouped vertical section composition");
   finish("DESIGN_OK");
 }
 
@@ -894,6 +931,16 @@ function charts() {
   ]) {
     check(gate, new RegExp(`struct ${name}: View`).test(text), `${name} is missing`);
   }
+  const comparisonChart = text.match(/public struct ComparisonChart: View \{([\s\S]*?)\n\}\n\n\/\/ MARK: - Cumulative/)?.[1] ?? "";
+  check(gate, /\.chartYAxis\s*\{/.test(comparisonChart),
+    "ComparisonChart leaves category-label placement to a resizing-sensitive default");
+  check(gate, /AxisMarks\(position:\s*\.leading\)/.test(comparisonChart) && /AxisValueLabel\s*\{/.test(comparisonChart),
+    "ComparisonChart category labels are not reserved on the leading axis");
+  const shareChart = text.match(/public struct ShareChart: View \{([\s\S]*?)\n\}\n\n\/\/ MARK: - Comparison/)?.[1] ?? "";
+  check(gate, /\.chartOverlay\s*\{/.test(shareChart),
+    "ShareChart does not position its total through the chart plot geometry");
+  check(gate, /proxy\.plotFrame/.test(shareChart),
+    "ShareChart centers its total on the chart-plus-legend frame instead of the donut plot frame");
   // Every chart type must define its own text alternative.
   for (const [, body] of text.matchAll(/struct (\w+): View \{([\s\S]*?)\n\}/g)) {
     if (!body.includes("Chart(") && !body.includes("ChartFrame(")) continue;
@@ -945,12 +992,30 @@ function selfTest() {
     ["secret negative control", () => findSecretLiterals('let apiKey = key').length === 0],
     ["fixture leak", () => findFixtureLeaks("let d = WakaDashboard.fixture").length === 1],
     ["fixture negative control", () => findFixtureLeaks("// WakaDashboard.fixture").length === 0],
+    ["owner links accept distinct canonical profiles", () => findOwnerLinkIssues(
+      "https://github.com/kevinle3212 https://www.linkedin.com/in/lekevin1"
+    ).length === 0],
+    ["owner links reject a LinkedIn handle as GitHub owner", () => findOwnerLinkIssues(
+      "https://github.com/lekevin1/WakaBoard"
+    ).length === 1],
+    ["compact percentage accepts symbol", () => findSpelledPercentStrings('"42% of the selected period"').length === 0],
+    ["compact percentage rejects word", () => findSpelledPercentStrings('"42 percent of the selected period"').length === 1],
     ["png alpha", () => pngHeader("Apps/WakaBoardApp/Assets.xcassets/AppIcon.appiconset/icon-mac-512x512@2x.png")?.hasAlpha === true],
     ["png alpha negative control", () => pngHeader("Apps/WakaBoardApp/Assets.xcassets/AppIcon.appiconset/icon-ios-1024.png")?.hasAlpha === false],
     ["png dimensions", () => pngHeader("Apps/WakaBoardApp/Assets.xcassets/AppIcon.appiconset/icon-ios-1024.png")?.width === 1024],
     ["design literal", () => findDesignLiterals(".padding(11)\n").length === 1],
     ["design literal negative control", () => findDesignLiterals(".padding(WakaDesign.Spacing.tight)\n").length === 0],
     ["design-exempt escape", () => findDesignLiterals(".padding(.vertical, 14) // design-exempt: measured hit target\n").length === 0],
+    ["settings layout accepts grouped sections", () => {
+      const source = "struct WakaSettingsView { SettingsSection(title: \"Account\") {} }\n// MARK: - Shared scaffolding";
+      const body = source.slice(source.indexOf("struct WakaSettingsView"), source.indexOf("// MARK: - Shared scaffolding"));
+      return !/\bForm\s*\{/.test(body) && /SettingsSection\(/.test(body);
+    }],
+    ["settings layout rejects platform form columns", () => {
+      const source = "struct WakaSettingsView { Form { Section(\"Account\") {} } }\n// MARK: - Shared scaffolding";
+      const body = source.slice(source.indexOf("struct WakaSettingsView"), source.indexOf("// MARK: - Shared scaffolding"));
+      return /\bForm\s*\{/.test(body) && !/SettingsSection\(/.test(body);
+    }],
     ["unguarded WidgetKit", () => findUnguardedWidgetKitImports("import Foundation\nimport WidgetKit\n").length === 1],
     ["guarded WidgetKit negative control", () => findUnguardedWidgetKitImports("#if canImport(WidgetKit)\nimport WidgetKit\n#endif\n").length === 0],
     ["title case", () => isTitleCase("Selected Period") && isTitleCase("Daily Average") && isTitleCase("Top Project")],
@@ -967,6 +1032,26 @@ function selfTest() {
     ["performance detects eager duplicate ranking", () => findBreakdownPerformanceIssues(
       "struct WakaBreakdownView { let a = model.ranked(model.selectedDimension); let b = model.ranked(model.selectedDimension) }\n// MARK: - Insights"
     ).length === 3],
+    ["chart centering accepts plot-frame geometry", () => {
+      const source = "public struct ShareChart: View {\n  Chart([]) {}.chartOverlay { proxy in if let frame = proxy.plotFrame {} }\n}\n\n// MARK: - Comparison";
+      const body = source.match(/public struct ShareChart: View \{([\s\S]*?)\n\}\n\n\/\/ MARK: - Comparison/)?.[1] ?? "";
+      return /\.chartOverlay\s*\{/.test(body) && /proxy\.plotFrame/.test(body);
+    }],
+    ["chart centering rejects chart-wide overlay", () => {
+      const source = "public struct ShareChart: View {\n  Chart([]) {}.overlay { Text(\"Total\") }\n}\n\n// MARK: - Comparison";
+      const body = source.match(/public struct ShareChart: View \{([\s\S]*?)\n\}\n\n\/\/ MARK: - Comparison/)?.[1] ?? "";
+      return !/\.chartOverlay\s*\{/.test(body) && !/proxy\.plotFrame/.test(body);
+    }],
+    ["comparison labels accept a reserved leading axis", () => {
+      const source = "public struct ComparisonChart: View {\n  Chart([]) {}.chartYAxis { AxisMarks(position: .leading) { AxisValueLabel { Text(\"Name\") } } }\n}\n\n// MARK: - Cumulative";
+      const body = source.match(/public struct ComparisonChart: View \{([\s\S]*?)\n\}\n\n\/\/ MARK: - Cumulative/)?.[1] ?? "";
+      return /\.chartYAxis\s*\{/.test(body) && /AxisMarks\(position:\s*\.leading\)/.test(body) && /AxisValueLabel\s*\{/.test(body);
+    }],
+    ["comparison labels reject default axis placement", () => {
+      const source = "public struct ComparisonChart: View {\n  Chart([]) {}\n}\n\n// MARK: - Cumulative";
+      const body = source.match(/public struct ComparisonChart: View \{([\s\S]*?)\n\}\n\n\/\/ MARK: - Cumulative/)?.[1] ?? "";
+      return !/\.chartYAxis\s*\{/.test(body) && !/AxisValueLabel\s*\{/.test(body);
+    }],
     ["artwork detector negative control", () => findWakaTimeArtwork().length === 0]
   ];
   let ok = true;

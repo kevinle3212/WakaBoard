@@ -1,60 +1,117 @@
 name: WakaBoard
 options:
   minimumXcodeGenVersion: 2.38.0
+  # Every platform WakaBoard ships on. `Package.swift` declares the same floors, and
+  # `node scripts/audit-checks.mjs platforms` fails the build when the two disagree —
+  # a platform added in one file and forgotten in the other is otherwise invisible
+  # until someone tries to build it.
   deploymentTarget:
     iOS: "18.0"
     macOS: "15.0"
+    watchOS: "11.0"
+    tvOS: "18.0"
+    visionOS: "26.0"
 settings:
   base:
     SWIFT_VERSION: 6.0
     SWIFT_STRICT_CONCURRENCY: complete
     SWIFT_TREAT_WARNINGS_AS_ERRORS: YES
     DEVELOPMENT_TEAM: ""
+
+targetTemplates:
+  # The three library and app shapes, written once. Six platforms times three target
+  # kinds is eighteen targets; spelling each one out in full is how two of them
+  # silently drift apart.
+  CoreLibrary:
+    type: library.static
+    sources:
+      - path: Sources/WakaCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: org.wakaboard.core.${suffix}
+        PRODUCT_NAME: WakaCore
+        PRODUCT_MODULE_NAME: WakaCore
+  UILibrary:
+    type: library.static
+    sources:
+      - path: Sources/WakaUI
+    dependencies:
+      - target: WakaCore_${suffix}
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: org.wakaboard.ui.${suffix}
+        PRODUCT_NAME: WakaUI
+        PRODUCT_MODULE_NAME: WakaUI
+  WidgetExtension:
+    type: app-extension
+    sources:
+      - path: Widgets/WakaBoardWidgets
+      - path: Config/PrivacyInfo-Widgets.xcprivacy
+        name: PrivacyInfo.xcprivacy
+    dependencies:
+      - target: WakaUI_${suffix}
+      - target: WakaCore_${suffix}
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: ${bundleID}
+        INFOPLIST_KEY_CFBundleDisplayName: WakaBoard Widgets
+        CODE_SIGN_ENTITLEMENTS: Config/WakaBoardWidgets.entitlements
+    info:
+      path: Config/WakaBoardWidgets-Info.plist
+      properties:
+        ITSAppUsesNonExemptEncryption: false
+        NSExtension:
+          # WidgetKit extensions use the SwiftUI `@main WidgetBundle` as their entry
+          # point. Declaring NSExtensionPrincipalClass here is not merely redundant —
+          # installd rejects the bundle outright ("not allowed for the extension point
+          # com.apple.widgetkit-extension"), so the app cannot be installed at all.
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+
 targets:
+  # --- Libraries -----------------------------------------------------------
   WakaCore_iOS:
-    type: library.static
+    templates: [CoreLibrary]
+    templateAttributes: { suffix: iOS }
     platform: iOS
-    sources:
-      - path: Sources/WakaCore
-    settings:
-      base:
-        PRODUCT_BUNDLE_IDENTIFIER: org.wakaboard.core
-        PRODUCT_NAME: WakaCore
-        PRODUCT_MODULE_NAME: WakaCore
   WakaCore_macOS:
-    type: library.static
+    templates: [CoreLibrary]
+    templateAttributes: { suffix: macOS }
     platform: macOS
-    sources:
-      - path: Sources/WakaCore
-    settings:
-      base:
-        PRODUCT_BUNDLE_IDENTIFIER: org.wakaboard.core.macos
-        PRODUCT_NAME: WakaCore
-        PRODUCT_MODULE_NAME: WakaCore
+  WakaCore_watchOS:
+    templates: [CoreLibrary]
+    templateAttributes: { suffix: watchOS }
+    platform: watchOS
+  WakaCore_tvOS:
+    templates: [CoreLibrary]
+    templateAttributes: { suffix: tvOS }
+    platform: tvOS
+  WakaCore_visionOS:
+    templates: [CoreLibrary]
+    templateAttributes: { suffix: visionOS }
+    platform: visionOS
+
   WakaUI_iOS:
-    type: library.static
+    templates: [UILibrary]
+    templateAttributes: { suffix: iOS }
     platform: iOS
-    sources:
-      - path: Sources/WakaUI
-    dependencies:
-      - target: WakaCore_iOS
-    settings:
-      base:
-        PRODUCT_BUNDLE_IDENTIFIER: org.wakaboard.ui
-        PRODUCT_NAME: WakaUI
-        PRODUCT_MODULE_NAME: WakaUI
   WakaUI_macOS:
-    type: library.static
+    templates: [UILibrary]
+    templateAttributes: { suffix: macOS }
     platform: macOS
-    sources:
-      - path: Sources/WakaUI
-    dependencies:
-      - target: WakaCore_macOS
-    settings:
-      base:
-        PRODUCT_BUNDLE_IDENTIFIER: org.wakaboard.ui.macos
-        PRODUCT_NAME: WakaUI
-        PRODUCT_MODULE_NAME: WakaUI
+  WakaUI_watchOS:
+    templates: [UILibrary]
+    templateAttributes: { suffix: watchOS }
+    platform: watchOS
+  WakaUI_tvOS:
+    templates: [UILibrary]
+    templateAttributes: { suffix: tvOS }
+    platform: tvOS
+  WakaUI_visionOS:
+    templates: [UILibrary]
+    templateAttributes: { suffix: visionOS }
+    platform: visionOS
+
+  # --- Applications --------------------------------------------------------
   WakaBoardApp_iOS:
     type: application
     platform: iOS
@@ -69,6 +126,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: org.wakaboard.app
         INFOPLIST_KEY_CFBundleDisplayName: WakaBoard
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         # The shipped bundle is WakaBoard.app; the target name is a build detail.
         PRODUCT_NAME: WakaBoard
         CODE_SIGN_ENTITLEMENTS: Config/WakaBoard.entitlements
@@ -80,6 +138,7 @@ targets:
         CFBundleURLTypes:
           - CFBundleURLName: WakaBoard callback
             CFBundleURLSchemes: [wakaboard]
+
   WakaBoardApp_macOS:
     type: application
     platform: macOS
@@ -94,75 +153,131 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: org.wakaboard.app.macos
         INFOPLIST_KEY_CFBundleDisplayName: WakaBoard
-        # The shipped bundle is WakaBoard.app; the target name is a build detail.
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         PRODUCT_NAME: WakaBoard
         CODE_SIGN_ENTITLEMENTS: Config/WakaBoard.entitlements
     info:
       path: Config/WakaBoard-Info.plist
       properties:
-        # Only OS-provided encryption (TLS via URLSession, the Keychain) is used.
         ITSAppUsesNonExemptEncryption: false
         CFBundleURLTypes:
           - CFBundleURLName: WakaBoard callback
             CFBundleURLSchemes: [wakaboard]
+
+  WakaBoardApp_visionOS:
+    type: application
+    platform: visionOS
+    sources:
+      - path: Apps/WakaBoardApp
+      - path: Config/PrivacyInfo.xcprivacy
+    dependencies:
+      - target: WakaUI_visionOS
+      - target: WakaCore_visionOS
+      - target: WakaBoardWidgets_visionOS
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: org.wakaboard.app.visionos
+        INFOPLIST_KEY_CFBundleDisplayName: WakaBoard
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        PRODUCT_NAME: WakaBoard
+        CODE_SIGN_ENTITLEMENTS: Config/WakaBoard.entitlements
+    info:
+      path: Config/WakaBoard-Info.plist
+      properties:
+        ITSAppUsesNonExemptEncryption: false
+        CFBundleURLTypes:
+          - CFBundleURLName: WakaBoard callback
+            CFBundleURLSchemes: [wakaboard]
+
+  WakaBoardApp_tvOS:
+    type: application
+    platform: tvOS
+    sources:
+      - path: Apps/WakaBoardApp
+      - path: Config/PrivacyInfo.xcprivacy
+    # No widget extension: tvOS ships no WidgetKit framework at all. Its analogue is
+    # Top Shelf, which WakaBoard does not use, so the app target stands alone here.
+    #
+    # No app icon either. tvOS wants a layered Brand Assets stack rather than a flat
+    # 1024 image, and inventing one from the existing artwork would produce a worse
+    # icon than none. `TODO.md` carries it as real, unbuilt work.
+    dependencies:
+      - target: WakaUI_tvOS
+      - target: WakaCore_tvOS
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: org.wakaboard.app.tvos
+        INFOPLIST_KEY_CFBundleDisplayName: WakaBoard
+        PRODUCT_NAME: WakaBoard
+        CODE_SIGN_ENTITLEMENTS: Config/WakaBoard.entitlements
+    info:
+      path: Config/WakaBoard-Info.plist
+      properties:
+        ITSAppUsesNonExemptEncryption: false
+        CFBundleURLTypes:
+          - CFBundleURLName: WakaBoard callback
+            CFBundleURLSchemes: [wakaboard]
+
+  WakaBoardApp_watchOS:
+    type: application
+    platform: watchOS
+    sources:
+      - path: Apps/WakaBoardApp
+      - path: Config/PrivacyInfo.xcprivacy
+    dependencies:
+      - target: WakaUI_watchOS
+      - target: WakaCore_watchOS
+      - target: WakaBoardWidgets_watchOS
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: org.wakaboard.app.watchos
+        INFOPLIST_KEY_CFBundleDisplayName: WakaBoard
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        PRODUCT_NAME: WakaBoard
+        CODE_SIGN_ENTITLEMENTS: Config/WakaBoard.entitlements
+    # A separate plist because a standalone watch app needs `WKApplication`, and a
+    # watch bundle carrying `CFBundleURLTypes` it cannot service is noise.
+    info:
+      path: Config/WakaBoard-Watch-Info.plist
+      properties:
+        ITSAppUsesNonExemptEncryption: false
+        WKApplication: true
+
+  # --- Widget extensions ---------------------------------------------------
   WakaBoardWidgets_iOS:
-    type: app-extension
+    templates: [WidgetExtension]
+    templateAttributes:
+      suffix: iOS
+      bundleID: org.wakaboard.app.widgets
     platform: iOS
-    sources:
-      - path: Widgets/WakaBoardWidgets
-      - path: Config/PrivacyInfo-Widgets.xcprivacy
-        name: PrivacyInfo.xcprivacy
-    dependencies:
-      - target: WakaUI_iOS
-      - target: WakaCore_iOS
-    settings:
-      base:
-        PRODUCT_BUNDLE_IDENTIFIER: org.wakaboard.app.widgets
-        INFOPLIST_KEY_CFBundleDisplayName: WakaBoard Widgets
-        CODE_SIGN_ENTITLEMENTS: Config/WakaBoardWidgets.entitlements
-    info:
-      path: Config/WakaBoardWidgets-Info.plist
-      properties:
-        ITSAppUsesNonExemptEncryption: false
-        NSExtension:
-          # WidgetKit extensions use the SwiftUI `@main WidgetBundle` as their entry
-          # point. Declaring NSExtensionPrincipalClass here is not merely redundant —
-          # installd rejects the bundle outright ("not allowed for the extension point
-          # com.apple.widgetkit-extension"), so the app cannot be installed at all.
-          NSExtensionPointIdentifier: com.apple.widgetkit-extension
   WakaBoardWidgets_macOS:
-    type: app-extension
+    templates: [WidgetExtension]
+    templateAttributes:
+      suffix: macOS
+      bundleID: org.wakaboard.app.macos.widgets
     platform: macOS
-    sources:
-      - path: Widgets/WakaBoardWidgets
-      - path: Config/PrivacyInfo-Widgets.xcprivacy
-        name: PrivacyInfo.xcprivacy
-    dependencies:
-      - target: WakaUI_macOS
-      - target: WakaCore_macOS
-    settings:
-      base:
-        PRODUCT_BUNDLE_IDENTIFIER: org.wakaboard.app.macos.widgets
-        INFOPLIST_KEY_CFBundleDisplayName: WakaBoard Widgets
-        CODE_SIGN_ENTITLEMENTS: Config/WakaBoardWidgets.entitlements
-    info:
-      path: Config/WakaBoardWidgets-Info.plist
-      properties:
-        ITSAppUsesNonExemptEncryption: false
-        NSExtension:
-          # WidgetKit extensions use the SwiftUI `@main WidgetBundle` as their entry
-          # point. Declaring NSExtensionPrincipalClass here is not merely redundant —
-          # installd rejects the bundle outright ("not allowed for the extension point
-          # com.apple.widgetkit-extension"), so the app cannot be installed at all.
-          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+  WakaBoardWidgets_visionOS:
+    templates: [WidgetExtension]
+    templateAttributes:
+      suffix: visionOS
+      bundleID: org.wakaboard.app.visionos.widgets
+    platform: visionOS
+  WakaBoardWidgets_watchOS:
+    templates: [WidgetExtension]
+    templateAttributes:
+      suffix: watchOS
+      bundleID: org.wakaboard.app.watchos.widgets
+    platform: watchOS
+
 schemes:
   WakaBoard:
     build:
       targets:
         WakaBoardApp_iOS: all
         WakaBoardApp_macOS: all
-        WakaBoardWidgets_iOS: all
-        WakaBoardWidgets_macOS: all
+        WakaBoardApp_watchOS: all
+        WakaBoardApp_tvOS: all
+        WakaBoardApp_visionOS: all
   WakaBoardApp_iOS:
     build:
       targets:
@@ -173,3 +288,17 @@ schemes:
       targets:
         WakaBoardApp_macOS: all
         WakaBoardWidgets_macOS: all
+  WakaBoardApp_watchOS:
+    build:
+      targets:
+        WakaBoardApp_watchOS: all
+        WakaBoardWidgets_watchOS: all
+  WakaBoardApp_tvOS:
+    build:
+      targets:
+        WakaBoardApp_tvOS: all
+  WakaBoardApp_visionOS:
+    build:
+      targets:
+        WakaBoardApp_visionOS: all
+        WakaBoardWidgets_visionOS: all

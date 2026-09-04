@@ -2,7 +2,7 @@
 
 ## Context and targets
 
-WakaBoard is a greenfield, independent Apple-platform analytics client for WakaTime. The local toolchain is Xcode 26.6, Swift 6.3.3, and macOS/iOS 26.5 SDKs. The initial deployment targets are iOS/iPadOS 18 and macOS 15: these provide Observation, Swift Charts, App Intents, and current WidgetKit while retaining a practical install base. Revisit before a public release.
+WakaBoard is a greenfield, independent Apple-platform analytics client for WakaTime. The local toolchain is Xcode 26.6, Swift 6.3.3, and macOS/iOS 26.5 SDKs. The deployment targets are iOS/iPadOS 18, macOS 15, watchOS 11, tvOS 18, and visionOS 26: these provide Observation, Swift Charts, App Intents, and current WidgetKit while retaining a practical install base. visionOS sits at 26 because WidgetKit does not exist on that platform before then. Revisit before a public release.
 
 The repository uses one XcodeGen specification and one local Swift package. XcodeGen is a development tool, not a runtime dependency. Production code uses Apple frameworks only.
 
@@ -10,7 +10,7 @@ The repository uses one XcodeGen specification and one local Swift package. Xcod
 
 - `WakaCore` — `Sendable` normalized models, duration/date formatting, analytics formulas, deterministic insights, deep links, API DTOs, request construction, error mapping, Keychain abstraction, versioned JSON cache, request coalescing, and widget snapshots.
 - `WakaUI` — shared SwiftUI design system and feature views. It depends on `WakaCore`; it does not own networking or analytics formulas.
-- `WakaBoardApp` — adaptive composition. iPhone uses tabs and `NavigationStack`; iPad and macOS use `NavigationSplitView`.
+- `WakaBoardApp` — adaptive composition. iPhone, iPad, macOS, and visionOS use `NavigationSplitView`; watchOS uses a compact `NavigationStack` over a list; tvOS uses a focusable `TabView`. The three shells live behind `#if os(...)` in `WakaShell.swift` and share every screen below them.
 - `WakaBoardWidgets` — cached, credential-free WidgetKit presentation for Home Screen, desktop, and concise Lock Screen families.
 
 Dependencies point inward: app/widgets → UI → core. Raw WakaTime DTOs stop at the repository boundary.
@@ -32,8 +32,9 @@ The first release integrates read-only resources documented at [WakaTime API Doc
 
 - `GET /api/v1/users/current`
 - `GET /api/v1/users/current/summaries?start=YYYY-MM-DD&end=YYYY-MM-DD`
-- `GET /api/v1/users/current/stats/:range`
-- `GET /api/v1/users/current/projects`
+- `GET /api/v1/users/current/heartbeats?date=YYYY-MM-DD` — read only by the user-initiated file-type breakdown, bounded to fourteen days per drill-down
+
+The `stats` and `projects` endpoints were declared and never called. They were removed on 2026-08-29: an endpoint nothing reaches is attack surface with no user, and `ATTRIBUTION.md` claims WakaBoard reads these endpoints and no others, which has to be exactly true.
 
 Summaries are the primary normalized source for daily/project/language/editor/OS activity. Stats supplements long-range aggregates and its `is_up_to_date`/202 behavior is honored. Heartbeats, write scopes, leaders, and organizations are out of scope.
 

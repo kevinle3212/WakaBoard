@@ -7,6 +7,9 @@ built for every Apple platform: Mac, iPhone, iPad, Apple Watch, Apple Vision Pro
 and Apple TV. It presents local-first coding summaries without treating usage time
 as a measure of skill.
 
+Created by **Kevin Le** — [GitHub](https://github.com/kevinle3212) ·
+[LinkedIn](https://www.linkedin.com/in/lekevin1).
+
 **Every underlying duration WakaBoard shows is measured and provided by WakaTime.**
 WakaBoard derives clearly labelled summaries such as medians and calendar-week totals
 on the device; it does not invent activity. See [ATTRIBUTION.md](ATTRIBUTION.md).
@@ -90,7 +93,7 @@ repository boundary. See [docs/planning/ARCHITECTURE.md](docs/planning/ARCHITECT
    open WakaBoard.xcodeproj
    ```
 
-Run the suite — 137 tests, no network access or credential required:
+Run the suite — 139 tests, no network access or credential required:
 
 ```sh
 swift test

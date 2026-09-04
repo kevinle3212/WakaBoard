@@ -150,8 +150,12 @@ public enum Credential: Equatable, Sendable {
 public enum WakaTimeEndpoint: Sendable {
     case currentUser
     case summaries(ActivityRange)
-    case stats(String)
-    case projects
+    /// One day of heartbeats, used only by the user-initiated file-type breakdown.
+    ///
+    /// Carries the day as an already-formatted `yyyy-MM-dd` string so the formatting
+    /// happens once, at the call site that knows the time zone, rather than being
+    /// re-derived here with a different calendar.
+    case heartbeats(day: String)
 
     /// The only host this client will ever contact.
     public static let canonicalBaseURL = URL(string: "https://api.wakatime.com")!
@@ -167,14 +171,13 @@ public enum WakaTimeEndpoint: Sendable {
         switch self {
         case .currentUser:
             components?.path = "/api/v1/users/current"
-        case .projects:
-            components?.path = "/api/v1/users/current/projects"
-        case .stats(let range):
-            guard !range.isEmpty, range.count <= 32,
-                  range.allSatisfy({ $0.isASCII && ($0.isLetter || $0.isNumber || $0 == "_" || $0 == "-") }) else {
-                throw WakaTimeError.invalidEndpoint
-            }
-            components?.path = "/api/v1/users/current/stats/\(range)"
+        case .heartbeats(let day):
+            // Validated rather than trusted: the day reaches this from a formatter,
+            // but a query value assembled from an unvalidated string is how a
+            // request ends up pointing somewhere it was never meant to.
+            guard Self.isCalendarDay(day) else { throw WakaTimeError.invalidEndpoint }
+            components?.path = "/api/v1/users/current/heartbeats"
+            components?.queryItems = [URLQueryItem(name: "date", value: day)]
         case .summaries(let range):
             components?.path = "/api/v1/users/current/summaries"
             let dates = range.queryDates()
@@ -199,6 +202,14 @@ public enum WakaTimeEndpoint: Sendable {
     /// Hosts WakaTime serves its public API from. Anything else is rejected before
     /// a credential is attached, so a mistyped or injected base URL cannot exfiltrate one.
     private static let allowedHosts: Set<String> = ["api.wakatime.com", "wakatime.com"]
+
+    /// Whether `value` is exactly a `yyyy-MM-dd` calendar day.
+    static func isCalendarDay(_ value: String) -> Bool {
+        guard value.count == 10 else { return false }
+        let parts = value.split(separator: "-", omittingEmptySubsequences: false)
+        guard parts.count == 3, parts[0].count == 4, parts[1].count == 2, parts[2].count == 2 else { return false }
+        return parts.allSatisfy { $0.allSatisfy(\.isASCII) && $0.allSatisfy(\.isNumber) }
+    }
 }
 
 /// The parts of the summaries response needed at the repository boundary.
@@ -211,8 +222,37 @@ public struct WakaTimeSummaryDay: Decodable, Sendable {
     public let grandTotal: WakaTimeDuration
     public let projects: [WakaTimeNamedDuration]
     public let languages: [WakaTimeNamedDuration]
+    public let editors: [WakaTimeNamedDuration]
+    public let operatingSystems: [WakaTimeNamedDuration]
+    public let categories: [WakaTimeNamedDuration]
 
-    enum CodingKeys: String, CodingKey { case range; case grandTotal = "grand_total"; case projects; case languages }
+    enum CodingKeys: String, CodingKey {
+        case range
+        case grandTotal = "grand_total"
+        case projects
+        case languages
+        case editors
+        case operatingSystems = "operating_systems"
+        case categories
+    }
+
+    /// Decodes a day, treating every bucket list as optional.
+    ///
+    /// WakaTime documents all six lists, but a bucket a user has never produced —
+    /// no debugging time, a plugin too old to report its editor — has been observed
+    /// absent rather than empty. A missing list is no data, not a malformed
+    /// response, and failing the whole refresh over one would lose the five lists
+    /// that did arrive.
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.range = try container.decode(WakaTimeRange.self, forKey: .range)
+        self.grandTotal = try container.decode(WakaTimeDuration.self, forKey: .grandTotal)
+        self.projects = try container.decodeIfPresent([WakaTimeNamedDuration].self, forKey: .projects) ?? []
+        self.languages = try container.decodeIfPresent([WakaTimeNamedDuration].self, forKey: .languages) ?? []
+        self.editors = try container.decodeIfPresent([WakaTimeNamedDuration].self, forKey: .editors) ?? []
+        self.operatingSystems = try container.decodeIfPresent([WakaTimeNamedDuration].self, forKey: .operatingSystems) ?? []
+        self.categories = try container.decodeIfPresent([WakaTimeNamedDuration].self, forKey: .categories) ?? []
+    }
 }
 
 public struct WakaTimeRange: Decodable, Sendable { public let date: String }
@@ -259,6 +299,15 @@ public enum ResponseBounds {
     public static func name(_ raw: String) -> String {
         raw.count <= maximumNameLength ? raw : String(raw.prefix(maximumNameLength))
     }
+
+    /// Restores separators in project names that WakaTime derived from a known
+    /// absolute filesystem path while preserving ordinary hyphenated names.
+    public static func projectName(_ raw: String) -> String {
+        let bounded = name(raw)
+        let pathRoots = ["Users-", "Volumes-", "private-", "home-", "opt-", "var-"]
+        guard pathRoots.contains(where: bounded.hasPrefix) else { return bounded }
+        return "/" + bounded.replacingOccurrences(of: "-", with: "/")
+    }
 }
 
 public extension WakaTimeSummariesResponse {
@@ -276,15 +325,23 @@ public extension WakaTimeSummariesResponse {
             return ActivityDay(
                 date: date,
                 duration: try ResponseBounds.duration(item.grandTotal.totalSeconds),
-                projects: try bucket(item.projects),
-                languages: try bucket(item.languages)
+                projects: try bucket(item.projects, names: ResponseBounds.projectName),
+                languages: try bucket(item.languages),
+                editors: try bucket(item.editors),
+                operatingSystems: try bucket(item.operatingSystems),
+                categories: try bucket(item.categories)
             )
         }
     }
 
-    private func bucket(_ raw: [WakaTimeNamedDuration]) throws -> [Usage] {
-        try raw.prefix(ResponseBounds.maximumBucketsPerDay).map {
-            Usage(name: ResponseBounds.name($0.name), duration: try ResponseBounds.duration($0.totalSeconds))
+    private func bucket(
+        _ raw: [WakaTimeNamedDuration],
+        names: (String) -> String = ResponseBounds.name
+    ) throws -> [Usage] {
+        try raw.prefix(ResponseBounds.maximumBucketsPerDay).compactMap {
+            let duration = try ResponseBounds.duration($0.totalSeconds)
+            guard duration > 0 else { return nil }
+            return Usage(name: names($0.name), duration: duration)
         }
     }
 }
@@ -329,6 +386,24 @@ public struct WakaTimeClient: Sendable {
         let data = try await send(request)
         do {
             return try decoder.decode(WakaTimeSummariesResponse.self, from: data).normalized(timeZone: timeZone)
+        } catch let error as WakaTimeError {
+            throw error
+        } catch {
+            throw WakaTimeError.decoding
+        }
+    }
+
+    /// One day of heartbeats, for the user-initiated file-type breakdown.
+    ///
+    /// Goes through exactly the same token bucket and retry policy as every other
+    /// request. The drill-down is the only feature that can issue more than one
+    /// request per user action, so it is the one that most needs the limiter, not
+    /// the one that should be allowed to skip it.
+    public func heartbeats(day: String, credential: Credential) async throws -> [WakaTimeHeartbeat] {
+        let request = try WakaTimeEndpoint.heartbeats(day: day).request(credential: credential)
+        let data = try await send(request)
+        do {
+            return try decoder.decode(WakaTimeHeartbeatsResponse.self, from: data).data
         } catch let error as WakaTimeError {
             throw error
         } catch {

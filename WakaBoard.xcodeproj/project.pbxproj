@@ -7,51 +7,161 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		024591308AF394DB6DFC6711 /* Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20FD6A5A5290DD3557E6D0C /* Analytics.swift */; };
+		0249C9FB6D4DE517745B3235 /* WakaBreakdownSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E6039F0F9A1F95D4A9320B /* WakaBreakdownSheet.swift */; };
+		040941EDEB69705E9B5C7DB4 /* libWakaUI_visionOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C6965A7BBEBA57DE812AA7A /* libWakaUI_visionOS.a */; };
 		04A500F7A075CC07D949800B /* libWakaUI_macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1332E258C6C6172ABDD390A0 /* libWakaUI_macOS.a */; };
+		07F171C4E5C7BBD3E984759D /* WakaScreens.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0948335A8D4F5DE236C5E08 /* WakaScreens.swift */; };
+		0962CE3616AA7C3D9E9984BD /* WakaUIModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC54424A6C39E0C86A5CB4F /* WakaUIModel.swift */; };
 		09C0D55EA62193EA201B072E /* libWakaUI_iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D787D43FCB4D1D53965FEA6 /* libWakaUI_iOS.a */; };
+		0F09A35949609C3AD8BCEAFB /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F147625003C40641BE28B8A /* Environment.swift */; };
+		104330F0E794A3345C430FB7 /* RateLimiting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D51FCDA6848961E431A52B1 /* RateLimiting.swift */; };
+		11CFF868ACE812B4AAAD5B01 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55C3B902224E1DFF234C275B /* Assets.xcassets */; };
 		1256CDEBBCF9F8C22A3A145D /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 863D0DD4C832763A4C5402CA /* PrivacyInfo.xcprivacy */; };
+		12CA17A75618022D18976114 /* libWakaCore_watchOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E26DBDB4563764B77932510D /* libWakaCore_watchOS.a */; };
 		15B01EC6BB8C929C9CF1A441 /* WakaBoardApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81C6E2BF0B99E542DBAE4FEC /* WakaBoardApp.swift */; };
+		16C37073EA4F1FFE373CA2A3 /* WakaBoardWidgets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949286D7F50152857127A4A1 /* WakaBoardWidgets.swift */; };
 		170036BE28D169983FD5FD80 /* libWakaUI_iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D787D43FCB4D1D53965FEA6 /* libWakaUI_iOS.a */; };
+		1E075F8AF6B1562C08E228CC /* WakaAccessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7D329C1820822DA5F89EA5C /* WakaAccessibility.swift */; };
+		2240A389B74BEC1266092789 /* WakaBoardWidgets_watchOS.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D528FE46E0A344AF8659FB7E /* WakaBoardWidgets_watchOS.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		22E8DDF8BB020756BE8B2A8D /* Networking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7453C53E08B6C77365296E3E /* Networking.swift */; };
 		2398045028703FC52780A79B /* RateLimiting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D51FCDA6848961E431A52B1 /* RateLimiting.swift */; };
-		2FBA2870D50EF69EE9E8581E /* WakaUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23686512529000071F80FBB0 /* WakaUI.swift */; };
+		251014E5C9818816EAABCACD /* FileTypeBreakdown.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE9847340276149368F3B917 /* FileTypeBreakdown.swift */; };
+		30E87780D5969C34A656CBEE /* WakaShell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23DC7D7FC3E33369E391C944 /* WakaShell.swift */; };
 		319C3F65A064D59BC8F57FA8 /* WakaBoardWidgets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949286D7F50152857127A4A1 /* WakaBoardWidgets.swift */; };
+		323FCB75514DC66B0D22FC04 /* WakaBreakdownSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E6039F0F9A1F95D4A9320B /* WakaBreakdownSheet.swift */; };
+		326A471060429CBD024639EE /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = E592C76190218E39991A0BCE /* Models.swift */; };
+		3590886C1363CED3B8CB08FC /* FileTypeBreakdown.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE9847340276149368F3B917 /* FileTypeBreakdown.swift */; };
+		3C37B9D01A951AEFCFD5E762 /* WakaDesign.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3550A6331C3A84DBC4C953CB /* WakaDesign.swift */; };
 		3CF6A8F4CB9BDDCA4E79C3A4 /* CacheRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FD0B89D517DE64566CA2F7D /* CacheRepository.swift */; };
+		3E0000A5B7CEAED041DA10F2 /* WakaScreens.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0948335A8D4F5DE236C5E08 /* WakaScreens.swift */; };
 		3F3895195561A57731C8423C /* libWakaCore_iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 520E1AD72821C921C8CCBC8E /* libWakaCore_iOS.a */; };
+		434CF572AA924A2E89A4F7B8 /* WakaAccessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7D329C1820822DA5F89EA5C /* WakaAccessibility.swift */; };
 		448959570B74DACAF666E0CC /* Security.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB3FC904E3CEA93816B91B9F /* Security.swift */; };
 		472F06AF15C7EF9FC964F0E8 /* Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20FD6A5A5290DD3557E6D0C /* Analytics.swift */; };
+		475484AD1D25ACAA680999F4 /* WakaComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D90D600C4C6515FBE968DD /* WakaComponents.swift */; };
+		4808DDAD0E457EA131C6F8A9 /* CacheRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FD0B89D517DE64566CA2F7D /* CacheRepository.swift */; };
+		4845E17F6207A69601450F4B /* WakaAccessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7D329C1820822DA5F89EA5C /* WakaAccessibility.swift */; };
+		48C5EF996162796D1B2E0A51 /* libWakaCore_visionOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E0F345F622F44F3A03CD1492 /* libWakaCore_visionOS.a */; };
 		49B4DECA828117D5832B0531 /* WakaBoardWidgets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949286D7F50152857127A4A1 /* WakaBoardWidgets.swift */; };
-		4D7B552FCD6848F35C0CE0DE /* WakaUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23686512529000071F80FBB0 /* WakaUI.swift */; };
+		4C082866AC6B542FFD59BBC8 /* Networking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7453C53E08B6C77365296E3E /* Networking.swift */; };
+		4C2C28A4F601577D6EC9E42C /* WakaAccessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7D329C1820822DA5F89EA5C /* WakaAccessibility.swift */; };
+		4CE646AAD3ADB53C049FEF18 /* Security.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB3FC904E3CEA93816B91B9F /* Security.swift */; };
 		5044FA76EDCE6ACF98A0A081 /* Networking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7453C53E08B6C77365296E3E /* Networking.swift */; };
+		512088A3097BF4B44E2BB376 /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F147625003C40641BE28B8A /* Environment.swift */; };
+		52A92A06E95E4278BD521297 /* FileTypeBreakdown.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE9847340276149368F3B917 /* FileTypeBreakdown.swift */; };
 		53669B7F3957AA837DF9FF5F /* libWakaCore_macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA8C780682935871239B99D4 /* libWakaCore_macOS.a */; };
+		53D7CC417A560756046CF950 /* libWakaCore_tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9B83E02A4B0D7F1B1569B157 /* libWakaCore_tvOS.a */; };
+		54030528E0222BA65D54C9DF /* RateLimiting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D51FCDA6848961E431A52B1 /* RateLimiting.swift */; };
+		55C95C8405303B3D5925EA55 /* WakaBoardApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81C6E2BF0B99E542DBAE4FEC /* WakaBoardApp.swift */; };
+		56378AF2031E66BC37A91080 /* WakaBoardApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81C6E2BF0B99E542DBAE4FEC /* WakaBoardApp.swift */; };
+		5926DE4F8C3600340AA44A5F /* WakaComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D90D600C4C6515FBE968DD /* WakaComponents.swift */; };
+		59AB8FEC50278B56D0ABD9A1 /* libWakaCore_visionOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E0F345F622F44F3A03CD1492 /* libWakaCore_visionOS.a */; };
+		5A76954013D3FC599C8799ED /* WakaCharts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62CFF9BDA31F1F15080849FE /* WakaCharts.swift */; };
+		5D0FFB448DA712297501A83B /* WakaCharts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62CFF9BDA31F1F15080849FE /* WakaCharts.swift */; };
+		5FB64D1B363B754E116E0424 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55C3B902224E1DFF234C275B /* Assets.xcassets */; };
+		66B3111736092697C61D7D5C /* WakaAccessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7D329C1820822DA5F89EA5C /* WakaAccessibility.swift */; };
+		67CB302066B010AD513A1053 /* WakaShell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23DC7D7FC3E33369E391C944 /* WakaShell.swift */; };
+		6C0D5F4F472AC1011B60F058 /* Security.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB3FC904E3CEA93816B91B9F /* Security.swift */; };
+		74DE2FD4621A19A3F49A6FB8 /* Networking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7453C53E08B6C77365296E3E /* Networking.swift */; };
+		7504667B7AEED29574A46399 /* WakaUIModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC54424A6C39E0C86A5CB4F /* WakaUIModel.swift */; };
+		79A8DD43047178624C355604 /* CacheRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FD0B89D517DE64566CA2F7D /* CacheRepository.swift */; };
 		7B2CD226FF543719307486E5 /* RateLimiting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D51FCDA6848961E431A52B1 /* RateLimiting.swift */; };
+		7D65F245286884CE5ADAD062 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = E592C76190218E39991A0BCE /* Models.swift */; };
+		7D9A8E8CDF066D3F000FC634 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 3DEFD171F9E15B779A9BD298 /* PrivacyInfo.xcprivacy */; };
+		7F178668E48FBC49E154EB2A /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 863D0DD4C832763A4C5402CA /* PrivacyInfo.xcprivacy */; };
 		808F09347995A1B548239C4E /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = E592C76190218E39991A0BCE /* Models.swift */; };
+		80A6AA09DD1BAC2425B06AB8 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 3DEFD171F9E15B779A9BD298 /* PrivacyInfo.xcprivacy */; };
+		8166050010088CDD22DA2818 /* WakaBreakdownSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E6039F0F9A1F95D4A9320B /* WakaBreakdownSheet.swift */; };
+		81B050A9E5BB007F11647E27 /* WakaShell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23DC7D7FC3E33369E391C944 /* WakaShell.swift */; };
+		81C8BA7FA22C1308543001D8 /* libWakaUI_watchOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 896A350EE86C5E461BD61439 /* libWakaUI_watchOS.a */; };
+		825175E8C27F1F004FC062FD /* WakaDesign.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3550A6331C3A84DBC4C953CB /* WakaDesign.swift */; };
+		829E9D0DB92099C27A95C30F /* Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20FD6A5A5290DD3557E6D0C /* Analytics.swift */; };
 		84C7A3C8180A46EC27ADE782 /* Networking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7453C53E08B6C77365296E3E /* Networking.swift */; };
+		8963A044D1AF13F47A5013B0 /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F147625003C40641BE28B8A /* Environment.swift */; };
+		89C0792CC244472E072176C5 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = E592C76190218E39991A0BCE /* Models.swift */; };
+		8B359AC6E31749EBD06FED8D /* WakaComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D90D600C4C6515FBE968DD /* WakaComponents.swift */; };
+		8CF4344D9D6C8F3743A79ABC /* WakaBreakdownSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E6039F0F9A1F95D4A9320B /* WakaBreakdownSheet.swift */; };
 		8E66A7757982EBDE2D8B04F6 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = E592C76190218E39991A0BCE /* Models.swift */; };
+		8FA893D0095FE6BB0F09DA21 /* WakaCharts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62CFF9BDA31F1F15080849FE /* WakaCharts.swift */; };
 		927956A18389CD0E29F1CAC8 /* Security.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB3FC904E3CEA93816B91B9F /* Security.swift */; };
+		94728A4AD6C77A59D0BE4739 /* libWakaUI_visionOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C6965A7BBEBA57DE812AA7A /* libWakaUI_visionOS.a */; };
+		94CA374709AA13A0DF2FB4DD /* FileTypeBreakdown.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE9847340276149368F3B917 /* FileTypeBreakdown.swift */; };
+		9793C2F190E3CEAC1DEC0183 /* WakaScreens.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0948335A8D4F5DE236C5E08 /* WakaScreens.swift */; };
+		99F0051ABD0412D5D8C4AB77 /* WakaBoardApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81C6E2BF0B99E542DBAE4FEC /* WakaBoardApp.swift */; };
 		9A5571C7AB488C6212F5EAF4 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 3DEFD171F9E15B779A9BD298 /* PrivacyInfo.xcprivacy */; };
+		9E4728C67C22A91DB5F7C05E /* Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20FD6A5A5290DD3557E6D0C /* Analytics.swift */; };
+		A35106B73D16B6D225561E6F /* libWakaUI_tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D8E339FEB3B1E77D256ED061 /* libWakaUI_tvOS.a */; };
+		A4CFB617B8817C812020DFEA /* WakaScreens.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0948335A8D4F5DE236C5E08 /* WakaScreens.swift */; };
+		A504DBF39480E2B75DCB998D /* WakaUIModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC54424A6C39E0C86A5CB4F /* WakaUIModel.swift */; };
+		A954A99BDA19DFF135252E32 /* WakaBoardWidgets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949286D7F50152857127A4A1 /* WakaBoardWidgets.swift */; };
+		A958E7472030F19003573ED0 /* FileTypeBreakdown.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE9847340276149368F3B917 /* FileTypeBreakdown.swift */; };
+		AA15979EEF55F1F84FB249BD /* RateLimiting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D51FCDA6848961E431A52B1 /* RateLimiting.swift */; };
 		AAAA4C4FBEEDA1F53AEF50E1 /* CacheRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FD0B89D517DE64566CA2F7D /* CacheRepository.swift */; };
 		AF8361E03B4E6D5CD007C676 /* WakaBoardApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81C6E2BF0B99E542DBAE4FEC /* WakaBoardApp.swift */; };
+		B1BAD386622297804251F07A /* libWakaUI_watchOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 896A350EE86C5E461BD61439 /* libWakaUI_watchOS.a */; };
 		B3EEC3919A8442E6680147D3 /* libWakaUI_macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1332E258C6C6172ABDD390A0 /* libWakaUI_macOS.a */; };
+		B546C6484D2260FAC0EEC99E /* WakaCharts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62CFF9BDA31F1F15080849FE /* WakaCharts.swift */; };
 		B6A6E7858CF16A1945099E0D /* WakaUIModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC54424A6C39E0C86A5CB4F /* WakaUIModel.swift */; };
 		BAFB96BCCF3D341E946B1ACE /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F147625003C40641BE28B8A /* Environment.swift */; };
+		BF6878DC0E058ED554419EAC /* libWakaCore_watchOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E26DBDB4563764B77932510D /* libWakaCore_watchOS.a */; };
 		CC2C08392D3994AFE8AAAC84 /* WakaBoardWidgets_iOS.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 4F0244C402978C742EA7466D /* WakaBoardWidgets_iOS.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		CC9F4324185B91B4676C435D /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F147625003C40641BE28B8A /* Environment.swift */; };
 		CE9A1F1074E289366A9A17D8 /* WakaUIModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC54424A6C39E0C86A5CB4F /* WakaUIModel.swift */; };
+		CF28A199BAF4403868339830 /* WakaShell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23DC7D7FC3E33369E391C944 /* WakaShell.swift */; };
+		D09862DB9AABDC61B69E38D9 /* WakaComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D90D600C4C6515FBE968DD /* WakaComponents.swift */; };
+		D0D20D2FA9F6B5D383202DA6 /* WakaBoardWidgets_visionOS.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 0C5FE0355E20AE0D14B95A76 /* WakaBoardWidgets_visionOS.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		D294F3C8EBBD5BA4FE230EFE /* WakaShell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23DC7D7FC3E33369E391C944 /* WakaShell.swift */; };
 		D35E74AE004659FDC483A05C /* Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20FD6A5A5290DD3557E6D0C /* Analytics.swift */; };
+		D491DAEC2B942FBA9E74DA66 /* WakaDesign.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3550A6331C3A84DBC4C953CB /* WakaDesign.swift */; };
+		D859255D57E499429600D819 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55C3B902224E1DFF234C275B /* Assets.xcassets */; };
+		D915BFDF52382EC904F34150 /* WakaComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D90D600C4C6515FBE968DD /* WakaComponents.swift */; };
 		DBDC65395A4C053DB33C3787 /* libWakaCore_macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA8C780682935871239B99D4 /* libWakaCore_macOS.a */; };
+		DCED17ED0184417AF52CEB51 /* CacheRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FD0B89D517DE64566CA2F7D /* CacheRepository.swift */; };
+		DFD97C328B37C94D1C224D55 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 863D0DD4C832763A4C5402CA /* PrivacyInfo.xcprivacy */; };
+		E1679AEFB72D70A3D9D2AF27 /* WakaDesign.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3550A6331C3A84DBC4C953CB /* WakaDesign.swift */; };
 		E42A5A979CCC050D1A101E81 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 863D0DD4C832763A4C5402CA /* PrivacyInfo.xcprivacy */; };
+		E7073B38F86C140227919BB8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55C3B902224E1DFF234C275B /* Assets.xcassets */; };
+		E7C42AE49EFB66B4A3B29342 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 3DEFD171F9E15B779A9BD298 /* PrivacyInfo.xcprivacy */; };
 		EB0CBABB04FB6ADA3C01EB8B /* libWakaCore_iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 520E1AD72821C921C8CCBC8E /* libWakaCore_iOS.a */; };
+		EFAA0282EF276E85E55CCF05 /* WakaDesign.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3550A6331C3A84DBC4C953CB /* WakaDesign.swift */; };
+		F11AB39014907E3E611D128E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55C3B902224E1DFF234C275B /* Assets.xcassets */; };
 		F469760707FE588488796BCD /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 3DEFD171F9E15B779A9BD298 /* PrivacyInfo.xcprivacy */; };
+		F64ACC99D718C2225EAB5D26 /* WakaCharts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62CFF9BDA31F1F15080849FE /* WakaCharts.swift */; };
+		F66E1E824A2F46554218DEE6 /* WakaScreens.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0948335A8D4F5DE236C5E08 /* WakaScreens.swift */; };
+		FA35F24C33C81EDADA7152D9 /* Security.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB3FC904E3CEA93816B91B9F /* Security.swift */; };
 		FA9EA5A23977A479FD9CE311 /* WakaBoardWidgets_macOS.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 474D547068DE9FAD4B00B81A /* WakaBoardWidgets_macOS.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		FD7CF1B7D546F7C19D626AD4 /* WakaBreakdownSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E6039F0F9A1F95D4A9320B /* WakaBreakdownSheet.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		0CE78EA19F013C7CBBA1D7A6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F05AC8072EC246AD9341C51D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 08FA18328F7DB64AAC7DC6A3;
+			remoteInfo = WakaUI_tvOS;
+		};
+		268ACA00C3409E35F17A5FAC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F05AC8072EC246AD9341C51D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B993F152B35C4B326E0D4DDE;
+			remoteInfo = WakaCore_watchOS;
+		};
 		30DA2AF51347D8296A75277C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F05AC8072EC246AD9341C51D /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = A7DB0D2F8620DC3757034F7F;
 			remoteInfo = WakaCore_iOS;
+		};
+		417D475E68354A6B930B44EA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F05AC8072EC246AD9341C51D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C310C721CA70D20E0A8D90A2;
+			remoteInfo = WakaCore_visionOS;
 		};
 		4BEFA46165B5D47A29FBE3FB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -88,6 +198,34 @@
 			remoteGlobalIDString = AE60B38D976C61637CB85752;
 			remoteInfo = WakaUI_iOS;
 		};
+		6677907F2322F28F3C7DD10B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F05AC8072EC246AD9341C51D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BDF020C637323C216982D5FD;
+			remoteInfo = WakaUI_watchOS;
+		};
+		6B6A2793BA032805235D8586 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F05AC8072EC246AD9341C51D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2E9E2E7896898D8A608BFBED;
+			remoteInfo = WakaBoardWidgets_watchOS;
+		};
+		6FA194F1CD7EE27211C7AF45 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F05AC8072EC246AD9341C51D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B993F152B35C4B326E0D4DDE;
+			remoteInfo = WakaCore_watchOS;
+		};
+		73766332E315FECBEE57992E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F05AC8072EC246AD9341C51D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 00D22BE51F3C5668D94BD9D5;
+			remoteInfo = WakaCore_tvOS;
+		};
 		8E31644588CE3788C47DC219 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F05AC8072EC246AD9341C51D /* Project object */;
@@ -109,12 +247,33 @@
 			remoteGlobalIDString = BCDCBFB7068636F13D426909;
 			remoteInfo = WakaUI_macOS;
 		};
+		98955FA1F354D63B5BEDDDED /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F05AC8072EC246AD9341C51D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C310C721CA70D20E0A8D90A2;
+			remoteInfo = WakaCore_visionOS;
+		};
+		A079A26177D8B5F9337DEC31 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F05AC8072EC246AD9341C51D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C310C721CA70D20E0A8D90A2;
+			remoteInfo = WakaCore_visionOS;
+		};
 		A1A01526FC8771341ACD827D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F05AC8072EC246AD9341C51D /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = A63A4EAEC6C3B1C899151957;
 			remoteInfo = WakaCore_macOS;
+		};
+		A8C5ED23723CEEFB0FE1D75F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F05AC8072EC246AD9341C51D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 00D22BE51F3C5668D94BD9D5;
+			remoteInfo = WakaCore_tvOS;
 		};
 		AE9E7A4D3D03A32F6DB3BD7D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -123,12 +282,47 @@
 			remoteGlobalIDString = 976FA143998E699024D422C4;
 			remoteInfo = WakaBoardWidgets_iOS;
 		};
+		B102158E635BBB4C4A410433 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F05AC8072EC246AD9341C51D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BDF020C637323C216982D5FD;
+			remoteInfo = WakaUI_watchOS;
+		};
+		B3370D4D8DF5A19FD06A2705 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F05AC8072EC246AD9341C51D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 185B0C684F2713CABCB720AC;
+			remoteInfo = WakaBoardWidgets_visionOS;
+		};
+		B82008206321558BE6861514 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F05AC8072EC246AD9341C51D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 018A3A6CD002CB54682B6157;
+			remoteInfo = WakaUI_visionOS;
+		};
 		B93C03B001D50137F4F8C6B2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F05AC8072EC246AD9341C51D /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = A63A4EAEC6C3B1C899151957;
 			remoteInfo = WakaCore_macOS;
+		};
+		D38675E4019FF81558A78C6C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F05AC8072EC246AD9341C51D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B993F152B35C4B326E0D4DDE;
+			remoteInfo = WakaCore_watchOS;
+		};
+		FA52951B9599783C74EB4492 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F05AC8072EC246AD9341C51D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 018A3A6CD002CB54682B6157;
+			remoteInfo = WakaUI_visionOS;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -144,6 +338,17 @@
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		8252FFB7EBB19C49F31F81E6 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				D0D20D2FA9F6B5D383202DA6 /* WakaBoardWidgets_visionOS.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		88C132865BE05A8E25E42FD0 /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -155,39 +360,105 @@
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		EBF4F6965F7F2743121C02E3 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				2240A389B74BEC1266092789 /* WakaBoardWidgets_watchOS.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0C5FE0355E20AE0D14B95A76 /* WakaBoardWidgets_visionOS.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = WakaBoardWidgets_visionOS.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		0D51FCDA6848961E431A52B1 /* RateLimiting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RateLimiting.swift; sourceTree = "<group>"; };
+		11E6039F0F9A1F95D4A9320B /* WakaBreakdownSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WakaBreakdownSheet.swift; sourceTree = "<group>"; };
 		1332E258C6C6172ABDD390A0 /* libWakaUI_macOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libWakaUI_macOS.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		16789045EA812BDD39F284F1 /* WakaBoardApp_macOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WakaBoardApp_macOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		23686512529000071F80FBB0 /* WakaUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WakaUI.swift; sourceTree = "<group>"; };
+		1E10F3032AFBC358202CCCD6 /* WakaBoardApp_watchOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WakaBoardApp_watchOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		23DC7D7FC3E33369E391C944 /* WakaShell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WakaShell.swift; sourceTree = "<group>"; };
+		2C6965A7BBEBA57DE812AA7A /* libWakaUI_visionOS.a */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = archive.ar; path = libWakaUI_visionOS.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		3550A6331C3A84DBC4C953CB /* WakaDesign.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WakaDesign.swift; sourceTree = "<group>"; };
 		3DEFD171F9E15B779A9BD298 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		474D547068DE9FAD4B00B81A /* WakaBoardWidgets_macOS.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WakaBoardWidgets_macOS.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CC54424A6C39E0C86A5CB4F /* WakaUIModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WakaUIModel.swift; sourceTree = "<group>"; };
 		4F0244C402978C742EA7466D /* WakaBoardWidgets_iOS.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = WakaBoardWidgets_iOS.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		520E1AD72821C921C8CCBC8E /* libWakaCore_iOS.a */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = archive.ar; path = libWakaCore_iOS.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		55C3B902224E1DFF234C275B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5FD0B89D517DE64566CA2F7D /* CacheRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheRepository.swift; sourceTree = "<group>"; };
+		62CFF9BDA31F1F15080849FE /* WakaCharts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WakaCharts.swift; sourceTree = "<group>"; };
 		7453C53E08B6C77365296E3E /* Networking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Networking.swift; sourceTree = "<group>"; };
+		7AF851E579947BB161BDC904 /* WakaBoardApp_visionOS.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = WakaBoardApp_visionOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		81C6E2BF0B99E542DBAE4FEC /* WakaBoardApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WakaBoardApp.swift; sourceTree = "<group>"; };
 		863D0DD4C832763A4C5402CA /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; name = PrivacyInfo.xcprivacy; path = "PrivacyInfo-Widgets.xcprivacy"; sourceTree = "<group>"; };
+		896A350EE86C5E461BD61439 /* libWakaUI_watchOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libWakaUI_watchOS.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D787D43FCB4D1D53965FEA6 /* libWakaUI_iOS.a */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = archive.ar; path = libWakaUI_iOS.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		8F147625003C40641BE28B8A /* Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
 		8FD99EBA82AF9875A0773A80 /* WakaBoardApp_iOS.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = WakaBoardApp_iOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		949286D7F50152857127A4A1 /* WakaBoardWidgets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WakaBoardWidgets.swift; sourceTree = "<group>"; };
+		9B83E02A4B0D7F1B1569B157 /* libWakaCore_tvOS.a */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = archive.ar; path = libWakaCore_tvOS.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		A0948335A8D4F5DE236C5E08 /* WakaScreens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WakaScreens.swift; sourceTree = "<group>"; };
+		AE9847340276149368F3B917 /* FileTypeBreakdown.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileTypeBreakdown.swift; sourceTree = "<group>"; };
 		B20FD6A5A5290DD3557E6D0C /* Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Analytics.swift; sourceTree = "<group>"; };
+		B9D90D600C4C6515FBE968DD /* WakaComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WakaComponents.swift; sourceTree = "<group>"; };
 		BB3FC904E3CEA93816B91B9F /* Security.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Security.swift; sourceTree = "<group>"; };
+		CBBA8E13C49441815C586231 /* WakaBoardApp_tvOS.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = WakaBoardApp_tvOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D528FE46E0A344AF8659FB7E /* WakaBoardWidgets_watchOS.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WakaBoardWidgets_watchOS.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		D8E339FEB3B1E77D256ED061 /* libWakaUI_tvOS.a */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = archive.ar; path = libWakaUI_tvOS.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		DA8C780682935871239B99D4 /* libWakaCore_macOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libWakaCore_macOS.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		E0F345F622F44F3A03CD1492 /* libWakaCore_visionOS.a */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = archive.ar; path = libWakaCore_visionOS.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		E26DBDB4563764B77932510D /* libWakaCore_watchOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libWakaCore_watchOS.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		E592C76190218E39991A0BCE /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		E7D329C1820822DA5F89EA5C /* WakaAccessibility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WakaAccessibility.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		1F2D0E66F3EBCEF1D0C7F09D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A35106B73D16B6D225561E6F /* libWakaUI_tvOS.a in Frameworks */,
+				53D7CC417A560756046CF950 /* libWakaCore_tvOS.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		50050215A93DCFADBA91F932 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				09C0D55EA62193EA201B072E /* libWakaUI_iOS.a in Frameworks */,
 				3F3895195561A57731C8423C /* libWakaCore_iOS.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		77259BBD69EAF81E68D9BCBB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				81C8BA7FA22C1308543001D8 /* libWakaUI_watchOS.a in Frameworks */,
+				12CA17A75618022D18976114 /* libWakaCore_watchOS.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7A9D4ED9B4D8722F8D192742 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				040941EDEB69705E9B5C7DB4 /* libWakaUI_visionOS.a in Frameworks */,
+				59AB8FEC50278B56D0ABD9A1 /* libWakaCore_visionOS.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7E57DE95EA64D6F87F13936C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B1BAD386622297804251F07A /* libWakaUI_watchOS.a in Frameworks */,
+				BF6878DC0E058ED554419EAC /* libWakaCore_watchOS.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -206,6 +477,15 @@
 			files = (
 				04A500F7A075CC07D949800B /* libWakaUI_macOS.a in Frameworks */,
 				53669B7F3957AA837DF9FF5F /* libWakaCore_macOS.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DF7944B4FC5EDBC3428BAC26 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				94728A4AD6C77A59D0BE4739 /* libWakaUI_visionOS.a in Frameworks */,
+				48C5EF996162796D1B2E0A51 /* libWakaCore_visionOS.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -242,6 +522,7 @@
 		3156B786CDB54B081E3B6155 /* WakaBoardApp */ = {
 			isa = PBXGroup;
 			children = (
+				55C3B902224E1DFF234C275B /* Assets.xcassets */,
 				81C6E2BF0B99E542DBAE4FEC /* WakaBoardApp.swift */,
 			);
 			name = WakaBoardApp;
@@ -254,6 +535,7 @@
 				B20FD6A5A5290DD3557E6D0C /* Analytics.swift */,
 				5FD0B89D517DE64566CA2F7D /* CacheRepository.swift */,
 				8F147625003C40641BE28B8A /* Environment.swift */,
+				AE9847340276149368F3B917 /* FileTypeBreakdown.swift */,
 				E592C76190218E39991A0BCE /* Models.swift */,
 				7453C53E08B6C77365296E3E /* Networking.swift */,
 				0D51FCDA6848961E431A52B1 /* RateLimiting.swift */,
@@ -266,7 +548,13 @@
 		91EC361F9903D34EE1FFCEDA /* WakaUI */ = {
 			isa = PBXGroup;
 			children = (
-				23686512529000071F80FBB0 /* WakaUI.swift */,
+				E7D329C1820822DA5F89EA5C /* WakaAccessibility.swift */,
+				11E6039F0F9A1F95D4A9320B /* WakaBreakdownSheet.swift */,
+				62CFF9BDA31F1F15080849FE /* WakaCharts.swift */,
+				B9D90D600C4C6515FBE968DD /* WakaComponents.swift */,
+				3550A6331C3A84DBC4C953CB /* WakaDesign.swift */,
+				A0948335A8D4F5DE236C5E08 /* WakaScreens.swift */,
+				23DC7D7FC3E33369E391C944 /* WakaShell.swift */,
 				4CC54424A6C39E0C86A5CB4F /* WakaUIModel.swift */,
 			);
 			name = WakaUI;
@@ -290,12 +578,23 @@
 			children = (
 				520E1AD72821C921C8CCBC8E /* libWakaCore_iOS.a */,
 				DA8C780682935871239B99D4 /* libWakaCore_macOS.a */,
+				9B83E02A4B0D7F1B1569B157 /* libWakaCore_tvOS.a */,
+				E0F345F622F44F3A03CD1492 /* libWakaCore_visionOS.a */,
+				E26DBDB4563764B77932510D /* libWakaCore_watchOS.a */,
 				8D787D43FCB4D1D53965FEA6 /* libWakaUI_iOS.a */,
 				1332E258C6C6172ABDD390A0 /* libWakaUI_macOS.a */,
+				D8E339FEB3B1E77D256ED061 /* libWakaUI_tvOS.a */,
+				2C6965A7BBEBA57DE812AA7A /* libWakaUI_visionOS.a */,
+				896A350EE86C5E461BD61439 /* libWakaUI_watchOS.a */,
 				8FD99EBA82AF9875A0773A80 /* WakaBoardApp_iOS.app */,
 				16789045EA812BDD39F284F1 /* WakaBoardApp_macOS.app */,
+				CBBA8E13C49441815C586231 /* WakaBoardApp_tvOS.app */,
+				7AF851E579947BB161BDC904 /* WakaBoardApp_visionOS.app */,
+				1E10F3032AFBC358202CCCD6 /* WakaBoardApp_watchOS.app */,
 				4F0244C402978C742EA7466D /* WakaBoardWidgets_iOS.appex */,
 				474D547068DE9FAD4B00B81A /* WakaBoardWidgets_macOS.appex */,
+				0C5FE0355E20AE0D14B95A76 /* WakaBoardWidgets_visionOS.appex */,
+				D528FE46E0A344AF8659FB7E /* WakaBoardWidgets_watchOS.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -303,6 +602,171 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		00D22BE51F3C5668D94BD9D5 /* WakaCore_tvOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 233E9CDA816B1C82575FF78E /* Build configuration list for PBXNativeTarget "WakaCore_tvOS" */;
+			buildPhases = (
+				DFE1019BF9902A3819F0C384 /* Sources */,
+				805CB9662BDFF07A69BBE720 /* Copy Swift Objective-C Interface Header */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = WakaCore_tvOS;
+			packageProductDependencies = (
+			);
+			productName = WakaCore_tvOS;
+			productReference = 9B83E02A4B0D7F1B1569B157 /* libWakaCore_tvOS.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		018A3A6CD002CB54682B6157 /* WakaUI_visionOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C311DB478F9C30CF9FC0679C /* Build configuration list for PBXNativeTarget "WakaUI_visionOS" */;
+			buildPhases = (
+				36497B4BE28A286109952746 /* Sources */,
+				A062F4AC6B984E601991B06B /* Copy Swift Objective-C Interface Header */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2D0A6256CD49ADE936FC2E7F /* PBXTargetDependency */,
+			);
+			name = WakaUI_visionOS;
+			packageProductDependencies = (
+			);
+			productName = WakaUI_visionOS;
+			productReference = 2C6965A7BBEBA57DE812AA7A /* libWakaUI_visionOS.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		05FEFA0772A51DDEC294C3DA /* WakaBoardApp_visionOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AB663B3E3EA164DF37360B80 /* Build configuration list for PBXNativeTarget "WakaBoardApp_visionOS" */;
+			buildPhases = (
+				748E4759BF5E7706A9D265F1 /* Sources */,
+				CCC97F921B720CF40C9A5EAB /* Resources */,
+				DF7944B4FC5EDBC3428BAC26 /* Frameworks */,
+				8252FFB7EBB19C49F31F81E6 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B7C55AF3D5C8D223CC162778 /* PBXTargetDependency */,
+				21C96EDCFD5397E7D889A4A2 /* PBXTargetDependency */,
+				E2E63CC5B1E10FCA219AA3A9 /* PBXTargetDependency */,
+			);
+			name = WakaBoardApp_visionOS;
+			packageProductDependencies = (
+			);
+			productName = WakaBoardApp_visionOS;
+			productReference = 7AF851E579947BB161BDC904 /* WakaBoardApp_visionOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+		08FA18328F7DB64AAC7DC6A3 /* WakaUI_tvOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0F75AC219A33757A9A3329FB /* Build configuration list for PBXNativeTarget "WakaUI_tvOS" */;
+			buildPhases = (
+				6B3234B4FB7FAA4AA41FD795 /* Sources */,
+				5B757F66A631CEA30B8805B3 /* Copy Swift Objective-C Interface Header */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				736BBDFD44C7521F3833699C /* PBXTargetDependency */,
+			);
+			name = WakaUI_tvOS;
+			packageProductDependencies = (
+			);
+			productName = WakaUI_tvOS;
+			productReference = D8E339FEB3B1E77D256ED061 /* libWakaUI_tvOS.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		185B0C684F2713CABCB720AC /* WakaBoardWidgets_visionOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FCFF18587ADC48AD44EBA394 /* Build configuration list for PBXNativeTarget "WakaBoardWidgets_visionOS" */;
+			buildPhases = (
+				D13C20139E5FA0676940CF93 /* Sources */,
+				7B1056EB6F7467A014C14608 /* Resources */,
+				7A9D4ED9B4D8722F8D192742 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				366CF6130AFDD693A723416D /* PBXTargetDependency */,
+				9D3D5DEDE85A7508A45711A4 /* PBXTargetDependency */,
+			);
+			name = WakaBoardWidgets_visionOS;
+			packageProductDependencies = (
+			);
+			productName = WakaBoardWidgets_visionOS;
+			productReference = 0C5FE0355E20AE0D14B95A76 /* WakaBoardWidgets_visionOS.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		2E9E2E7896898D8A608BFBED /* WakaBoardWidgets_watchOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 47122F30846F9AA7E25AF8B5 /* Build configuration list for PBXNativeTarget "WakaBoardWidgets_watchOS" */;
+			buildPhases = (
+				D20A800016FB8C49D2C0E0A5 /* Sources */,
+				6BE6A680AD722955A395650F /* Resources */,
+				77259BBD69EAF81E68D9BCBB /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				257C44C5E27AFEB29BA16A9F /* PBXTargetDependency */,
+				34E7C668442B7AE8CF803FF8 /* PBXTargetDependency */,
+			);
+			name = WakaBoardWidgets_watchOS;
+			packageProductDependencies = (
+			);
+			productName = WakaBoardWidgets_watchOS;
+			productReference = D528FE46E0A344AF8659FB7E /* WakaBoardWidgets_watchOS.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		33BD31D6CA246E22B88EB085 /* WakaBoardApp_watchOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B13D218984BAFD2CC97536C9 /* Build configuration list for PBXNativeTarget "WakaBoardApp_watchOS" */;
+			buildPhases = (
+				41314D66BDA858BD9C7B96C4 /* Sources */,
+				A507805FC58C98A5F8E08499 /* Resources */,
+				7E57DE95EA64D6F87F13936C /* Frameworks */,
+				EBF4F6965F7F2743121C02E3 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				20025ECB3B53760B6C3C7C33 /* PBXTargetDependency */,
+				7175FA97CCE43DDDEAE71312 /* PBXTargetDependency */,
+				1FBE99E167BCC0BFBC309EDE /* PBXTargetDependency */,
+			);
+			name = WakaBoardApp_watchOS;
+			packageProductDependencies = (
+			);
+			productName = WakaBoardApp_watchOS;
+			productReference = 1E10F3032AFBC358202CCCD6 /* WakaBoardApp_watchOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+		45D409EB3597FB80F0536B3B /* WakaBoardApp_tvOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BD788E51CA3BB2494336F988 /* Build configuration list for PBXNativeTarget "WakaBoardApp_tvOS" */;
+			buildPhases = (
+				68F9851A129BA41D68DE8E4C /* Sources */,
+				08EF6D558FA22B574C460BC2 /* Resources */,
+				1F2D0E66F3EBCEF1D0C7F09D /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				ADBE21B40E3050345AE3E776 /* PBXTargetDependency */,
+				4AFB505D6525E37E96396D1B /* PBXTargetDependency */,
+			);
+			name = WakaBoardApp_tvOS;
+			packageProductDependencies = (
+			);
+			productName = WakaBoardApp_tvOS;
+			productReference = CBBA8E13C49441815C586231 /* WakaBoardApp_tvOS.app */;
+			productType = "com.apple.product-type.application";
+		};
 		6665B928B87595D3E1214A51 /* WakaBoardApp_macOS */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 12EC63C270AB51E4A6569D1A /* Build configuration list for PBXNativeTarget "WakaBoardApp_macOS" */;
@@ -425,6 +889,24 @@
 			productReference = 8D787D43FCB4D1D53965FEA6 /* libWakaUI_iOS.a */;
 			productType = "com.apple.product-type.library.static";
 		};
+		B993F152B35C4B326E0D4DDE /* WakaCore_watchOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7CAB35C8BF4BAEF1E19AC0CE /* Build configuration list for PBXNativeTarget "WakaCore_watchOS" */;
+			buildPhases = (
+				8FB2E37B7F5F0FF5ACD824CB /* Sources */,
+				C5473653A937B91985E34A85 /* Copy Swift Objective-C Interface Header */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = WakaCore_watchOS;
+			packageProductDependencies = (
+			);
+			productName = WakaCore_watchOS;
+			productReference = E26DBDB4563764B77932510D /* libWakaCore_watchOS.a */;
+			productType = "com.apple.product-type.library.static";
+		};
 		BCDCBFB7068636F13D426909 /* WakaUI_macOS */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 0A822D03834AD85291D077C2 /* Build configuration list for PBXNativeTarget "WakaUI_macOS" */;
@@ -442,6 +924,43 @@
 			);
 			productName = WakaUI_macOS;
 			productReference = 1332E258C6C6172ABDD390A0 /* libWakaUI_macOS.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		BDF020C637323C216982D5FD /* WakaUI_watchOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 78607BA101BA8B7501AD31FE /* Build configuration list for PBXNativeTarget "WakaUI_watchOS" */;
+			buildPhases = (
+				13202D9A5AF5A785129F1715 /* Sources */,
+				991B906F0BBD5A94DF4B3116 /* Copy Swift Objective-C Interface Header */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1DA6B073B250DBE9EE63E9A7 /* PBXTargetDependency */,
+			);
+			name = WakaUI_watchOS;
+			packageProductDependencies = (
+			);
+			productName = WakaUI_watchOS;
+			productReference = 896A350EE86C5E461BD61439 /* libWakaUI_watchOS.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		C310C721CA70D20E0A8D90A2 /* WakaCore_visionOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 78B91D58594D5957298B34CE /* Build configuration list for PBXNativeTarget "WakaCore_visionOS" */;
+			buildPhases = (
+				97635C834CAADFD4930401CC /* Sources */,
+				4957C14C18761FD40863D8E4 /* Copy Swift Objective-C Interface Header */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = WakaCore_visionOS;
+			packageProductDependencies = (
+			);
+			productName = WakaCore_visionOS;
+			productReference = E0F345F622F44F3A03CD1492 /* libWakaCore_visionOS.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		E05A64AA00664384758940F9 /* WakaBoardWidgets_macOS */ = {
@@ -474,6 +993,30 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
+					00D22BE51F3C5668D94BD9D5 = {
+						DevelopmentTeam = "";
+					};
+					018A3A6CD002CB54682B6157 = {
+						DevelopmentTeam = "";
+					};
+					05FEFA0772A51DDEC294C3DA = {
+						DevelopmentTeam = "";
+					};
+					08FA18328F7DB64AAC7DC6A3 = {
+						DevelopmentTeam = "";
+					};
+					185B0C684F2713CABCB720AC = {
+						DevelopmentTeam = "";
+					};
+					2E9E2E7896898D8A608BFBED = {
+						DevelopmentTeam = "";
+					};
+					33BD31D6CA246E22B88EB085 = {
+						DevelopmentTeam = "";
+					};
+					45D409EB3597FB80F0536B3B = {
+						DevelopmentTeam = "";
+					};
 					6665B928B87595D3E1214A51 = {
 						DevelopmentTeam = "";
 					};
@@ -492,7 +1035,16 @@
 					AE60B38D976C61637CB85752 = {
 						DevelopmentTeam = "";
 					};
+					B993F152B35C4B326E0D4DDE = {
+						DevelopmentTeam = "";
+					};
 					BCDCBFB7068636F13D426909 = {
+						DevelopmentTeam = "";
+					};
+					BDF020C637323C216982D5FD = {
+						DevelopmentTeam = "";
+					};
+					C310C721CA70D20E0A8D90A2 = {
 						DevelopmentTeam = "";
 					};
 					E05A64AA00664384758940F9 = {
@@ -516,22 +1068,77 @@
 			targets = (
 				A7DB0D2F8620DC3757034F7F /* WakaCore_iOS */,
 				A63A4EAEC6C3B1C899151957 /* WakaCore_macOS */,
+				B993F152B35C4B326E0D4DDE /* WakaCore_watchOS */,
+				00D22BE51F3C5668D94BD9D5 /* WakaCore_tvOS */,
+				C310C721CA70D20E0A8D90A2 /* WakaCore_visionOS */,
 				AE60B38D976C61637CB85752 /* WakaUI_iOS */,
 				BCDCBFB7068636F13D426909 /* WakaUI_macOS */,
+				BDF020C637323C216982D5FD /* WakaUI_watchOS */,
+				08FA18328F7DB64AAC7DC6A3 /* WakaUI_tvOS */,
+				018A3A6CD002CB54682B6157 /* WakaUI_visionOS */,
 				6D7E2640CBCE67A037DBE304 /* WakaBoardApp_iOS */,
 				6665B928B87595D3E1214A51 /* WakaBoardApp_macOS */,
+				05FEFA0772A51DDEC294C3DA /* WakaBoardApp_visionOS */,
+				45D409EB3597FB80F0536B3B /* WakaBoardApp_tvOS */,
+				33BD31D6CA246E22B88EB085 /* WakaBoardApp_watchOS */,
 				976FA143998E699024D422C4 /* WakaBoardWidgets_iOS */,
 				E05A64AA00664384758940F9 /* WakaBoardWidgets_macOS */,
+				185B0C684F2713CABCB720AC /* WakaBoardWidgets_visionOS */,
+				2E9E2E7896898D8A608BFBED /* WakaBoardWidgets_watchOS */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		08EF6D558FA22B574C460BC2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5FB64D1B363B754E116E0424 /* Assets.xcassets in Resources */,
+				7D9A8E8CDF066D3F000FC634 /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6BE6A680AD722955A395650F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7F178668E48FBC49E154EB2A /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		6F6A72BD23F8DD0C86C95BE8 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F11AB39014907E3E611D128E /* Assets.xcassets in Resources */,
 				F469760707FE588488796BCD /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7B1056EB6F7467A014C14608 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DFD97C328B37C94D1C224D55 /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A507805FC58C98A5F8E08499 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D859255D57E499429600D819 /* Assets.xcassets in Resources */,
+				80A6AA09DD1BAC2425B06AB8 /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CCC97F921B720CF40C9A5EAB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				11CFF868ACE812B4AAAD5B01 /* Assets.xcassets in Resources */,
+				E7C42AE49EFB66B4A3B29342 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -539,6 +1146,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E7073B38F86C140227919BB8 /* Assets.xcassets in Resources */,
 				9A5571C7AB488C6212F5EAF4 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -563,6 +1171,86 @@
 
 /* Begin PBXShellScriptBuildPhase section */
 		07850A5BC97567B463FEFE07 /* Copy Swift Objective-C Interface Header */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(DERIVED_SOURCES_DIR)/$(SWIFT_OBJC_INTERFACE_HEADER_NAME)",
+			);
+			name = "Copy Swift Objective-C Interface Header";
+			outputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/include/$(PRODUCT_MODULE_NAME)/$(SWIFT_OBJC_INTERFACE_HEADER_NAME)",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "ditto \"${SCRIPT_INPUT_FILE_0}\" \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+		};
+		4957C14C18761FD40863D8E4 /* Copy Swift Objective-C Interface Header */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(DERIVED_SOURCES_DIR)/$(SWIFT_OBJC_INTERFACE_HEADER_NAME)",
+			);
+			name = "Copy Swift Objective-C Interface Header";
+			outputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/include/$(PRODUCT_MODULE_NAME)/$(SWIFT_OBJC_INTERFACE_HEADER_NAME)",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "ditto \"${SCRIPT_INPUT_FILE_0}\" \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+		};
+		5B757F66A631CEA30B8805B3 /* Copy Swift Objective-C Interface Header */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(DERIVED_SOURCES_DIR)/$(SWIFT_OBJC_INTERFACE_HEADER_NAME)",
+			);
+			name = "Copy Swift Objective-C Interface Header";
+			outputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/include/$(PRODUCT_MODULE_NAME)/$(SWIFT_OBJC_INTERFACE_HEADER_NAME)",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "ditto \"${SCRIPT_INPUT_FILE_0}\" \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+		};
+		805CB9662BDFF07A69BBE720 /* Copy Swift Objective-C Interface Header */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(DERIVED_SOURCES_DIR)/$(SWIFT_OBJC_INTERFACE_HEADER_NAME)",
+			);
+			name = "Copy Swift Objective-C Interface Header";
+			outputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/include/$(PRODUCT_MODULE_NAME)/$(SWIFT_OBJC_INTERFACE_HEADER_NAME)",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "ditto \"${SCRIPT_INPUT_FILE_0}\" \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+		};
+		991B906F0BBD5A94DF4B3116 /* Copy Swift Objective-C Interface Header */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(DERIVED_SOURCES_DIR)/$(SWIFT_OBJC_INTERFACE_HEADER_NAME)",
+			);
+			name = "Copy Swift Objective-C Interface Header";
+			outputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/include/$(PRODUCT_MODULE_NAME)/$(SWIFT_OBJC_INTERFACE_HEADER_NAME)",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "ditto \"${SCRIPT_INPUT_FILE_0}\" \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+		};
+		A062F4AC6B984E601991B06B /* Copy Swift Objective-C Interface Header */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -610,6 +1298,22 @@
 			shellPath = /bin/sh;
 			shellScript = "ditto \"${SCRIPT_INPUT_FILE_0}\" \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 		};
+		C5473653A937B91985E34A85 /* Copy Swift Objective-C Interface Header */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(DERIVED_SOURCES_DIR)/$(SWIFT_OBJC_INTERFACE_HEADER_NAME)",
+			);
+			name = "Copy Swift Objective-C Interface Header";
+			outputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/include/$(PRODUCT_MODULE_NAME)/$(SWIFT_OBJC_INTERFACE_HEADER_NAME)",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "ditto \"${SCRIPT_INPUT_FILE_0}\" \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+		};
 		FB29218DBFF09EB1F7BE3F68 /* Copy Swift Objective-C Interface Header */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -636,10 +1340,49 @@
 				D35E74AE004659FDC483A05C /* Analytics.swift in Sources */,
 				3CF6A8F4CB9BDDCA4E79C3A4 /* CacheRepository.swift in Sources */,
 				BAFB96BCCF3D341E946B1ACE /* Environment.swift in Sources */,
+				94CA374709AA13A0DF2FB4DD /* FileTypeBreakdown.swift in Sources */,
 				8E66A7757982EBDE2D8B04F6 /* Models.swift in Sources */,
 				5044FA76EDCE6ACF98A0A081 /* Networking.swift in Sources */,
 				7B2CD226FF543719307486E5 /* RateLimiting.swift in Sources */,
 				448959570B74DACAF666E0CC /* Security.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		13202D9A5AF5A785129F1715 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4845E17F6207A69601450F4B /* WakaAccessibility.swift in Sources */,
+				8166050010088CDD22DA2818 /* WakaBreakdownSheet.swift in Sources */,
+				8FA893D0095FE6BB0F09DA21 /* WakaCharts.swift in Sources */,
+				D09862DB9AABDC61B69E38D9 /* WakaComponents.swift in Sources */,
+				EFAA0282EF276E85E55CCF05 /* WakaDesign.swift in Sources */,
+				07F171C4E5C7BBD3E984759D /* WakaScreens.swift in Sources */,
+				30E87780D5969C34A656CBEE /* WakaShell.swift in Sources */,
+				0962CE3616AA7C3D9E9984BD /* WakaUIModel.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		36497B4BE28A286109952746 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				434CF572AA924A2E89A4F7B8 /* WakaAccessibility.swift in Sources */,
+				323FCB75514DC66B0D22FC04 /* WakaBreakdownSheet.swift in Sources */,
+				5A76954013D3FC599C8799ED /* WakaCharts.swift in Sources */,
+				D915BFDF52382EC904F34150 /* WakaComponents.swift in Sources */,
+				3C37B9D01A951AEFCFD5E762 /* WakaDesign.swift in Sources */,
+				9793C2F190E3CEAC1DEC0183 /* WakaScreens.swift in Sources */,
+				CF28A199BAF4403868339830 /* WakaShell.swift in Sources */,
+				A504DBF39480E2B75DCB998D /* WakaUIModel.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		41314D66BDA858BD9C7B96C4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				56378AF2031E66BC37A91080 /* WakaBoardApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -655,8 +1398,37 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4D7B552FCD6848F35C0CE0DE /* WakaUI.swift in Sources */,
+				66B3111736092697C61D7D5C /* WakaAccessibility.swift in Sources */,
+				0249C9FB6D4DE517745B3235 /* WakaBreakdownSheet.swift in Sources */,
+				5D0FFB448DA712297501A83B /* WakaCharts.swift in Sources */,
+				5926DE4F8C3600340AA44A5F /* WakaComponents.swift in Sources */,
+				E1679AEFB72D70A3D9D2AF27 /* WakaDesign.swift in Sources */,
+				3E0000A5B7CEAED041DA10F2 /* WakaScreens.swift in Sources */,
+				67CB302066B010AD513A1053 /* WakaShell.swift in Sources */,
 				B6A6E7858CF16A1945099E0D /* WakaUIModel.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		68F9851A129BA41D68DE8E4C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				99F0051ABD0412D5D8C4AB77 /* WakaBoardApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6B3234B4FB7FAA4AA41FD795 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4C2C28A4F601577D6EC9E42C /* WakaAccessibility.swift in Sources */,
+				FD7CF1B7D546F7C19D626AD4 /* WakaBreakdownSheet.swift in Sources */,
+				B546C6484D2260FAC0EEC99E /* WakaCharts.swift in Sources */,
+				475484AD1D25ACAA680999F4 /* WakaComponents.swift in Sources */,
+				825175E8C27F1F004FC062FD /* WakaDesign.swift in Sources */,
+				A4CFB617B8817C812020DFEA /* WakaScreens.swift in Sources */,
+				D294F3C8EBBD5BA4FE230EFE /* WakaShell.swift in Sources */,
+				7504667B7AEED29574A46399 /* WakaUIModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -667,10 +1439,19 @@
 				472F06AF15C7EF9FC964F0E8 /* Analytics.swift in Sources */,
 				AAAA4C4FBEEDA1F53AEF50E1 /* CacheRepository.swift in Sources */,
 				CC9F4324185B91B4676C435D /* Environment.swift in Sources */,
+				251014E5C9818816EAABCACD /* FileTypeBreakdown.swift in Sources */,
 				808F09347995A1B548239C4E /* Models.swift in Sources */,
 				84C7A3C8180A46EC27ADE782 /* Networking.swift in Sources */,
 				2398045028703FC52780A79B /* RateLimiting.swift in Sources */,
 				927956A18389CD0E29F1CAC8 /* Security.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		748E4759BF5E7706A9D265F1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				55C95C8405303B3D5925EA55 /* WakaBoardApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -679,6 +1460,36 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF8361E03B4E6D5CD007C676 /* WakaBoardApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8FB2E37B7F5F0FF5ACD824CB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9E4728C67C22A91DB5F7C05E /* Analytics.swift in Sources */,
+				4808DDAD0E457EA131C6F8A9 /* CacheRepository.swift in Sources */,
+				512088A3097BF4B44E2BB376 /* Environment.swift in Sources */,
+				52A92A06E95E4278BD521297 /* FileTypeBreakdown.swift in Sources */,
+				89C0792CC244472E072176C5 /* Models.swift in Sources */,
+				22E8DDF8BB020756BE8B2A8D /* Networking.swift in Sources */,
+				104330F0E794A3345C430FB7 /* RateLimiting.swift in Sources */,
+				6C0D5F4F472AC1011B60F058 /* Security.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		97635C834CAADFD4930401CC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				829E9D0DB92099C27A95C30F /* Analytics.swift in Sources */,
+				DCED17ED0184417AF52CEB51 /* CacheRepository.swift in Sources */,
+				8963A044D1AF13F47A5013B0 /* Environment.swift in Sources */,
+				3590886C1363CED3B8CB08FC /* FileTypeBreakdown.swift in Sources */,
+				7D65F245286884CE5ADAD062 /* Models.swift in Sources */,
+				4C082866AC6B542FFD59BBC8 /* Networking.swift in Sources */,
+				54030528E0222BA65D54C9DF /* RateLimiting.swift in Sources */,
+				4CE646AAD3ADB53C049FEF18 /* Security.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -694,8 +1505,45 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2FBA2870D50EF69EE9E8581E /* WakaUI.swift in Sources */,
+				1E075F8AF6B1562C08E228CC /* WakaAccessibility.swift in Sources */,
+				8CF4344D9D6C8F3743A79ABC /* WakaBreakdownSheet.swift in Sources */,
+				F64ACC99D718C2225EAB5D26 /* WakaCharts.swift in Sources */,
+				8B359AC6E31749EBD06FED8D /* WakaComponents.swift in Sources */,
+				D491DAEC2B942FBA9E74DA66 /* WakaDesign.swift in Sources */,
+				F66E1E824A2F46554218DEE6 /* WakaScreens.swift in Sources */,
+				81B050A9E5BB007F11647E27 /* WakaShell.swift in Sources */,
 				CE9A1F1074E289366A9A17D8 /* WakaUIModel.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D13C20139E5FA0676940CF93 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A954A99BDA19DFF135252E32 /* WakaBoardWidgets.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D20A800016FB8C49D2C0E0A5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				16C37073EA4F1FFE373CA2A3 /* WakaBoardWidgets.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DFE1019BF9902A3819F0C384 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				024591308AF394DB6DFC6711 /* Analytics.swift in Sources */,
+				79A8DD43047178624C355604 /* CacheRepository.swift in Sources */,
+				0F09A35949609C3AD8BCEAFB /* Environment.swift in Sources */,
+				A958E7472030F19003573ED0 /* FileTypeBreakdown.swift in Sources */,
+				326A471060429CBD024639EE /* Models.swift in Sources */,
+				74DE2FD4621A19A3F49A6FB8 /* Networking.swift in Sources */,
+				AA15979EEF55F1F84FB249BD /* RateLimiting.swift in Sources */,
+				FA35F24C33C81EDADA7152D9 /* Security.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -720,6 +1568,36 @@
 			target = BCDCBFB7068636F13D426909 /* WakaUI_macOS */;
 			targetProxy = 937677B924D11AAE872110A0 /* PBXContainerItemProxy */;
 		};
+		1DA6B073B250DBE9EE63E9A7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B993F152B35C4B326E0D4DDE /* WakaCore_watchOS */;
+			targetProxy = 268ACA00C3409E35F17A5FAC /* PBXContainerItemProxy */;
+		};
+		1FBE99E167BCC0BFBC309EDE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2E9E2E7896898D8A608BFBED /* WakaBoardWidgets_watchOS */;
+			targetProxy = 6B6A2793BA032805235D8586 /* PBXContainerItemProxy */;
+		};
+		20025ECB3B53760B6C3C7C33 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BDF020C637323C216982D5FD /* WakaUI_watchOS */;
+			targetProxy = 6677907F2322F28F3C7DD10B /* PBXContainerItemProxy */;
+		};
+		21C96EDCFD5397E7D889A4A2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C310C721CA70D20E0A8D90A2 /* WakaCore_visionOS */;
+			targetProxy = A079A26177D8B5F9337DEC31 /* PBXContainerItemProxy */;
+		};
+		257C44C5E27AFEB29BA16A9F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BDF020C637323C216982D5FD /* WakaUI_watchOS */;
+			targetProxy = B102158E635BBB4C4A410433 /* PBXContainerItemProxy */;
+		};
+		2D0A6256CD49ADE936FC2E7F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C310C721CA70D20E0A8D90A2 /* WakaCore_visionOS */;
+			targetProxy = 417D475E68354A6B930B44EA /* PBXContainerItemProxy */;
+		};
 		32FB90FA12AC9978C5EAA79A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = A63A4EAEC6C3B1C899151957 /* WakaCore_macOS */;
@@ -730,15 +1608,40 @@
 			target = 976FA143998E699024D422C4 /* WakaBoardWidgets_iOS */;
 			targetProxy = AE9E7A4D3D03A32F6DB3BD7D /* PBXContainerItemProxy */;
 		};
+		34E7C668442B7AE8CF803FF8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B993F152B35C4B326E0D4DDE /* WakaCore_watchOS */;
+			targetProxy = D38675E4019FF81558A78C6C /* PBXContainerItemProxy */;
+		};
 		35C49B57698C16311E6A4FE2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = A7DB0D2F8620DC3757034F7F /* WakaCore_iOS */;
 			targetProxy = 30DA2AF51347D8296A75277C /* PBXContainerItemProxy */;
 		};
+		366CF6130AFDD693A723416D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 018A3A6CD002CB54682B6157 /* WakaUI_visionOS */;
+			targetProxy = FA52951B9599783C74EB4492 /* PBXContainerItemProxy */;
+		};
+		4AFB505D6525E37E96396D1B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 00D22BE51F3C5668D94BD9D5 /* WakaCore_tvOS */;
+			targetProxy = 73766332E315FECBEE57992E /* PBXContainerItemProxy */;
+		};
 		64B16CA8F8A739EE6ADD8FC7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = A63A4EAEC6C3B1C899151957 /* WakaCore_macOS */;
 			targetProxy = A1A01526FC8771341ACD827D /* PBXContainerItemProxy */;
+		};
+		7175FA97CCE43DDDEAE71312 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B993F152B35C4B326E0D4DDE /* WakaCore_watchOS */;
+			targetProxy = 6FA194F1CD7EE27211C7AF45 /* PBXContainerItemProxy */;
+		};
+		736BBDFD44C7521F3833699C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 00D22BE51F3C5668D94BD9D5 /* WakaCore_tvOS */;
+			targetProxy = A8C5ED23723CEEFB0FE1D75F /* PBXContainerItemProxy */;
 		};
 		75203123E4040F0EEB461604 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -750,6 +1653,21 @@
 			target = BCDCBFB7068636F13D426909 /* WakaUI_macOS */;
 			targetProxy = 93F53A578D71B35557E3993D /* PBXContainerItemProxy */;
 		};
+		9D3D5DEDE85A7508A45711A4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C310C721CA70D20E0A8D90A2 /* WakaCore_visionOS */;
+			targetProxy = 98955FA1F354D63B5BEDDDED /* PBXContainerItemProxy */;
+		};
+		ADBE21B40E3050345AE3E776 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 08FA18328F7DB64AAC7DC6A3 /* WakaUI_tvOS */;
+			targetProxy = 0CE78EA19F013C7CBBA1D7A6 /* PBXContainerItemProxy */;
+		};
+		B7C55AF3D5C8D223CC162778 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 018A3A6CD002CB54682B6157 /* WakaUI_visionOS */;
+			targetProxy = B82008206321558BE6861514 /* PBXContainerItemProxy */;
+		};
 		D0F9AFF4D1FCC31795975F38 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = A63A4EAEC6C3B1C899151957 /* WakaCore_macOS */;
@@ -759,6 +1677,11 @@
 			isa = PBXTargetDependency;
 			target = AE60B38D976C61637CB85752 /* WakaUI_iOS */;
 			targetProxy = 5CE81003867DAF4E6F233663 /* PBXContainerItemProxy */;
+		};
+		E2E63CC5B1E10FCA219AA3A9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 185B0C684F2713CABCB720AC /* WakaBoardWidgets_visionOS */;
+			targetProxy = B3370D4D8DF5A19FD06A2705 /* PBXContainerItemProxy */;
 		};
 		E70CB9F11666AF6B0FB48189 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -773,6 +1696,50 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		001450DBC471F1E30CE7C06A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Config/WakaBoardWidgets.entitlements;
+				INFOPLIST_FILE = "Config/WakaBoardWidgets-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "WakaBoard Widgets";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.wakaboard.app.visionos.widgets;
+				SDKROOT = xros;
+				TARGETED_DEVICE_FAMILY = 7;
+			};
+			name = Debug;
+		};
+		0E1111DDB1A4FF99D586272B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_ENTITLEMENTS = Config/WakaBoard.entitlements;
+				INFOPLIST_FILE = "Config/WakaBoard-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = WakaBoard;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.wakaboard.app.tvos;
+				PRODUCT_NAME = WakaBoard;
+				SDKROOT = appletvos;
+				TARGETED_DEVICE_FAMILY = 3;
+			};
+			name = Release;
+		};
 		1AC6A25DFB4311CA1E79FE75 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -802,7 +1769,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.wakaboard.ui;
+				PRODUCT_BUNDLE_IDENTIFIER = org.wakaboard.ui.iOS;
 				PRODUCT_MODULE_NAME = WakaUI;
 				PRODUCT_NAME = WakaUI;
 				SDKROOT = iphoneos;
@@ -811,6 +1778,88 @@
 			};
 			name = Debug;
 		};
+		21DF8BF974247D56D1A292B3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.wakaboard.ui.tvOS;
+				PRODUCT_MODULE_NAME = WakaUI;
+				PRODUCT_NAME = WakaUI;
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 3;
+			};
+			name = Release;
+		};
+		247C84FDE8E249FA82F79421 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_BUNDLE_IDENTIFIER = org.wakaboard.ui.watchOS;
+				PRODUCT_MODULE_NAME = WakaUI;
+				PRODUCT_NAME = WakaUI;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+			};
+			name = Debug;
+		};
+		30F088BA50BB38FA71BF2CAE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Config/WakaBoard.entitlements;
+				INFOPLIST_FILE = "Config/WakaBoard-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = WakaBoard;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.wakaboard.app.visionos;
+				PRODUCT_NAME = WakaBoard;
+				SDKROOT = xros;
+				TARGETED_DEVICE_FAMILY = 7;
+			};
+			name = Release;
+		};
+		3284CBF7166109E031CA8BA7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.wakaboard.core.tvOS;
+				PRODUCT_MODULE_NAME = WakaCore;
+				PRODUCT_NAME = WakaCore;
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 3;
+			};
+			name = Debug;
+		};
+		376A5E231F9E88DC2356C2F7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.wakaboard.core.visionOS;
+				PRODUCT_MODULE_NAME = WakaCore;
+				PRODUCT_NAME = WakaCore;
+				SDKROOT = xros;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 7;
+			};
+			name = Release;
+		};
 		455C846CD7C1B37C0BF0EA69 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -818,7 +1867,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.wakaboard.core;
+				PRODUCT_BUNDLE_IDENTIFIER = org.wakaboard.core.iOS;
 				PRODUCT_MODULE_NAME = WakaCore;
 				PRODUCT_NAME = WakaCore;
 				SDKROOT = iphoneos;
@@ -826,6 +1875,44 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
+		};
+		4DA4EC2EBA677C69709E0473 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.wakaboard.core.visionOS;
+				PRODUCT_MODULE_NAME = WakaCore;
+				PRODUCT_NAME = WakaCore;
+				SDKROOT = xros;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 7;
+			};
+			name = Debug;
+		};
+		511D46FC0F844982E6C18249 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Config/WakaBoardWidgets.entitlements;
+				INFOPLIST_FILE = "Config/WakaBoardWidgets-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "WakaBoard Widgets";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.wakaboard.app.watchos.widgets;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+			};
+			name = Release;
 		};
 		57E68CC0BC62656E27202C6E /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -890,6 +1977,9 @@
 				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_TREAT_WARNINGS_AS_ERRORS = YES;
 				SWIFT_VERSION = 6.0;
+				TVOS_DEPLOYMENT_TARGET = 18.0;
+				WATCHOS_DEPLOYMENT_TARGET = 11.0;
+				XROS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Debug;
 		};
@@ -922,13 +2012,68 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.wakaboard.ui.macos;
+				PRODUCT_BUNDLE_IDENTIFIER = org.wakaboard.ui.macOS;
 				PRODUCT_MODULE_NAME = WakaUI;
 				PRODUCT_NAME = WakaUI;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 			};
 			name = Release;
+		};
+		696D7D4F12183FF6B7863C50 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Config/WakaBoard.entitlements;
+				INFOPLIST_FILE = "Config/WakaBoard-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = WakaBoard;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.wakaboard.app.visionos;
+				PRODUCT_NAME = WakaBoard;
+				SDKROOT = xros;
+				TARGETED_DEVICE_FAMILY = 7;
+			};
+			name = Debug;
+		};
+		6F90ED2E1727DB66FD3E1FC8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Config/WakaBoardWidgets.entitlements;
+				INFOPLIST_FILE = "Config/WakaBoardWidgets-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "WakaBoard Widgets";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.wakaboard.app.visionos.widgets;
+				SDKROOT = xros;
+				TARGETED_DEVICE_FAMILY = 7;
+			};
+			name = Release;
+		};
+		728D68971E159826F6AD32A0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_BUNDLE_IDENTIFIER = org.wakaboard.core.watchOS;
+				PRODUCT_MODULE_NAME = WakaCore;
+				PRODUCT_NAME = WakaCore;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+			};
+			name = Debug;
 		};
 		734D211971AC9114CEA7F8DA /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -959,7 +2104,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.wakaboard.core;
+				PRODUCT_BUNDLE_IDENTIFIER = org.wakaboard.core.iOS;
 				PRODUCT_MODULE_NAME = WakaCore;
 				PRODUCT_NAME = WakaCore;
 				SDKROOT = iphoneos;
@@ -989,6 +2134,28 @@
 			};
 			name = Debug;
 		};
+		8691965CCE6A15F1FB74318A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Config/WakaBoardWidgets.entitlements;
+				INFOPLIST_FILE = "Config/WakaBoardWidgets-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "WakaBoard Widgets";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.wakaboard.app.watchos.widgets;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+			};
+			name = Debug;
+		};
 		8D49597ACAD73E0B596FC8EA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -997,7 +2164,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.wakaboard.ui.macos;
+				PRODUCT_BUNDLE_IDENTIFIER = org.wakaboard.ui.macOS;
 				PRODUCT_MODULE_NAME = WakaUI;
 				PRODUCT_NAME = WakaUI;
 				SDKROOT = macosx;
@@ -1026,6 +2193,69 @@
 			};
 			name = Release;
 		};
+		9F980D8FDA8881C37A4AF76E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.wakaboard.ui.tvOS;
+				PRODUCT_MODULE_NAME = WakaUI;
+				PRODUCT_NAME = WakaUI;
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 3;
+			};
+			name = Debug;
+		};
+		A24243D9A321D22B6F47423D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Config/WakaBoard.entitlements;
+				INFOPLIST_FILE = "Config/WakaBoard-Watch-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = WakaBoard;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.wakaboard.app.watchos;
+				PRODUCT_NAME = WakaBoard;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+			};
+			name = Release;
+		};
+		ADA4F8CC46022362F97AA80E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_BUNDLE_IDENTIFIER = org.wakaboard.ui.watchOS;
+				PRODUCT_MODULE_NAME = WakaUI;
+				PRODUCT_NAME = WakaUI;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+			};
+			name = Release;
+		};
+		ADF2AF60F114C3D09A7DEEE7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.wakaboard.core.tvOS;
+				PRODUCT_MODULE_NAME = WakaCore;
+				PRODUCT_NAME = WakaCore;
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 3;
+			};
+			name = Release;
+		};
 		B308AF3D9DA11C6DEB54E316 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1034,7 +2264,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.wakaboard.core.macos;
+				PRODUCT_BUNDLE_IDENTIFIER = org.wakaboard.core.macOS;
 				PRODUCT_MODULE_NAME = WakaCore;
 				PRODUCT_NAME = WakaCore;
 				SDKROOT = macosx;
@@ -1064,6 +2294,61 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
+		};
+		BB9955627D9A2CEF1BBDF157 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.wakaboard.ui.visionOS;
+				PRODUCT_MODULE_NAME = WakaUI;
+				PRODUCT_NAME = WakaUI;
+				SDKROOT = xros;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 7;
+			};
+			name = Debug;
+		};
+		C00B7D3B2A87C825E449984E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_ENTITLEMENTS = Config/WakaBoard.entitlements;
+				INFOPLIST_FILE = "Config/WakaBoard-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = WakaBoard;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.wakaboard.app.tvos;
+				PRODUCT_NAME = WakaBoard;
+				SDKROOT = appletvos;
+				TARGETED_DEVICE_FAMILY = 3;
+			};
+			name = Debug;
+		};
+		C453E35594C32C7E7230F235 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.wakaboard.ui.visionOS;
+				PRODUCT_MODULE_NAME = WakaUI;
+				PRODUCT_NAME = WakaUI;
+				SDKROOT = xros;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 7;
+			};
+			name = Release;
 		};
 		C8EFD72BAC2C3C3604E2C591 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -1108,6 +2393,25 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
+		};
+		D770D9115051794CFD088BA9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Config/WakaBoard.entitlements;
+				INFOPLIST_FILE = "Config/WakaBoard-Watch-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = WakaBoard;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.wakaboard.app.watchos;
+				PRODUCT_NAME = WakaBoard;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+			};
+			name = Debug;
 		};
 		E214D833A3539500A9257B0A /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -1165,6 +2469,9 @@
 				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_TREAT_WARNINGS_AS_ERRORS = YES;
 				SWIFT_VERSION = 6.0;
+				TVOS_DEPLOYMENT_TARGET = 18.0;
+				WATCHOS_DEPLOYMENT_TARGET = 11.0;
+				XROS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Release;
 		};
@@ -1176,7 +2483,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.wakaboard.core.macos;
+				PRODUCT_BUNDLE_IDENTIFIER = org.wakaboard.core.macOS;
 				PRODUCT_MODULE_NAME = WakaCore;
 				PRODUCT_NAME = WakaCore;
 				SDKROOT = macosx;
@@ -1191,12 +2498,24 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.wakaboard.ui;
+				PRODUCT_BUNDLE_IDENTIFIER = org.wakaboard.ui.iOS;
 				PRODUCT_MODULE_NAME = WakaUI;
 				PRODUCT_NAME = WakaUI;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		FC44182E8035B4A840A36D45 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_BUNDLE_IDENTIFIER = org.wakaboard.core.watchOS;
+				PRODUCT_MODULE_NAME = WakaCore;
+				PRODUCT_NAME = WakaCore;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 4;
 			};
 			name = Release;
 		};
@@ -1208,6 +2527,15 @@
 			buildConfigurations = (
 				8D49597ACAD73E0B596FC8EA /* Debug */,
 				5EE27566386DE937FBAC8C19 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		0F75AC219A33757A9A3329FB /* Build configuration list for PBXNativeTarget "WakaUI_tvOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9F980D8FDA8881C37A4AF76E /* Debug */,
+				21DF8BF974247D56D1A292B3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
@@ -1226,6 +2554,24 @@
 			buildConfigurations = (
 				1CE3741A8FBB4143A976B930 /* Debug */,
 				F945938CA84D2E7232F9CE02 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		233E9CDA816B1C82575FF78E /* Build configuration list for PBXNativeTarget "WakaCore_tvOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3284CBF7166109E031CA8BA7 /* Debug */,
+				ADF2AF60F114C3D09A7DEEE7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		47122F30846F9AA7E25AF8B5 /* Build configuration list for PBXNativeTarget "WakaBoardWidgets_watchOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8691965CCE6A15F1FB74318A /* Debug */,
+				511D46FC0F844982E6C18249 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
@@ -1275,11 +2621,83 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
+		78607BA101BA8B7501AD31FE /* Build configuration list for PBXNativeTarget "WakaUI_watchOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				247C84FDE8E249FA82F79421 /* Debug */,
+				ADA4F8CC46022362F97AA80E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		78B91D58594D5957298B34CE /* Build configuration list for PBXNativeTarget "WakaCore_visionOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4DA4EC2EBA677C69709E0473 /* Debug */,
+				376A5E231F9E88DC2356C2F7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		7CAB35C8BF4BAEF1E19AC0CE /* Build configuration list for PBXNativeTarget "WakaCore_watchOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				728D68971E159826F6AD32A0 /* Debug */,
+				FC44182E8035B4A840A36D45 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		890AB0122AED2CD523679A03 /* Build configuration list for PBXProject "WakaBoard" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				57E68CC0BC62656E27202C6E /* Debug */,
 				E214D833A3539500A9257B0A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		AB663B3E3EA164DF37360B80 /* Build configuration list for PBXNativeTarget "WakaBoardApp_visionOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				696D7D4F12183FF6B7863C50 /* Debug */,
+				30F088BA50BB38FA71BF2CAE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		B13D218984BAFD2CC97536C9 /* Build configuration list for PBXNativeTarget "WakaBoardApp_watchOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D770D9115051794CFD088BA9 /* Debug */,
+				A24243D9A321D22B6F47423D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		BD788E51CA3BB2494336F988 /* Build configuration list for PBXNativeTarget "WakaBoardApp_tvOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C00B7D3B2A87C825E449984E /* Debug */,
+				0E1111DDB1A4FF99D586272B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		C311DB478F9C30CF9FC0679C /* Build configuration list for PBXNativeTarget "WakaUI_visionOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BB9955627D9A2CEF1BBDF157 /* Debug */,
+				C453E35594C32C7E7230F235 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		FCFF18587ADC48AD44EBA394 /* Build configuration list for PBXNativeTarget "WakaBoardWidgets_visionOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				001450DBC471F1E30CE7C06A /* Debug */,
+				6F90ED2E1727DB66FD3E1FC8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

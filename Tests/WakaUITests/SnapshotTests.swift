@@ -69,7 +69,7 @@ struct SnapshotTests {
                 "range": ["date": formatter.string(from: date)],
                 "grand_total": ["total_seconds": seconds],
                 "projects": [
-                    ["name": "WakaBoard", "total_seconds": seconds * 2 / 3],
+                    ["name": "A Very Long Project Name", "total_seconds": seconds * 2 / 3],
                     ["name": "dotfiles", "total_seconds": seconds / 3]
                 ],
                 "languages": [
@@ -109,14 +109,9 @@ struct SnapshotTests {
         return model
     }
 
-    /// The screens this check can rasterize.
-    ///
-    /// Settings is a platform `Form`, which `ImageRenderer` returns `nil` for — it is
-    /// backed by AppKit rather than by SwiftUI primitives, and no amount of framing
-    /// changes that. It is not unverified: `scripts/ax-audit.swift` walks the real
-    /// Settings screen in the running app and audits its live accessibility tree,
-    /// which is a stronger check than a picture of it. Every other screen renders here.
-    static var renderableRoutes: [WakaRoute] { WakaRoute.allCases.filter { $0 != .settings } }
+    /// Every route must use renderable SwiftUI layout primitives so visual regressions
+    /// cannot hide behind a platform-backed control that `ImageRenderer` skips.
+    static var renderableRoutes: [WakaRoute] { WakaRoute.allCases }
 
     @Test("every screen renders at every width, type size, and appearance without overflowing")
     func rendersEveryScreen() async throws {

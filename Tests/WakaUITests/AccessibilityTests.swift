@@ -86,18 +86,30 @@ struct AccessibilityTests {
         #expect(WakaAccessibility.trendSummary(title: "Projects Trend", points: []).contains("nothing recorded"))
     }
 
-    @Test("data rows are spoken as sentences with units, not bare numbers")
+    @Test("data rows use compact percentages with units")
     func rowsAreSpoken() {
         let usage = WakaAccessibility.usageLabel(name: "Orbit Compiler", duration: 5_400, percentage: 42)
-        #expect(usage == "Orbit Compiler, 1h 30m, 42 percent of the selected period")
-        // "42%" would be read as "42" by some voices; the word is spelled out.
-        #expect(!usage.contains("%"))
+        #expect(usage == "Orbit Compiler, 1h 30m, 42% of the selected period")
+        #expect(!usage.contains(" percent"))
+
+        let share = WakaAccessibility.shareSummary(
+            title: "Projects",
+            usage: [Usage(name: "Orbit Compiler", duration: 5_400), Usage(name: "Other", duration: 3_600)]
+        )
+        #expect(share.contains("60%"))
+        #expect(!share.contains(" percent"))
 
         let today = WakaAccessibility.todayLabel(duration: 3_660)
         #expect(today == "Today, 1h 1m of coding time")
 
         let metric = WakaAccessibility.metricLabel(title: "Streak", value: "4", detail: "Days over 15 minutes")
         #expect(metric == "Streak: 4. Days over 15 minutes.")
+    }
+
+    @Test("small genuine shares never read as zero")
+    func smallSharesRemainVisible() {
+        #expect(WakaAccessibility.sharePercentage(duration: 1, total: 1_000) == "<1%")
+        #expect(WakaAccessibility.sharePercentage(duration: 0, total: 1_000) == "0%")
     }
 
     @Test("the range picker is spoken in words rather than as an abbreviation")

@@ -37,10 +37,15 @@ WakaBoard is an independent client that uses the WakaTime public API. WakaBoard
 is not affiliated with, endorsed by, sponsored by, or otherwise associated with
 WakaTime. "WakaTime" is a trademark of its respective owner and is used here
 only nominatively, to identify the third-party service this client connects to.
+No WakaTime logo, wordmark image, or other WakaTime artwork appears in this
+project. The full attribution — the endpoints WakaBoard reads, how WakaTime's
+published rate limit is respected, and WakaBoard's position under WakaTime's
+trademark policy — is in ATTRIBUTION.md.
 
-"Apple", "macOS", "iOS", "iPadOS", "Xcode", "Swift", "App Store", "TestFlight",
-and "VoiceOver" are trademarks of Apple Inc., used nominatively to describe
-platform compatibility. WakaBoard is not affiliated with or endorsed by
+"Apple", "macOS", "iOS", "iPadOS", "watchOS", "tvOS", "visionOS", "Apple Watch",
+"Apple TV", "Apple Vision Pro", "Xcode", "Swift", "App Store", "TestFlight", and
+"VoiceOver" are trademarks of Apple Inc., used nominatively to describe platform
+compatibility. WakaBoard is not affiliated with or endorsed by
 Apple Inc.
 
 The Apache Software Foundation name and the Apache License are used solely to

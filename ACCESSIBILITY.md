@@ -41,7 +41,7 @@ the code that produces what assistive technology actually reads:
 | Every chart carries a text alternative containing its real content — the daily chart's totals and busiest day, active-day balance and peak/median figures, each share chart's leaders and percentages, the weekday and calendar-week values, the cumulative endpoint, the ribbon's active-day count, and the leaders in each trend — never a description of the picture | **1.1.1 Non-text Content** |
 | Chart identity is never carried by colour alone. Three of the eight categorical hues fall below 3:1 against a light background, which the palette method permits only with relief, so every chart also prints its figures and is repeated as a ranked list | **1.4.1 Use of Colour**, **1.4.11 Non-text Contrast** |
 | Every load state (signed out, loading, loaded, empty, stale, rate limited, expired, failed) produces a complete spoken sentence, never a leaked enum name | **1.3.1 Info and Relationships**, **4.1.2 Name, Role, Value** |
-| Every data row is spoken with its name, duration, and share, with "percent" spelled out rather than `%` | **1.3.1**, **4.1.2** |
+| Every data row is spoken with its name, duration, and compact `%` share | **1.3.1**, **4.1.2** |
 | The period picker is spoken as "Last 7 days", not "7D" | **2.4.6 Headings and Labels** |
 | The declared minimum hit-target constant is ≥ 44 pt, exceeding the 24×24 requirement | **2.5.8 Target Size (Minimum)** |
 | Error messages are complete sentences that never leak status codes, hosts, or header names | **3.3.1 Error Identification** |

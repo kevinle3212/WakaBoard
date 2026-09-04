@@ -1,0 +1,7 @@
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Synthetic API-key literal used by the secret-detector negative control"
+regexTarget = "secret"
+regexes = ['''abcdef0123456789xyz''']

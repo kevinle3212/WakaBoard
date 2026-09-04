@@ -163,6 +163,9 @@ so a detector that can never fail is caught at authoring time.
   script's filter matched no tests yet went green on files left by a previous run. Both
   now fail loudly. Settings is excluded and says why — it is a platform `Form`, which
   `ImageRenderer` cannot rasterize; the live accessibility audit covers it instead.
+  SUPERSEDED — 2026-09-04: H31 replaced that `Form` after its detached-column layout
+  failed manual review. Settings now joins the render matrix; the latest run produced
+  74 images and five contact sheets.
 
 - [x] H12: The unmerged responsive-layout fixes sitting in the
       `.claude/worktrees/wakaboard-responsive` worktree are folded into the main
@@ -398,3 +401,82 @@ so a detector that can never fail is caught at authoring time.
   nodes and 26 interactive elements were audited, and the iOS Simulator build
   installed and remained running; `DEVICE_CHECK_OK` — 2026-09-04. The driver retains
   the new exit-4 `AX_TREE_UNAVAILABLE` diagnosis for genuinely unavailable sessions.
+
+## 2026-09-04 Manual Layout Regressions
+
+- [x] H31: Share-ring totals are centered on the donut plot rather than on the wider
+      plot-plus-legend frame, and the value and caption remain a distinct centered
+      stack. Settings presents each heading, controls, and supporting copy as one
+      coherent vertical group at the tested macOS window size instead of allowing
+      platform `Form` columns to detach them. Settings joins the automated snapshot
+      matrix so this exact surface is no longer excluded from visual regression output.
+  CHECK: sh scripts/snapshot-check.sh && node scripts/audit-checks.mjs charts && node scripts/audit-checks.mjs design
+  EXPECT: DESIGN_OK
+  EVIDENCE: exits 0 — 2026-09-04. The requirement-first chart and Settings detectors
+  each failed twice against the reported implementation, then passed after the fix;
+  their planted positive and negative controls printed `SELF_TEST_OK`. The full suite
+  passed 137 tests in 27 suites. The snapshot runner rendered all five screens as 74
+  images and five contact sheets and printed `SNAPSHOTS_OK`; manual inspection of the
+  Settings and Breakdown sheets confirmed grouped Settings cards and donut-centered
+  totals in compact, regular, and wide layouts. The final live audit visited all five
+  destinations, inspected 1,242 nodes and 26 interactive elements, and the iOS
+  Simulator build installed and remained running; `DEVICE_CHECK_OK`.
+
+## 2026-09-04 Public GitHub Repository and Owner Credit
+
+- [x] H32: Every first-party repository link names `kevinle3212/WakaBoard`, while
+      Kevin Le is credited with distinct GitHub `kevinle3212` and LinkedIn `lekevin1`
+      profile links in the README and the app's About section. No first-party GitHub
+      URL incorrectly treats the LinkedIn handle as a GitHub owner.
+  CHECK: node scripts/audit-checks.mjs attribution
+  EXPECT: ATTRIBUTION_OK
+  EVIDENCE: exit 0 — 2026-09-04. `ATTRIBUTION_OK`; the detector's positive and
+  negative ownership controls passed, and the README plus in-app About surface
+  distinct canonical GitHub and LinkedIn profile links.
+
+- [x] H33: The complete project is safe for public release: credentials, signing
+      material, machine-local agent state, build output, and private analytics are
+      excluded; checked-in documentation and generated review artifacts contain no
+      secret; tests, audits, snapshots, and builds pass on the exact tree published.
+  CHECK: swift test && node scripts/audit-checks.mjs --self-test && node scripts/audit-checks.mjs audit && sh scripts/snapshot-check.sh && sh scripts/build-all.sh
+  EXPECT: BUILD_ALL_OK
+  EVIDENCE: exits 0 — 2026-09-04. 139 tests in 27 suites passed; all 17 direct
+  audit gates and every planted control passed; 74 renders and five contact sheets
+  printed `SNAPSHOTS_OK`; every shipping platform printed `BUILD_ALL_OK`; `gitleaks`
+  found no secret in eight commits or the 554 MB working tree. Local agent state,
+  build output, and render intermediates are ignored.
+
+- [ ] H34: `https://github.com/kevinle3212/WakaBoard` exists under the authenticated
+      `kevinle3212` account, is public, uses `main` as its default branch, and its
+      remote default-branch commit contains the complete verified local project.
+      Local `origin` points to that repository and the working branch is synchronized
+      after any required pull-request merge.
+  CHECK: External GitHub metadata, remote refs, pull-request checks, and local/remote commit identity must all be inspected after publication.
+  EXPECT: Repository visibility `public`; default branch `main`; local and remote commit identifiers match.
+
+## 2026-09-04 Resizable Comparison Charts and Compact Percentages
+
+- [x] H35: Horizontal comparison charts keep every category label outside its bar
+      and readable at compact, regular, wide, and accessibility-size layouts, including
+      long names. Every user-visible share uses `%` rather than spelling out “percent,”
+      including textual and accessibility chart alternatives.
+  CHECK: sh scripts/snapshot-check.sh && swift test --filter Accessibility && node scripts/audit-checks.mjs charts && node scripts/audit-checks.mjs accessibility
+  EXPECT: ACCESSIBILITY_OK
+  EVIDENCE: exits 0 — 2026-09-04. `CHARTS_OK`, `ACCESSIBILITY_OK`, and
+  `SNAPSHOTS_OK`; the 74-image matrix covers compact, regular, wide, and
+  accessibility-size layouts. Direct inspection of compact and wide Breakdown
+  renders confirmed the long project label is complete and separated from its bar.
+
+## 2026-09-04 Project Breakdown Data Quality
+
+- [x] H36: Project breakdowns omit buckets with no genuine recorded duration,
+      retain genuinely positive sub-minute activity without displaying it as `0m`
+      or `0%`, and render WakaTime path-shaped project names such as
+      `Users-kevinkhanhle` with `/` directory separators. Ordinary hyphenated
+      project names remain unchanged.
+  CHECK: swift test
+  EXPECT: Test run with at least 1 test in 1 suite passed
+  EVIDENCE: exit 0 — 2026-09-04. 139 tests in 27 suites passed. Regression tests
+  prove exact-zero projects are discarded, `/Users/kevinkhanhle` is restored from
+  `Users-kevinkhanhle`, ordinary `waka-board` is unchanged, and positive values
+  below one minute or one percent render as `<1m` and `<1%` rather than zero.

@@ -68,6 +68,7 @@ struct DateRangeTests {
 struct DeepLinkTests {
     @Test("round-trips known routes and rejects everything else")
     func allowlist() throws {
+        #expect(DurationFormatter().string(1) == "<1m")
         #expect(DurationFormatter().string(3_661) == "1h 1m")
         let link = try #require(DeepLink.overview.url(scheme: "wakaboard"))
         #expect(DeepLink(url: link, scheme: "wakaboard") == .overview)
@@ -77,6 +78,28 @@ struct DeepLinkTests {
         #expect(DeepLink(url: URL(string: "wakaboard://open/settings?x=1")!, scheme: "wakaboard") == nil)
         #expect(DeepLink(url: URL(string: "evil://open/settings")!, scheme: "wakaboard") == nil)
         #expect(DeepLink(url: URL(string: "wakaboard://elsewhere/settings")!, scheme: "wakaboard") == nil)
+    }
+
+    @Test("every route round-trips, including the ones shipped widgets still use")
+    func everyRouteRoundTrips() throws {
+        // Enumerated rather than spot-checked: `breakdown` was added after
+        // `projects` and `languages`, and those two are live in widgets already
+        // installed on somebody's Home Screen. A link that stops resolving sends the
+        // user to the wrong screen with no error anywhere.
+        for route in [DeepLink.overview, .activity, .breakdown, .projects, .languages, .insights, .settings] {
+            let url = try #require(route.url(scheme: "wakaboard"))
+            #expect(DeepLink(url: url, scheme: "wakaboard") == route, "\(route) did not round-trip")
+        }
+    }
+
+    @Test("the older dimension links open the breakdown on their own dimension")
+    func legacyLinksCarryTheirDimension() {
+        #expect(DeepLink.projects.dimension == .projects)
+        #expect(DeepLink.languages.dimension == .languages)
+        // Everything else selects the screen without forcing a dimension, so a link
+        // cannot silently reset a choice the user already made.
+        #expect(DeepLink.breakdown.dimension == nil)
+        #expect(DeepLink.overview.dimension == nil)
     }
 }
 
@@ -147,8 +170,8 @@ struct CacheTests {
     func expiryAndCorruption() async throws {
         let url = URL.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: url) }
-        let cache = JSONCache<[ActivityDay]>(fileURL: url)
-        try await cache.store([], writtenAt: Date(timeIntervalSince1970: 0))
+        let cache = JSONCache<CachedActivity>(fileURL: url)
+        try await cache.store(CachedActivity(rangeKey: "empty", days: []), writtenAt: Date(timeIntervalSince1970: 0))
         let cached = try await cache.load(now: Date(timeIntervalSince1970: 10), maximumAge: 5)
         #expect(cached?.isFresh == false)
         try Data("not json".utf8).write(to: url)
@@ -159,8 +182,8 @@ struct CacheTests {
     func versionMismatch() async throws {
         let url = URL.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: url) }
-        try await JSONCache<[ActivityDay]>(fileURL: url, version: 1).store([])
-        let newer = JSONCache<[ActivityDay]>(fileURL: url, version: 2)
+        try await JSONCache<CachedActivity>(fileURL: url, version: 1).store(CachedActivity(rangeKey: "empty", days: []))
+        let newer = JSONCache<CachedActivity>(fileURL: url, version: 2)
         await #expect(throws: CacheError.unsupportedVersion) { try await newer.load(maximumAge: 60) }
     }
 
@@ -168,7 +191,7 @@ struct CacheTests {
     func filePermissions() async throws {
         let url = URL.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: url) }
-        try await JSONCache<[ActivityDay]>(fileURL: url).store([])
+        try await JSONCache<CachedActivity>(fileURL: url).store(CachedActivity(rangeKey: "empty", days: []))
         let mode = try FileManager.default.attributesOfItem(atPath: url.path)[.posixPermissions] as? NSNumber
         // A user's coding history must not be world-readable on a shared Mac.
         #expect(mode?.int16Value == 0o600)

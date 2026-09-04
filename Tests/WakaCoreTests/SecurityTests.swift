@@ -71,23 +71,26 @@ struct TransportTests {
             "https://wakatime.com.attacker.net"
         ] {
             #expect(throws: WakaTimeError.invalidEndpoint) {
-                try WakaTimeEndpoint.projects.request(baseURL: URL(string: hostile)!, credential: .personalAPIKey("k"))
+                try WakaTimeEndpoint.currentUser.request(baseURL: URL(string: hostile)!, credential: .personalAPIKey("k"))
             }
         }
         #expect(throws: Never.self) {
-            try WakaTimeEndpoint.projects.request(baseURL: URL(string: "https://api.wakatime.com")!, credential: .personalAPIKey("k"))
+            try WakaTimeEndpoint.currentUser.request(baseURL: URL(string: "https://api.wakatime.com")!, credential: .personalAPIKey("k"))
         }
     }
 
-    @Test("a path segment cannot be smuggled through the stats range")
-    func statsRangeIsConstrained() {
-        for hostile in ["../../admin", "last_7_days/../../x", "a b", "", String(repeating: "x", count: 64), "günstig"] {
+    @Test("a path or query value cannot be smuggled through the heartbeats day")
+    func heartbeatsDayIsConstrained() {
+        // The only endpoint that takes a caller-supplied value. It replaced the stats
+        // endpoint, which carried the same shape and which nothing in the app called —
+        // an unused endpoint is unused attack surface.
+        for hostile in ["../../admin", "2026-08-29/../../x", "a b", "", String(repeating: "x", count: 64), "günstig"] {
             #expect(throws: WakaTimeError.invalidEndpoint) {
-                try WakaTimeEndpoint.stats(hostile).request(credential: .personalAPIKey("k"))
+                try WakaTimeEndpoint.heartbeats(day: hostile).request(credential: .personalAPIKey("k"))
             }
         }
         #expect(throws: Never.self) {
-            try WakaTimeEndpoint.stats("last_7_days").request(credential: .personalAPIKey("k"))
+            try WakaTimeEndpoint.heartbeats(day: "2026-08-29").request(credential: .personalAPIKey("k"))
         }
     }
 

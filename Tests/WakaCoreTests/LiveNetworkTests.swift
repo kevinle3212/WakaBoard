@@ -111,6 +111,59 @@ struct LiveAuthenticatedTests {
         }
     }
 
+    @Test("the new dimensions arrive from the real API, bounded")
+    func extraDimensionsDecode() async throws {
+        let client = WakaTimeClient(http: URLSessionHTTPClient(), retryPolicy: .none)
+        let range = ActivityRange(start: .now.addingTimeInterval(-6 * 86_400), end: .now, timeZone: .current)
+        let days = try await client.summaries(range: range, credential: try storedCredential(), timeZone: .current)
+
+        // Editors, operating systems, and categories are decoded tolerantly, which
+        // means a rename on WakaTime's side would silently produce empty lists rather
+        // than an error. This is the check that would notice.
+        let active = days.filter { $0.duration > 0 }
+        #expect(!active.isEmpty, "the API returned no active days for the last week")
+        #expect(active.contains { !$0.editors.isEmpty }, "no day carried an editor")
+        #expect(active.contains { !$0.operatingSystems.isEmpty }, "no day carried an operating system")
+        #expect(active.contains { !$0.categories.isEmpty }, "no day carried a category")
+        for day in days {
+            for bucket in day.editors + day.operatingSystems + day.categories {
+                #expect(bucket.duration.isFinite)
+                #expect(bucket.duration <= ResponseBounds.maximumDailySeconds)
+                #expect(bucket.name.count <= ResponseBounds.maximumNameLength)
+            }
+        }
+    }
+
+    @Test("the file-type breakdown reconstructs real durations from real heartbeats")
+    func breakdownAgainstLiveAPI() async throws {
+        let client = WakaTimeClient(http: URLSessionHTTPClient(), bucket: TokenBucket(capacity: 4, refillPerSecond: 1), retryPolicy: .none)
+        let formatter = DateFormatter()
+        formatter.calendar = Calendar(identifier: .gregorian)
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "yyyy-MM-dd"
+        let yesterday = formatter.string(from: Date.now.addingTimeInterval(-86_400))
+
+        let heartbeats = try await client.heartbeats(day: yesterday, credential: try storedCredential())
+        // An account with no activity yesterday returns an empty array, which is a
+        // valid response and not a failure — the assertion is about shape, and about
+        // the reconstruction never inventing time.
+        let attributed = FileTypeBreakdown.attribute(heartbeats)
+        #expect(attributed.count == heartbeats.filter { $0.time.isFinite }.count)
+        for (_, seconds) in attributed {
+            #expect(seconds >= 0)
+            #expect(seconds <= FileTypeBreakdown.keystrokeTimeout)
+        }
+        // A day cannot contain more reconstructed time than a day.
+        let total = attributed.reduce(0) { $0 + $1.seconds }
+        #expect(total <= ResponseBounds.maximumDailySeconds)
+
+        // Nothing about the account reaches the output: extensions only, no paths.
+        for row in FileTypeBreakdown.rows(from: heartbeats, bucket: "Other") {
+            #expect(!row.name.contains("/"))
+            #expect(row.duration.isFinite && row.duration > 0)
+        }
+    }
+
     @Test("a snapshot built from real data carries aggregates and no credential")
     func snapshotFromRealData() async throws {
         let client = WakaTimeClient(http: URLSessionHTTPClient(), retryPolicy: .none)

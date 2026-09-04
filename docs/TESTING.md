@@ -15,7 +15,8 @@ The default `swift test` run is offline and uses no stored credential.
 | Model derivations use fetched summaries and clear on sign-out | `LiveDataPathTests` |
 | Figure summaries carry real values and honest empty-state language | `AccessibilityTests.additionalAnalyticsAlternatives` |
 | New figures render loaded, empty, and boundary data at compact accessibility sizing | `SnapshotTests.rendersAdditionalAnalyticsStates` |
-| Every data screen renders across compact, regular, and wide widths, two Dynamic Type sizes, and light/dark appearances | `SnapshotTests.rendersEveryScreen` and `scripts/snapshot-check.sh` |
+| Every screen, including Settings, renders across compact, regular, and wide widths, two Dynamic Type sizes, and light/dark appearances | `SnapshotTests.rendersEveryScreen` and `scripts/snapshot-check.sh` |
+| Share-ring totals use plot-frame geometry; Settings headings and content remain vertically grouped rather than split into platform form columns | Chart and design checks in `scripts/audit-checks.mjs`, including planted controls |
 | Chart framing, direct summaries, design tokens, casing, accessibility structure, and lazy rendering | `scripts/audit-checks.mjs` |
 | Every Apple app and widget target compiles with warnings treated as errors | `scripts/build-all.sh` |
 

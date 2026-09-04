@@ -6,10 +6,13 @@ import Testing
 struct RetentionTests {
     private let now = Date(timeIntervalSince1970: 1_800_000_000)
 
-    private func temporaryCache() -> (JSONCache<[ActivityDay]>, URL) {
+    private func temporaryCache() -> (JSONCache<CachedActivity>, URL) {
         let url = URL.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         return (JSONCache(fileURL: url), url)
     }
+
+    /// The single range every test in this suite asks the repository for.
+    private var fixedRange: ActivityRange { ActivityRange(start: now, end: now, timeZone: .gmt) }
 
     /// Builds a day `daysAgo` before the fixed clock.
     private func day(daysAgo: Double, duration: TimeInterval = 3_600) -> ActivityDay {
@@ -31,14 +34,14 @@ struct RetentionTests {
         defer { try? FileManager.default.removeItem(at: url) }
         let recent = day(daysAgo: 1)
         let expired = day(daysAgo: 200)
-        try await cache.store([expired, recent], writtenAt: now)
+        try await cache.store(CachedActivity(rangeKey: fixedRange.cacheKey, days: [expired, recent]), writtenAt: now)
 
         let repository = AnalyticsRepository(
             client: immediateClient(http: StubHTTPClient(result: .success((Data(), HTTPURLResponse(url: URL(string: "https://api.wakatime.com")!, statusCode: 500, httpVersion: nil, headerFields: nil)!)))),
             cache: cache,
             now: { self.now }
         )
-        let range = ActivityRange(start: now, end: now, timeZone: .gmt)
+        let range = fixedRange
         let result = try await repository.days(range: range, credential: .personalAPIKey("k"), timeZone: .gmt)
         #expect(result.days.count == 1)
         #expect(result.days.first?.date == recent.date)
@@ -60,27 +63,27 @@ struct RetentionTests {
             cache: cache,
             now: { self.now }
         )
-        let range = ActivityRange(start: now, end: now, timeZone: .gmt)
+        let range = fixedRange
         let result = try await repository.days(range: range, credential: .personalAPIKey("k"), timeZone: .gmt)
         // 2020-01-01 is far outside the 90-day window; 2027-01-14 is within it.
         #expect(result.days.count == 1)
 
         let persisted = try await cache.load(now: now, maximumAge: 10_000)
-        #expect(persisted?.value.count == 1)
+        #expect(persisted?.value.days.count == 1)
     }
 
     @Test("an entirely expired cache is treated as absent, not as stale data")
     func fullyExpiredCacheIsNotServed() async throws {
         let (cache, url) = temporaryCache()
         defer { try? FileManager.default.removeItem(at: url) }
-        try await cache.store([day(daysAgo: 500)], writtenAt: now)
+        try await cache.store(CachedActivity(rangeKey: fixedRange.cacheKey, days: [day(daysAgo: 500)]), writtenAt: now)
         let response = HTTPURLResponse(url: URL(string: "https://api.wakatime.com")!, statusCode: 500, httpVersion: nil, headerFields: nil)!
         let repository = AnalyticsRepository(
             client: immediateClient(http: StubHTTPClient(result: .success((Data(), response)))),
             cache: cache,
             now: { self.now }
         )
-        let range = ActivityRange(start: now, end: now, timeZone: .gmt)
+        let range = fixedRange
         // Nothing retained means nothing to fall back on: the failure must surface
         // rather than the app presenting year-old numbers as "saved data".
         await #expect(throws: WakaTimeError.serviceUnavailable) {
@@ -92,7 +95,7 @@ struct RetentionTests {
     func clearRemovesFile() async throws {
         let (cache, url) = temporaryCache()
         defer { try? FileManager.default.removeItem(at: url) }
-        try await cache.store([day(daysAgo: 1)], writtenAt: now)
+        try await cache.store(CachedActivity(rangeKey: fixedRange.cacheKey, days: [day(daysAgo: 1)]), writtenAt: now)
         #expect(FileManager.default.fileExists(atPath: url.path))
         let repository = AnalyticsRepository(client: immediateClient(http: StubHTTPClient(result: .success((Data(), HTTPURLResponse())))), cache: cache, now: { self.now })
         try await repository.clearCache()
@@ -124,7 +127,7 @@ struct RetentionTests {
         let credentials = InMemoryCredentialStore(seeded: .personalAPIKey("secret"))
         let snapshots = WidgetSnapshotStore(suiteName: suite)
         try snapshots.store(WidgetSnapshot(generatedAt: now, todayDuration: 60, weekDuration: 60, topProject: "A"))
-        try await cache.store([day(daysAgo: 1)], writtenAt: now)
+        try await cache.store(CachedActivity(rangeKey: fixedRange.cacheKey, days: [day(daysAgo: 1)]), writtenAt: now)
 
         let environment = WakaEnvironment(
             repository: AnalyticsRepository(client: immediateClient(http: StubHTTPClient(result: .success((Data(), HTTPURLResponse())))), cache: cache, now: { self.now }),

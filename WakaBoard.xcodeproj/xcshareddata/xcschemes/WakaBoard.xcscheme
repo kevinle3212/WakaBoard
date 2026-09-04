@@ -43,9 +43,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "976FA143998E699024D422C4"
-               BuildableName = "WakaBoardWidgets_iOS.appex"
-               BlueprintName = "WakaBoardWidgets_iOS"
+               BlueprintIdentifier = "45D409EB3597FB80F0536B3B"
+               BuildableName = "WakaBoardApp_tvOS.app"
+               BlueprintName = "WakaBoardApp_tvOS"
                ReferencedContainer = "container:WakaBoard.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -57,9 +57,23 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "E05A64AA00664384758940F9"
-               BuildableName = "WakaBoardWidgets_macOS.appex"
-               BlueprintName = "WakaBoardWidgets_macOS"
+               BlueprintIdentifier = "05FEFA0772A51DDEC294C3DA"
+               BuildableName = "WakaBoardApp_visionOS.app"
+               BlueprintName = "WakaBoardApp_visionOS"
+               ReferencedContainer = "container:WakaBoard.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "33BD31D6CA246E22B88EB085"
+               BuildableName = "WakaBoardApp_watchOS.app"
+               BlueprintName = "WakaBoardApp_watchOS"
                ReferencedContainer = "container:WakaBoard.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>

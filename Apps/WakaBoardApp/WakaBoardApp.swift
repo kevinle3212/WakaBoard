@@ -15,6 +15,16 @@ struct WakaBoardApp: App {
         WindowGroup {
             WakaShellView(model: model)
         }
+        #if os(macOS)
+        // A sensible opening size, and a window that cannot be dragged smaller than
+        // its content needs — without this the split view clips the detail pane.
+        .defaultSize(width: 960, height: 640)
+        .windowResizability(.contentSize)
+        #endif
+        // A menu bar and hardware keyboard shortcuts exist on the Mac, on iPad, and
+        // in the Vision Pro's shared space. A watch and a television have neither, and
+        // `commands` is not available there at all.
+        #if os(macOS) || os(iOS) || os(visionOS)
         .commands {
             CommandGroup(after: .textEditing) {
                 Divider()
@@ -25,5 +35,6 @@ struct WakaBoardApp: App {
                 .disabled(model.isBusy)
             }
         }
+        #endif
     }
 }

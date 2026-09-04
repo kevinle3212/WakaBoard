@@ -1,8 +1,9 @@
 # Privacy Policy
 
 **Effective date:** 27 August 2026
-**Last updated:** 27 August 2026
-**Applies to:** WakaBoard for macOS, iOS, and iPadOS, and this source repository.
+**Last updated:** 3 September 2026
+**Applies to:** WakaBoard for macOS, iOS, iPadOS, watchOS, visionOS, and tvOS, and
+this source repository.
 
 ---
 
@@ -45,9 +46,22 @@ Everything below stays on your device. Nothing is transmitted to the developer.
 | Data | Where it is stored | Why | How long |
 |---|---|---|---|
 | Your WakaTime personal API key | System Keychain, device-only, excluded from iCloud and backups | To authenticate your requests to WakaTime | Until you sign out or delete the app |
-| Cached coding analytics (daily totals, project names, language names) | A file in the app's Application Support directory, owner-readable only (`0600`), excluded from backup | To show your dashboard instantly and to work offline | **90 days**, then deleted automatically |
+| Cached coding analytics (daily totals, project names, language names, editor names, operating-system names, activity categories) | A file in the app's Application Support directory, owner-readable only (`0600`), excluded from backup | To show your dashboard instantly and to work offline | **90 days**, then deleted automatically |
+| File-type breakdown of an unresolved language bucket | **Memory only.** Never written to disk, never placed in the App Group container | To answer "what is actually inside Other?" when you tap that row | Until the app closes, or immediately when you clear the cache or sign out |
 | Widget summary (today's total, this week's total, top project name, last 7 daily totals) | The app's App Group container, shared only with the WakaBoard widget on the same device | To render widgets without giving them your API key | **7 days**, then discarded and erased |
 | Your selected time period | In-memory only | To render the screen you are looking at | Until the app closes |
+
+**The file-type breakdown deserves its own paragraph, because it is the one place
+WakaBoard reads something more identifying than a project name.** Tapping WakaTime's
+"Other" language row asks WakaTime for your individual coding events for the days in
+the selected period, and those events name the **files** you edited — a path can name
+an employer, a client, or an unannounced product. WakaBoard reduces each path to its
+file extension immediately, keeps only the extension totals, and holds those in
+memory alone: no path is written to the cache file, to the App Group container, or to
+the system log, and nothing leaves your device. The fetch happens only when you tap
+that row — never on launch, never on refresh, and never in the background — and it is
+bounded to the fourteen most recent days of the period. Signing out, clearing the
+cache, or quitting the app discards it.
 
 **Diagnostic logs.** WakaBoard writes coarse failure categories (for example,
 `transport`, `rateLimited`) to the Apple system log. These contain no
@@ -67,6 +81,8 @@ They stay on your device and are never transmitted to the developer.
   significant effects.
 - No collection of data from children, or from anyone else, because no collection
   occurs.
+- No retention of file names or file paths. The file-type breakdown keeps extensions
+  and durations; the paths they came from are discarded as they are read.
 
 ---
 

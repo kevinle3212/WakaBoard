@@ -343,7 +343,7 @@ struct WakaInsightsView: View {
         case .streak(let days):
             "You have coded at least 15 minutes on \(days) days in a row."
         case .strongestProject(let name, let share):
-            "\(name) accounts for \(Int((share * 100).rounded()))% of your time this period."
+            "\(name) accounts for \(WakaAccessibility.sharePercentage(duration: share, total: 1)) of your time this period."
         case .consistency(let score):
             "Your day-to-day coding time is fairly even, scoring \(Int(score.rounded())) out of 100."
         }
@@ -362,73 +362,17 @@ struct WakaInsightsView: View {
 
 /// Account, data, and legal controls. Every button here does real work.
 struct WakaSettingsView: View {
+    @Environment(\.wakaFlatLayout) private var isFlat
     @Bindable var model: WakaUIModel
     @State private var confirmingSignOut = false
     @State private var confirmingClear = false
 
     var body: some View {
-        Form {
-            Section("Account") {
-                LabeledContent("Connection", value: model.isSignedIn ? "Connected" : "Not connected")
-                if model.isSignedIn {
-                    WakaFormButton(
-                        title: "Sign Out and Erase Local Data",
-                        role: .destructive,
-                        hint: "Removes your API key, cached analytics, and widget data from this device"
-                    ) { confirmingSignOut = true }
-                }
-                Text("WakaBoard signs in with a personal API key stored in the system Keychain on this "
-                     + "device only. It is never synced to iCloud and never included in a device backup.")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-            }
-
-            Section("Data Source") {
-                WakaTimeCredit()
-                LegalLink(title: "Attribution and Credit", file: "ATTRIBUTION")
-                Text("WakaBoard reads three WakaTime endpoints, all of them read-only, and stays well "
-                     + "inside WakaTime's published rate limit. It uses no WakaTime logo or artwork.")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-            }
-
-            Section("Data") {
-                WakaFormButton(title: "Refresh Analytics", hint: "Fetches the latest analytics from WakaTime") {
-                    Task { await model.refresh() }
-                }
-                .disabled(model.isBusy)
-                WakaFormButton(
-                    title: "Clear Local Cache",
-                    role: .destructive,
-                    hint: "Deletes cached analytics from this device; you stay signed in"
-                ) { confirmingClear = true }
-                Text("Cached analytics are kept on this device for up to 90 days and are deleted "
-                     + "automatically after that. Widget data is kept for up to 7 days.")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-            }
-
-            Section("Widgets") {
-                Text("Add WakaBoard from the system widget gallery. Widgets read only the cached summary "
-                     + "and never receive your API key. The system, not WakaBoard, decides when they refresh.")
-            }
-
-            Section("Privacy and Legal") {
-                Text("WakaBoard has no server, no telemetry, no advertising, and no crash-reporting SDK. "
-                     + "The developer receives no data about you at all.")
-                    .font(.footnote)
-                LegalLink(title: "Privacy Policy", file: "PRIVACY")
-                LegalLink(title: "Terms of Service", file: "TERMS")
-                LegalLink(title: "Data Retention", file: "RETENTION")
-                LegalLink(title: "Accessibility Statement", file: "ACCESSIBILITY")
-                LegalLink(title: "Disclaimer and Liability", file: "DISCLAIMER")
-            }
-
-            Section("About") {
-                Text("WakaBoard is an independent open-source client. It is not affiliated with, "
-                     + "endorsed by, or sponsored by WakaTime.")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
+        Group {
+            if isFlat {
+                settingsContent
+            } else {
+                ScrollView { settingsContent }
             }
         }
         .navigationTitle("Settings")
@@ -453,6 +397,117 @@ struct WakaSettingsView: View {
         } message: {
             Text("WakaBoard will refetch your analytics on the next refresh. You stay signed in.")
         }
+    }
+
+    /// Vertically grouped settings content shared by the live scroll view and snapshots.
+    private var settingsContent: some View {
+        VStack(alignment: .leading, spacing: WakaDesign.Spacing.loose) {
+            SettingsSection(title: "Account") {
+                HStack {
+                    Text("Connection").font(.wakaCardTitle)
+                    Spacer()
+                    Text(model.isSignedIn ? "Connected" : "Not connected")
+                        .foregroundStyle(.secondary)
+                }
+                if model.isSignedIn {
+                    WakaFormButton(
+                        title: "Sign Out and Erase Local Data",
+                        role: .destructive,
+                        hint: "Removes your API key, cached analytics, and widget data from this device"
+                    ) { confirmingSignOut = true }
+                }
+                Text("WakaBoard signs in with a personal API key stored in the system Keychain on this "
+                     + "device only. It is never synced to iCloud and never included in a device backup.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+
+            SettingsSection(title: "Data Source") {
+                WakaTimeCredit()
+                LegalLink(title: "Attribution and Credit", file: "ATTRIBUTION")
+                Text("WakaBoard reads three WakaTime endpoints, all of them read-only, and stays well "
+                     + "inside WakaTime's published rate limit. It uses no WakaTime logo or artwork.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+
+            SettingsSection(title: "Data") {
+                WakaFormButton(title: "Refresh Analytics", hint: "Fetches the latest analytics from WakaTime") {
+                    Task { await model.refresh() }
+                }
+                .disabled(model.isBusy)
+                WakaFormButton(
+                    title: "Clear Local Cache",
+                    role: .destructive,
+                    hint: "Deletes cached analytics from this device; you stay signed in"
+                ) { confirmingClear = true }
+                Text("Cached analytics are kept on this device for up to 90 days and are deleted "
+                     + "automatically after that. Widget data is kept for up to 7 days.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+
+            SettingsSection(title: "Widgets") {
+                Text("Add WakaBoard from the system widget gallery. Widgets read only the cached summary "
+                     + "and never receive your API key. The system, not WakaBoard, decides when they refresh.")
+            }
+
+            SettingsSection(title: "Privacy and Legal") {
+                Text("WakaBoard has no server, no telemetry, no advertising, and no crash-reporting SDK. "
+                     + "The developer receives no data about you at all.")
+                    .font(.footnote)
+                LegalLink(title: "Privacy Policy", file: "PRIVACY")
+                LegalLink(title: "Terms of Service", file: "TERMS")
+                LegalLink(title: "Data Retention", file: "RETENTION")
+                LegalLink(title: "Accessibility Statement", file: "ACCESSIBILITY")
+                LegalLink(title: "Disclaimer and Liability", file: "DISCLAIMER")
+            }
+
+            SettingsSection(title: "About") {
+                Text("WakaBoard is an independent open-source client. It is not affiliated with, "
+                     + "endorsed by, or sponsored by WakaTime.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                Text("Created by Kevin Le.")
+                    .font(.footnote)
+                WakaExternalLink(
+                    title: "Kevin Le on GitHub",
+                    url: URL(string: "https://github.com/kevinle3212"),
+                    hint: "Opens Kevin Le's GitHub profile"
+                )
+                WakaExternalLink(
+                    title: "Kevin Le on LinkedIn",
+                    url: URL(string: "https://www.linkedin.com/in/lekevin1"),
+                    hint: "Opens Kevin Le's LinkedIn profile"
+                )
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(WakaDesign.Spacing.regular)
+    }
+}
+
+/// A Settings group whose heading, actions, and explanation stay in one visual unit.
+private struct SettingsSection<Content: View>: View {
+    let title: String
+    @ViewBuilder let content: Content
+
+    /// Creates one vertically grouped Settings section.
+    ///
+    /// - Parameters:
+    ///   - title: The visible section heading.
+    ///   - content: Controls and supporting copy belonging to the heading.
+    init(title: String, @ViewBuilder content: () -> Content) {
+        self.title = title
+        self.content = content()
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: WakaDesign.Spacing.tight) {
+            Text(title).font(.wakaSectionTitle)
+            content
+        }
+        .wakaCard()
     }
 }
 

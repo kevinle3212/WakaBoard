@@ -131,6 +131,26 @@ These are accepted and stated rather than hidden:
 
 ---
 
+## Change log for this document
+
+**2026-08-29.** WakaBoard began reading a third endpoint,
+`GET /api/v1/users/current/heartbeats`, to break WakaTime's unresolved "Other"
+language bucket down by file type. Three things follow, and all three are enforced in
+code rather than promised here:
+
+- **It is user-initiated only.** No launch path, refresh path, or background task
+  reaches it. It fires on a tap, and it is bounded to the fourteen most recent days of
+  the selected period, through the same token bucket and retry policy as every other
+  request.
+- **It reads file paths, which is more identifying than anything else this app
+  touches.** Each path is reduced to its extension as it is read; the extension totals
+  live in memory and are never written to the cache file, the App Group container, or
+  the system log. See `PRIVACY.md` § 2 and `RETENTION.md`.
+- **The unused endpoints were removed in the same change.** `stats/:range` and
+  `projects` were declared and never called. An endpoint no code path reaches is
+  attack surface with no user, and the endpoint-validation tests that covered them now
+  cover `heartbeats`, which carries the same caller-supplied-path-segment shape.
+
 ## Coordinated disclosure
 
 On a confirmed vulnerability I will: acknowledge it, fix it on `main`, publish a

@@ -36,8 +36,11 @@ jobs:
 
       # `swift test` covers only the two library targets. Without this step CI would
       # pass while the app and widget extensions failed to compile.
-      - name: Build every shipping target on both platforms
+      - name: Build every shipping target on every platform
         run: sh scripts/build-all.sh
+
+      - name: Render every screen and fail on overflow
+        run: sh scripts/snapshot-check.sh
 
       # A build proves compilation, not installability. The scaffold compiled cleanly
       # on both platforms while carrying an Info.plist key that made installation
@@ -103,3 +106,24 @@ jobs:
 
       - name: CI enforces what it claims
         run: node scripts/audit-checks.mjs ci
+
+      - name: WakaTime is credited everywhere its data is shown
+        run: node scripts/audit-checks.mjs attribution
+
+      - name: WakaTime's trademark policy is respected
+        run: node scripts/audit-checks.mjs trademark
+
+      - name: Every platform is declared in both build systems
+        run: node scripts/audit-checks.mjs platforms
+
+      - name: No view invents its own spacing or radius
+        run: node scripts/audit-checks.mjs design
+
+      - name: Breakdown rendering stays virtualized and bounded
+        run: node scripts/audit-checks.mjs performance
+
+      - name: Every chart carries its content as text
+        run: node scripts/audit-checks.mjs charts
+
+      - name: Titles are Title Case and sentences are sentences
+        run: node scripts/audit-checks.mjs casing

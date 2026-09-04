@@ -23,6 +23,7 @@ your own control.
 | **Cached daily analytics** | **90 days** from the date of the activity | `RetentionPolicy.cachedActivity` | Automatic pruning on every cache read and write; Settings → *Clear local cache*; sign out; delete the app |
 | **Widget summary** | **7 days** from when it was generated | `RetentionPolicy.widgetSnapshot` | Automatic discard-and-erase on read; sign out; delete the app |
 | **Freshness window** (when the app refetches rather than reusing the cache) | **5 minutes** | `RetentionPolicy.cacheFreshness` | n/a — this is a refresh interval, not a retention period |
+| **File-type breakdown of an unresolved language bucket** | Until the app quits | Process lifetime — never written to disk | Quitting the app; Settings → *Clear local cache*; sign out |
 | **In-memory view state** | Until the app quits | Process lifetime | Quitting the app |
 | **System diagnostic log entries** | Managed by macOS/iOS, typically days | Apple's `OSLog` subsystem | OS log rotation |
 
@@ -118,3 +119,18 @@ change in the same commit — the test suite enforces that they cannot drift apa
 ---
 
 **Contact:** Kevin Le — KevinLe3212@gmail.com
+
+## Why the breakdown is memory-only
+
+Every other cached thing in this app is a name and a number. The file-type breakdown
+is derived from your individual coding events, and those name the files you edited —
+which is the most identifying thing WakaTime will hand back. WakaBoard reduces each
+path to its extension as it reads it and keeps only the extension totals, and even
+those are held in memory rather than persisted.
+
+That is deliberately stricter than the ninety days this policy allows for cached
+analytics. It costs nothing: the whole result is one tap away from being rebuilt, and
+a file path that is never written down cannot be recovered from a stolen device, a
+backup, or a support bundle. Enforced by construction rather than by a timer —
+`AnalyticsRepository` holds it in a dictionary and there is no code path that writes
+it anywhere.
