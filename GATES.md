@@ -480,3 +480,11 @@ so a detector that can never fail is caught at authoring time.
   prove exact-zero projects are discarded, `/Users/kevinkhanhle` is restored from
   `Users-kevinkhanhle`, ordinary `waka-board` is unchanged, and positive values
   below one minute or one percent render as `<1m` and `<1%` rather than zero.
+
+## 2026-09-04 Public CI Environment
+
+- [ ] H37: GitHub Actions selects an installed Xcode whose Swift toolchain can
+      parse the package's Swift 6.2 manifest, and the acceptance-ledger job fetches
+      enough Git history to verify every audited commit anchor.
+  CHECK: node scripts/audit-checks.mjs ci && swift test
+  EXPECT: CI_OK

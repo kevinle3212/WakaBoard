@@ -604,6 +604,10 @@ function ci() {
   check(gate, /timeout-minutes:/.test(text), "CI declares no job timeout");
   check(gate, /concurrency:/.test(text), "CI has no concurrency group, so superseded runs are not cancelled");
   check(gate, /persist-credentials: false/.test(text), "checkout does not disable credential persistence");
+  check(gate, /^env:\s*\n\s*DEVELOPER_DIR:\s*\/Applications\/Xcode_26\.3\.app\/Contents\/Developer/m.test(text),
+    "CI does not select the installed Swift 6.2-compatible Xcode 26.3 toolchain");
+  check(gate, /name: Verify the acceptance ledger[\s\S]*?fetch-depth:\s*0/.test(text),
+    "the acceptance-ledger job uses a shallow checkout and cannot verify historical audit anchors");
   // CI may build directly or delegate to the script; either way the app targets must
   // actually be built, so follow through to the script rather than accepting the
   // mere mention of it.
