@@ -27,7 +27,7 @@ jobs:
     steps:
       # actions/checkout v4.2.2, pinned by commit SHA so a moved tag cannot change
       # what runs here.
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           # This job never pushes; leaving a token in .git/config would be an
           # unnecessary credential on disk for every later step to reach.
@@ -76,7 +76,7 @@ jobs:
     runs-on: macos-15
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
           # The audit resolves recorded historical commit anchors, so a depth-1
