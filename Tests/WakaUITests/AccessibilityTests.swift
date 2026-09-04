@@ -50,6 +50,42 @@ struct AccessibilityTests {
         #expect(WakaAccessibility.chartSummary(durations: [0, 0]).contains("No activity"))
     }
 
+    @Test("additional analytics state their values and handle empty input honestly")
+    func additionalAnalyticsAlternatives() {
+        let peak = AnalyticsEngine.DailyValue(date: .now, duration: 7_200)
+        let summary = AnalyticsEngine.ActivitySummary(
+            dayCount: 7,
+            activeDayCount: 4,
+            activeShare: 4.0 / 7.0,
+            peak: peak,
+            medianDuration: 1_800
+        )
+        let balance = WakaAccessibility.activityBalanceSummary(summary)
+        #expect(balance.contains("4 of 7"))
+        #expect(balance.contains("2h 0m"))
+        #expect(balance.contains("30m"))
+        #expect(WakaAccessibility.activityBalanceSummary(nil).contains("nothing recorded"))
+
+        let weeks = [
+            AnalyticsEngine.WeekTotal(start: .now, duration: 3_600, dayCount: 4, isPartial: true),
+            AnalyticsEngine.WeekTotal(start: .now.addingTimeInterval(604_800), duration: 7_200, dayCount: 7, isPartial: false)
+        ]
+        let weekly = WakaAccessibility.weeklySummary(weeks)
+        #expect(weekly.contains("2 calendar weeks"))
+        #expect(weekly.contains("3h 0m"))
+        #expect(weekly.contains("1 weeks cover"))
+
+        let points = [
+            AnalyticsEngine.TrendPoint(date: .now, name: "Ωmega", duration: 900, seriesIndex: 0),
+            AnalyticsEngine.TrendPoint(date: .now, name: "Beta", duration: 300, seriesIndex: 1)
+        ]
+        let trend = WakaAccessibility.trendSummary(title: "Projects Trend", points: points)
+        #expect(trend.contains("Ωmega"))
+        #expect(trend.contains("15m"))
+        #expect(trend.contains("Beta"))
+        #expect(WakaAccessibility.trendSummary(title: "Projects Trend", points: []).contains("nothing recorded"))
+    }
+
     @Test("data rows are spoken as sentences with units, not bare numbers")
     func rowsAreSpoken() {
         let usage = WakaAccessibility.usageLabel(name: "Orbit Compiler", duration: 5_400, percentage: 42)

@@ -21,6 +21,20 @@ private struct StubHTTPClient: HTTPClient {
     }
 }
 
+/// Returns a deliberately slow week and a fast month to exercise refresh ordering.
+private struct RangeRaceHTTPClient: HTTPClient {
+    func data(for request: URLRequest) async throws -> (Data, HTTPURLResponse) {
+        let start = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)?
+            .queryItems?.first(where: { $0.name == "start" })?.value
+        let isWeek = start == "2027-01-09"
+        try await Task.sleep(for: .milliseconds(isWeek ? 120 : 5))
+        let seconds = isWeek ? 3_600 : 7_200
+        let json = summariesJSON(dates: ["2027-01-15"], seconds: [Double(seconds)])
+        let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!
+        return (Data(json.utf8), response)
+    }
+}
+
 /// Builds an environment with no real network, Keychain, or timing.
 @MainActor
 private func makeEnvironment(
@@ -89,6 +103,32 @@ struct LiveDataPathTests {
         #expect(model.projects.first?.name == "Orbit")
         #expect(model.languages.first?.name == "Swift")
         #expect(model.overview?.total == 7_200)
+        #expect(model.activitySummary?.activeDayCount == 1)
+        #expect(model.activitySummary?.peak.duration == 7_200)
+        #expect(model.weeklyTotals.count == 2)
+        #expect(model.dailyTrends(.projects).contains { $0.name == "Orbit" && $0.duration == 7_200 })
+    }
+
+    @Test("a slower old-period response cannot overwrite a newer range")
+    func latestRangeWinsRefreshRace() async throws {
+        let url = temporaryURL()
+        defer { try? FileManager.default.removeItem(at: url) }
+        let (environment, _, suite) = makeEnvironment(http: RangeRaceHTTPClient(), cacheURL: url)
+        defer { UserDefaults.standard.removePersistentDomain(forName: suite) }
+        let model = WakaUIModel(environment: environment, timeZone: .gmt, now: { fixedNow }, reloadWidgets: {})
+
+        let slowWeek = Task { await model.refresh() }
+        try await Task.sleep(for: .milliseconds(15))
+        model.selectedRange = .month
+        #expect(model.days.isEmpty)
+        #expect(model.activitySummary == nil)
+
+        try await Task.sleep(for: .milliseconds(180))
+        await slowWeek.value
+        #expect(model.selectedRange == .month)
+        #expect(model.state == .loaded)
+        #expect(model.overview?.total == 7_200)
+        #expect(model.activitySummary?.peak.duration == 7_200)
     }
 
     @Test("no stored credential means the sign-in screen, not empty analytics")
@@ -124,8 +164,15 @@ struct LiveDataPathTests {
         let url = temporaryURL()
         defer { try? FileManager.default.removeItem(at: url) }
         // Seed a cache so there is something to preserve.
-        let cache = JSONCache<[ActivityDay]>(fileURL: url)
-        try await cache.store([ActivityDay(date: fixedNow, duration: 3_600)], writtenAt: fixedNow.addingTimeInterval(-10_000))
+        let cache = JSONCache<CachedActivity>(fileURL: url)
+        // The cache is keyed by period, so the seed must claim the period the model
+        // will actually ask for — otherwise it is correctly ignored as a different
+        // question's answer and the test proves nothing.
+        let seeded = RangeOption.week.range(now: fixedNow, timeZone: .gmt)
+        try await cache.store(
+            CachedActivity(rangeKey: seeded.cacheKey, days: [ActivityDay(date: fixedNow, duration: 3_600)]),
+            writtenAt: fixedNow.addingTimeInterval(-10_000)
+        )
 
         let (environment, _, suite) = makeEnvironment(
             http: StubHTTPClient(status: 429, headers: ["Retry-After": "30"]),
@@ -309,6 +356,9 @@ struct LiveDataPathTests {
         #expect(model.days.isEmpty)
         #expect(model.overview == nil)
         #expect(model.projects.isEmpty)
+        #expect(model.activitySummary == nil)
+        #expect(model.weeklyTotals.isEmpty)
+        #expect(model.dailyTrends(.projects).isEmpty)
         #expect(try environment.credentials.load() == nil)
         #expect(snapshots.load(now: fixedNow) == nil)
         #expect(!FileManager.default.fileExists(atPath: url.path))

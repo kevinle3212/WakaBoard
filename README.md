@@ -1,41 +1,69 @@
-# WakaBoard
+<h1 align="center">
+  <img src="docs/assets/wakaboard-wordmark.png" alt="WakaBoard" width="440">
+</h1>
 
-WakaBoard is an independent, open-source native analytics client for WakaTime for
-macOS, iPhone, and iPad. It presents local-first coding summaries without treating
-usage time as a measure of skill.
+WakaBoard is an independent, open-source native analytics client for WakaTime,
+built for every Apple platform: Mac, iPhone, iPad, Apple Watch, Apple Vision Pro,
+and Apple TV. It presents local-first coding summaries without treating usage time
+as a measure of skill.
+
+**Every underlying duration WakaBoard shows is measured and provided by WakaTime.**
+WakaBoard derives clearly labelled summaries such as medians and calendar-week totals
+on the device; it does not invent activity. See [ATTRIBUTION.md](ATTRIBUTION.md).
 
 **There is no WakaBoard server.** Your device talks directly to WakaTime; the
 developer receives no data about you at all. See [PRIVACY.md](PRIVACY.md).
 
-> **Status: not yet released.** Verified further than a compile: the macOS app runs
-> on real hardware with its live accessibility tree audited, the iOS bundle installs
-> and launches on a Simulator, and real HTTPS requests reach `api.wakatime.com`.
-> Signing in with a real key works, real analytics render, and the widget snapshot is
-> written and verified credential-free.
-> **Not** verified: a physical iPhone or iPad, a provisioning-profile build (so the
-> App Group entitlement grant is unproven), Lock Screen widgets, and a human
-> VoiceOver / Dynamic Type / contrast review — see [GATES.md](GATES.md) G22.
-> Screenshots are pending for the same reason.
+> **Status: not yet released.** Verified further than a compile: all six platforms
+> build with warnings as errors, the macOS app runs on real hardware with its live
+> accessibility tree audited, the iOS bundle installs and launches on a Simulator,
+> and real HTTPS requests reach `api.wakatime.com`. Signing in with a real key works,
+> real analytics render, and the widget snapshot is written and verified
+> credential-free.
+> **Not** verified: watchOS, tvOS, and visionOS have never been *run* — their
+> simulator runtimes are not installed, so those three are compile-verified only, and
+> the watchOS build additionally excludes its asset catalog because `actool` needs a
+> watchsimulator runtime. A physical iPhone or iPad, a provisioning-profile build (so
+> the App Group entitlement grant is unproven), Lock Screen widgets, and a human
+> VoiceOver / Dynamic Type / contrast review are all still outstanding — see
+> [TODO.md](TODO.md). Automated render snapshots are committed; human visual review
+> remains pending.
 
 ## What it does
 
-- Dashboard, activity, projects, languages, insights, and settings, adaptive across
-  macOS, iPhone, and iPad.
-- Swift Charts activity view with a real text alternative for VoiceOver, accessible
-  metric cards, and honest loading, empty, offline, rate-limited, and expired-auth
-  states.
-- Today, Weekly Activity, and Coding Overview widgets, fed by a credential-free App
-  Group snapshot. Widgets never hold your API key.
+- Overview, Activity, Breakdown, Insights, and Settings — a sidebar on Mac, iPad,
+  iPhone, and Vision Pro; a compact stack on Apple Watch; a focusable tab bar on
+  Apple TV. None of the three is a shrunk copy of the others.
+- Nine analytical figures, each with a text alternative that carries the figure's
+  content rather than describing it: daily activity with a seven-day mean, the
+  Activity Ribbon density grid, active-day balance with peak and median days, a share
+  ring, a ranked comparison chart, cumulative time, calendar-week totals, weekday
+  averages, and bounded daily trends for the leading buckets in each dimension.
+- Five dimensions behind one picker: projects, languages, editors, operating systems,
+  and WakaTime's own activity categories.
+- **What is actually inside "Other".** WakaTime files anything it cannot classify
+  under `Other`; tapping that row opens a breakdown by file extension, reconstructed
+  on demand from your own coding events and labelled as a reconstruction.
+- A design token layer — one spacing scale, three radii, one type ramp, and a
+  categorical chart palette validated for contrast and colour-vision deficiency in
+  both light and dark rather than chosen by eye.
+- Today, Weekly Activity, and Coding Overview widgets plus Apple Watch complications,
+  fed by a credential-free App Group snapshot. Widgets never hold your API key.
 - Analytics computed on-device: calendar and active-day averages, streaks, a
-  consistency score, project and language shares, and insights that are omitted when
-  there is not enough data to support them.
+  consistency score, active-day balance, peak and median days, calendar-week totals,
+  per-dimension shares and trends, and insights that are omitted when there is not
+  enough data to support them.
 - Client-side rate limiting so the app cannot get your WakaTime account throttled.
 - No runtime third-party dependencies, no telemetry, no advertising, no crash SDK.
 
 ## Requirements
 
-iOS/iPadOS 18 or macOS 15. Built with Xcode 26.6 and Swift 6.3.3, under Swift 6
-strict concurrency with warnings treated as errors.
+iOS/iPadOS 18, macOS 15, watchOS 11, tvOS 18, or visionOS 26. Built with the Xcode
+26.5 SDKs and Swift 6.3.3, under Swift 6 strict concurrency with warnings treated as
+errors.
+
+visionOS is the one high floor, and not by choice: WidgetKit did not exist on
+visionOS before 26, so a lower floor cannot carry the widget extension at all.
 
 ## Architecture
 
@@ -62,13 +90,15 @@ repository boundary. See [docs/planning/ARCHITECTURE.md](docs/planning/ARCHITECT
    open WakaBoard.xcodeproj
    ```
 
-Run the suite — 83 tests, no network access, no credential required:
+Run the suite — 137 tests, no network access or credential required:
 
 ```sh
 swift test
 ```
 
-Build every shipping target on both platforms:
+Build every shipping target on every platform. macOS and iOS build for a real
+destination; watchOS, tvOS, and visionOS build against their device SDKs, because
+their simulator runtimes are not installed:
 
 ```sh
 sh scripts/build-all.sh
@@ -92,6 +122,13 @@ is printed but pass/fail — no key, project name, or duration:
 
 ```sh
 WAKABOARD_LIVE_AUTH=1 swift test --filter LiveAuthenticated
+```
+
+Redraw the app icon and the README lockup (the art is generated, not exported —
+edit the constants at the top of the script and rerun it):
+
+```sh
+python3 scripts/make-icon.py
 ```
 
 Verify the acceptance ledger in [GATES.md](GATES.md):
@@ -143,7 +180,11 @@ These numbers are enforced in code and asserted by a test, not just documented. 
 | [DISCLAIMER.md](DISCLAIMER.md) | Warranty disclaimer and liability limits |
 | [SECURITY.md](SECURITY.md) | Reporting, threat model, residual risks |
 | [docs/AUDIT.md](docs/AUDIT.md) | Full audit of the generated scaffold |
-| [GATES.md](GATES.md) | The acceptance ledger, including what is still open |
+| [docs/TESTING.md](docs/TESTING.md) | Source-to-test coverage and verification boundaries |
+| [ATTRIBUTION.md](ATTRIBUTION.md) | How WakaTime is credited, and the trademark position |
+| [GATES.md](GATES.md) | The acceptance ledger for the current work |
+| [docs/production-readiness-gates.md](docs/production-readiness-gates.md) | The closed ledger from the production-readiness audit |
+| [TODO.md](TODO.md) | Deferred work only Kevin can unblock |
 
 Contributions are welcome under [CONTRIBUTING.md](CONTRIBUTING.md) and the
 [Code of Conduct](CODE_OF_CONDUCT.md).
@@ -152,12 +193,21 @@ Contributions are welcome under [CONTRIBUTING.md](CONTRIBUTING.md) and the
 
 Apache License 2.0 — see [LICENSE](LICENSE) and [NOTICE](NOTICE).
 
-WakaBoard uses the WakaTime API but is not affiliated with, endorsed by, or
-sponsored by WakaTime. "WakaTime" is a trademark of its respective owner. WakaBoard
-is likewise not affiliated with Apple Inc.
+## Attribution
+
+WakaBoard uses the WakaTime public API but is not affiliated with, endorsed by, or
+sponsored by WakaTime. "WakaTime" is a trademark of WakaTime, used here nominatively
+to identify the service this client connects to. No WakaTime logo or artwork appears
+anywhere in this project, and a repository check fails the build if one is added.
+WakaBoard is likewise not affiliated with Apple Inc.
+
+The full position — every endpoint read, how WakaTime's rate limit is respected, and
+an honest note on the naming question their trademark policy raises — is in
+[ATTRIBUTION.md](ATTRIBUTION.md).
 
 ## Roadmap
 
-In priority order: the remaining on-device verification (GATES.md G22), an audited OAuth relay or
-native PKCE if WakaTime documents one, configurable project widgets, localization,
-and an audio graph for the activity chart.
+In priority order: the remaining on-device and human sensory verification
+([TODO.md](TODO.md)), a tvOS Brand Assets icon, an audited OAuth relay or native PKCE
+if WakaTime documents one, configurable project widgets, localization, and an audio
+graph for the activity chart.

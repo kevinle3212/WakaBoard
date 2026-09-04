@@ -2,7 +2,7 @@
 
 **Effective date:** 28 August 2026
 **Last updated:** 28 August 2026
-**Applies to:** WakaBoard for macOS, iOS, and iPadOS.
+**Applies to:** WakaBoard for macOS, iOS, iPadOS, watchOS, visionOS, and tvOS.
 
 ---
 
@@ -38,7 +38,8 @@ the code that produces what assistive technology actually reads:
 
 | Verified | Criterion |
 |---|---|
-| The activity chart carries a text alternative containing its real content — totals, active-day count, and busiest day — not a description of itself | **1.1.1 Non-text Content** |
+| Every chart carries a text alternative containing its real content — the daily chart's totals and busiest day, active-day balance and peak/median figures, each share chart's leaders and percentages, the weekday and calendar-week values, the cumulative endpoint, the ribbon's active-day count, and the leaders in each trend — never a description of the picture | **1.1.1 Non-text Content** |
+| Chart identity is never carried by colour alone. Three of the eight categorical hues fall below 3:1 against a light background, which the palette method permits only with relief, so every chart also prints its figures and is repeated as a ranked list | **1.4.1 Use of Colour**, **1.4.11 Non-text Contrast** |
 | Every load state (signed out, loading, loaded, empty, stale, rate limited, expired, failed) produces a complete spoken sentence, never a leaked enum name | **1.3.1 Info and Relationships**, **4.1.2 Name, Role, Value** |
 | Every data row is spoken with its name, duration, and share, with "percent" spelled out rather than `%` | **1.3.1**, **4.1.2** |
 | The period picker is spoken as "Last 7 days", not "7D" | **2.4.6 Headings and Labels** |
@@ -77,7 +78,7 @@ below 24 fails outright, anything an author sizes must reach 44, and only
 AppKit-sized controls between the two are exempted, with their reason printed on
 every run.
 
-The audit walks **all six screens** — Overview, Activity, Projects, Languages,
+The audit walks **all five screens** — Overview, Activity, Breakdown,
 Insights, and Settings — by driving the sidebar. Auditing only the screen that
 happened to be open missed six real violations, because a fresh launch shows
 Overview.
@@ -86,17 +87,25 @@ Overview.
 
 | Implemented | Criterion | Status |
 |---|---|---|
-| Dynamic Type — all text uses relative text styles; no fixed point sizes | **1.4.4 Resize Text** | Not reviewed at accessibility text sizes |
+| Dynamic Type — all text uses relative text styles; no fixed point sizes | **1.4.4 Resize Text** | Rendered at an accessibility size on every screen by `sh scripts/snapshot-check.sh`, which fails if content overflows its width. Not reviewed by a person |
 | Reduce Motion — chart transitions disabled when the system setting is on | **2.3.3 Animation from Interactions** | Not reviewed with the setting enabled |
-| Colour is never the sole carrier of meaning | **1.4.1 Use of Color** | Not visually reviewed |
-| Contrast in light and dark mode | **1.4.3 Contrast (Minimum)** | Not measured |
+| Colour is never the sole carrier of meaning | **1.4.1 Use of Color** | Every chart prints its figures and repeats as a ranked list; not visually reviewed |
+| Contrast in light and dark mode | **1.4.3 Contrast (Minimum)**, **1.4.11 Non-text Contrast** | The chart palette and the accent **are** measured — `swift test --filter Palette` recomputes the WCAG ratio of every hue against both surfaces. System-supplied text and control colours are not measured, and no screen has been reviewed by eye |
 | Keyboard operation and focus order on macOS, including ⌘R | **2.1.1**, **2.4.3** | Not reviewed |
 | How VoiceOver actually *sounds* reading each screen | **1.3.2 Meaningful Sequence** | Tree is audited; speech is not |
 | Widgets on a real Home Screen and Lock Screen | **1.1.1**, **4.1.2** | Requires a physical device |
 
 Only screens reachable without a credential are covered by the automated pass; the
-signed-in dashboard, activity, projects, languages, insights, and settings screens
+signed-in overview, activity, breakdown, insights, and settings screens
 have not been walked, because reaching them needs a real WakaTime key.
+
+**watchOS, tvOS, and visionOS have had no accessibility pass at all.** They compile,
+their shells are built for their own input models — a compact stack on the watch, a
+focus-traversable tab bar on the television — and the shared components they use are
+the audited ones. None of that is a substitute for running them: their simulator
+runtimes are not installed, so neither the accessibility tree nor the rendering on
+those three platforms has been inspected. The deferred-work file at the repository
+root records it.
 
 ### Known gaps
 

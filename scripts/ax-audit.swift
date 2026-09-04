@@ -9,7 +9,8 @@
 // 16-point target. Only the live tree could show that.
 //
 // Usage:  swift scripts/ax-audit.swift <pid> [--json]
-// Exit:   0 = AX_AUDIT_OK, 1 = violations found, 3 = accessibility permission missing.
+// Exit:   0 = AX_AUDIT_OK, 1 = violations found, 3 = accessibility permission missing,
+//         4 = the trusted process cannot reach the app's live accessibility tree.
 //
 // Requires the calling terminal to hold Accessibility permission
 // (System Settings → Privacy & Security → Accessibility).
@@ -202,29 +203,61 @@ let application = AXUIElementCreateApplication(pid)
 /// Presses a sidebar row by name, so every screen can be audited rather than only
 /// whichever happened to be on display when the script ran.
 func selectSidebarRow(named name: String) -> Bool {
+    /// Finds the selectable row wrapping an exact route label.
+    ///
+    /// SwiftUI's macOS accessibility bridge does not promise that a `Label` is
+    /// exposed as `AXStaticText`, and the number of wrapper groups changes with
+    /// layout and OS releases. The row ancestor is the stable contract: a screen
+    /// title elsewhere in the window cannot satisfy this search.
+    func rowAncestor(of element: AXUIElement) -> AXUIElement? {
+        var current: AXUIElement? = element
+        for _ in 0 ..< 8 {
+            guard let candidate = current,
+                  let parent = attribute(candidate, kAXParentAttribute as String) else { return nil }
+            let parentElement = parent as! AXUIElement
+            if (attribute(parentElement, kAXRoleAttribute as String) as? String) == "AXRow" {
+                return parentElement
+            }
+            current = parentElement
+        }
+        return nil
+    }
+
     func search(_ element: AXUIElement, depth: Int) -> AXUIElement? {
         guard depth < 16 else { return nil }
-        let role = attribute(element, kAXRoleAttribute as String) as? String ?? ""
-        if role == "AXStaticText", label(of: element) == name {
-            // The text is inside a cell inside the selectable row; walk back up.
-            var current: AXUIElement? = element
-            for _ in 0 ..< 3 {
-                guard let candidate = current,
-                      let parent = attribute(candidate, kAXParentAttribute as String) else { break }
-                let parentElement = parent as! AXUIElement
-                if (attribute(parentElement, kAXRoleAttribute as String) as? String) == "AXRow" {
-                    return parentElement
-                }
-                current = parentElement
-            }
-            return nil
+        if label(of: element) == name, let row = rowAncestor(of: element) {
+            return row
         }
         for child in (attribute(element, kAXChildrenAttribute as String) as? [AXUIElement]) ?? [] {
             if let found = search(child, depth: depth + 1) { return found }
         }
         return nil
     }
-    guard let row = search(application, depth: 0) else { return false }
+
+    /// Reveals a sidebar hidden by macOS window-state restoration.
+    ///
+    /// A fresh build can still inherit the app's previous split-view visibility.
+    /// Without this recovery the audit inspects Overview repeatedly while reporting
+    /// every other destination as unreachable, even though product navigation works.
+    func revealSidebar(_ element: AXUIElement, depth: Int) -> Bool {
+        guard depth < 16 else { return false }
+        let role = attribute(element, kAXRoleAttribute as String) as? String ?? ""
+        let text = label(of: element)
+        if role == "AXButton", text.hasPrefix("Show"), text.contains("Sidebar") {
+            return AXUIElementPerformAction(element, kAXPressAction as CFString) == .success
+        }
+        for child in (attribute(element, kAXChildrenAttribute as String) as? [AXUIElement]) ?? [] {
+            if revealSidebar(child, depth: depth + 1) { return true }
+        }
+        return false
+    }
+
+    var row = search(application, depth: 0)
+    if row == nil, revealSidebar(application, depth: 0) {
+        Thread.sleep(forTimeInterval: 0.8)
+        row = search(application, depth: 0)
+    }
+    guard let row else { return false }
     let pressed = AXUIElementPerformAction(row, kAXPressAction as CFString) == .success
     if !pressed {
         // Rows in an outline are selected rather than pressed.
@@ -234,17 +267,60 @@ func selectSidebarRow(named name: String) -> Bool {
     return true
 }
 
-let screens = ["Overview", "Activity", "Projects", "Languages", "Insights", "Settings"]
+// The sidebar rows, in order. Projects and Languages were separate screens until the
+// five data dimensions moved behind one picker on Breakdown; a list here that names a
+// row the sidebar no longer has silently reports it as unreachable on every run.
+let screens = ["Overview", "Activity", "Breakdown", "Insights", "Settings"]
+let minimumNodes = 20
+
+/// Stops before route assertions when the host exposes no real application window.
+///
+/// A process can remain trusted while the login window is locked or the GUI session
+/// is otherwise unavailable. Reporting every route as missing in that state disguises
+/// an environment failure as a product-navigation defect.
+func requireReachableTree() {
+    guard nodeCount >= minimumNodes else {
+        print("""
+        AX_TREE_UNAVAILABLE: inspected \(nodeCount) nodes, fewer than the \(minimumNodes) any real screen has.
+          The process is Accessibility-trusted, but the app window is not reachable.
+          Unlock the active GUI session, confirm the app window is visible, and retry.
+        """)
+        exit(4)
+    }
+}
+
 if arguments.contains("--all-screens") {
-    var visited: [String] = []
-    for screen in screens where selectSidebarRow(named: screen) {
+    // A fresh `WakaShell` opens on Overview. Its selected row may not expose a
+    // pressable accessibility element, so audit the initial surface directly before
+    // navigating the remaining destinations through the sidebar.
+    var visited = ["Overview"]
+    audit(application, path: "Overview", depth: 0, insideSystemChrome: false)
+    requireReachableTree()
+    for screen in screens.dropFirst() where selectSidebarRow(named: screen) {
         visited.append(screen)
         audit(application, path: screen, depth: 0, insideSystemChrome: false)
     }
     print("Visited screens: \(visited.joined(separator: ", "))")
     if visited.count < screens.count {
         let missed = screens.filter { !visited.contains($0) }
-        print("WARNING could not reach: \(missed.joined(separator: ", "))")
+        FileHandle.standardError.write(Data("FAIL could not reach: \(missed.joined(separator: ", "))\n".utf8))
+        // Keep failure diagnosis narrow: route and sidebar labels reveal navigation
+        // structure without printing API fields or private analytics from the tree.
+        func printNavigationCandidates(_ element: AXUIElement, depth: Int) {
+            guard depth < 16 else { return }
+            let role = attribute(element, kAXRoleAttribute as String) as? String ?? "?"
+            let text = label(of: element)
+            let lower = text.lowercased()
+            if !text.isEmpty,
+               (lower.contains("sidebar") || screens.contains(where: { lower.contains($0.lowercased()) })) {
+                print("NAV_CANDIDATE \(role) \"\(text)\"")
+            }
+            for child in (attribute(element, kAXChildrenAttribute as String) as? [AXUIElement]) ?? [] {
+                printNavigationCandidates(child, depth: depth + 1)
+            }
+        }
+        printNavigationCandidates(application, depth: 0)
+        exit(1)
     }
 } else {
     audit(application, path: "", depth: 0, insideSystemChrome: false)
@@ -263,6 +339,12 @@ for exemption in exemptions {
         exemption.role, exemption.label, exemption.height, exemption.reason
     ))
 }
+
+// An audit that reached nothing must not report success. Zero nodes means the
+// accessibility permission was refused, or the window was not found, or the app
+// exited — and every one of those produced "AX_AUDIT_OK" before this guard existed,
+// which is a green check for having looked at nothing at all.
+requireReachableTree()
 
 guard violations.isEmpty else {
     for violation in violations {

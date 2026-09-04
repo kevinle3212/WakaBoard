@@ -2,7 +2,12 @@ import Foundation
 import Observation
 import Security
 import WakaCore
+// tvOS is the one Apple platform with no WidgetKit at all — `AppleTVOS.sdk` ships no
+// `WidgetKit.framework`, and its analogue is Top Shelf, which WakaBoard does not use.
+// An unconditional import here is what would stop the tvOS target compiling.
+#if canImport(WidgetKit)
 import WidgetKit
+#endif
 
 /// The period the user is looking at.
 public enum RangeOption: String, CaseIterable, Identifiable, Sendable {
@@ -94,22 +99,42 @@ public final class WakaUIModel {
     /// sign-in looked like the Connect button doing nothing at all.
     public private(set) var signInError: String?
     public var selectedRange: RangeOption = .week {
-        didSet { if oldValue != selectedRange { Task { await refresh() } } }
+        didSet {
+            guard oldValue != selectedRange else { return }
+            // The picker now asks a different question, so the old period cannot
+            // remain on screen while its replacement loads. Invalidating here also
+            // prevents an older in-flight response from winning the race back.
+            refreshGeneration += 1
+            days = []
+            overview = nil
+            insights = []
+            state = .loading
+            Task { await refresh() }
+        }
     }
+
+    /// The dimension the breakdown screen is showing.
+    ///
+    /// Unlike the period, changing this triggers no fetch: every dimension is
+    /// already in the days that were loaded, so switching is instant and costs
+    /// WakaTime nothing.
+    public var selectedDimension: ActivityDimension = .projects
 
     private let environment: WakaEnvironment
     private let timeZone: TimeZone
     private let now: @Sendable () -> Date
     private let reloadWidgets: @Sendable () -> Void
+    /// Monotonic identity of the latest refresh allowed to update presented state.
+    private var refreshGeneration = 0
 
     /// - Parameters:
     ///   - reloadWidgets: Injected so tests do not call into WidgetKit, which is
-    ///     unavailable outside a real app bundle.
+    ///     unavailable outside a real app bundle — and absent entirely on tvOS.
     public init(
         environment: WakaEnvironment,
         timeZone: TimeZone = .current,
         now: @escaping @Sendable () -> Date = { .now },
-        reloadWidgets: @escaping @Sendable () -> Void = { WidgetCenter.shared.reloadAllTimelines() }
+        reloadWidgets: @escaping @Sendable () -> Void = WakaUIModel.reloadWidgetTimelines
     ) {
         self.environment = environment
         self.timeZone = timeZone
@@ -117,14 +142,91 @@ public final class WakaUIModel {
         self.reloadWidgets = reloadWidgets
     }
 
+    /// Asks WidgetKit to refresh, where WidgetKit exists.
+    ///
+    /// A free function rather than an inline default argument so the `#if` lives in
+    /// one place instead of inside a parameter list, where it reads badly and cannot
+    /// be documented.
+    public nonisolated static func reloadWidgetTimelines() {
+        #if canImport(WidgetKit)
+        WidgetCenter.shared.reloadAllTimelines()
+        #endif
+    }
+
+    /// The buckets of `dimension` across the loaded period, largest first.
+    public func ranked(_ dimension: ActivityDimension) -> [Usage] {
+        AnalyticsEngine.ranked(dimension, in: days)
+    }
+
     /// Projects across the loaded period, largest first.
-    public var projects: [Usage] { ranked(days.flatMap(\.projects)) }
+    public var projects: [Usage] { ranked(.projects) }
 
     /// Languages across the loaded period, largest first.
-    public var languages: [Usage] { ranked(days.flatMap(\.languages)) }
+    public var languages: [Usage] { ranked(.languages) }
+
+    /// Totals by day of the week across the loaded period.
+    public var weekdayTotals: [AnalyticsEngine.WeekdayTotal] {
+        AnalyticsEngine.weekdayTotals(days: days, range: loadedRange)
+    }
+
+    /// The running total across the loaded period, oldest day first.
+    public var cumulative: [(date: Date, total: TimeInterval)] { AnalyticsEngine.cumulative(days: days) }
+
+    /// The trailing seven-day mean across the loaded period.
+    public var rollingAverage: [(date: Date, average: TimeInterval)] { AnalyticsEngine.rollingAverage(days: days) }
+
+    /// The loaded period as a week-by-weekday grid, for the activity ribbon.
+    public var density: [AnalyticsEngine.DensityCell] {
+        AnalyticsEngine.density(days: days, range: loadedRange)
+    }
+
+    /// Active-day, peak, and median figures for the loaded period.
+    public var activitySummary: AnalyticsEngine.ActivitySummary? {
+        AnalyticsEngine.activitySummary(days: days, range: loadedRange)
+    }
+
+    /// Calendar-week totals for the loaded period, oldest week first.
+    public var weeklyTotals: [AnalyticsEngine.WeekTotal] {
+        AnalyticsEngine.weeklyTotals(days: days, range: loadedRange)
+    }
+
+    /// Daily points for the leading buckets of `dimension`.
+    public func dailyTrends(_ dimension: ActivityDimension) -> [AnalyticsEngine.TrendPoint] {
+        AnalyticsEngine.dailyTrends(dimension, days: days, range: loadedRange)
+    }
+
+    /// The range the presented days belong to.
+    ///
+    /// Derived from the selection rather than stored, so it can never disagree with
+    /// the picker the user is looking at.
+    private var loadedRange: ActivityRange { selectedRange.range(now: now(), timeZone: timeZone) }
 
     /// Total time in the loaded period, for the chart and the header.
     public var dailyDurations: [TimeInterval] { days.sorted { $0.date < $1.date }.map(\.duration) }
+
+    /// Daily totals paired with their dates, oldest first.
+    ///
+    /// Charts plot the real date rather than the position in an array: a period with
+    /// a missing day would otherwise silently compress its own axis.
+    public var dailySeries: [(date: Date, duration: TimeInterval)] {
+        days.sorted { $0.date < $1.date }.map { ($0.date, $0.duration) }
+    }
+
+    /// A dimension's buckets with the tail folded into one labelled row, ready to
+    /// hand to a chart with a fixed eight-slot palette.
+    public func foldedUsage(_ dimension: ActivityDimension) -> [Usage] {
+        let folded = AnalyticsEngine.topBuckets(ranked(dimension))
+        return folded.top + [folded.remainder].compactMap { $0 }
+    }
+
+    /// Whether tapping this row opens a further breakdown.
+    ///
+    /// Only WakaTime's unresolved language buckets can be opened. Everything else is
+    /// already as specific as WakaTime's data gets, and a chevron on a row that opens
+    /// nothing is worse than no chevron at all.
+    public func canDrillInto(_ item: Usage, dimension: ActivityDimension) -> Bool {
+        dimension == .languages && FileTypeBreakdown.isUnresolvedBucket(item.name)
+    }
 
     /// Whether the dashboard should be shown rather than the sign-in screen.
     public var isSignedIn: Bool {
@@ -133,6 +235,50 @@ public final class WakaUIModel {
         default: true
         }
     }
+
+    /// What the file-type drill-down currently has to show.
+    public enum BreakdownState: Equatable, Sendable {
+        case loading
+        case loaded(BreakdownResult)
+        /// The reason it could not be produced, phrased for a user.
+        case failed(String)
+    }
+
+    /// The drill-down for the bucket currently open, if one is open.
+    public private(set) var breakdown: BreakdownState?
+
+    /// Loads the file types inside `bucket` for the selected period.
+    ///
+    /// User-initiated only: nothing calls this on refresh, on launch, or on a period
+    /// change. It is the one path in the app that issues more than one request per
+    /// action, so it stays behind a deliberate tap.
+    public func loadBreakdown(for bucket: Usage) async {
+        breakdown = .loading
+        guard case .success(let stored?) = storedCredential() else {
+            breakdown = .failed("WakaBoard could not read your saved key, so it cannot load this breakdown.")
+            return
+        }
+        do {
+            let result = try await environment.repository.fileTypes(
+                inBucket: bucket.name,
+                range: loadedRange,
+                credential: stored,
+                timeZone: timeZone
+            )
+            breakdown = result.rows.isEmpty
+                ? .failed("WakaTime returned no file-level detail for this period, so there is nothing to break down.")
+                : .loaded(result)
+        } catch is CancellationError {
+            breakdown = nil
+        } catch let error as WakaTimeError {
+            breakdown = .failed(Self.message(for: error))
+        } catch {
+            breakdown = .failed("Something went wrong loading the file types for this period.")
+        }
+    }
+
+    /// Discards the open drill-down when its sheet closes.
+    public func clearBreakdown() { breakdown = nil }
 
     /// Reads the stored credential, distinguishing "absent" from "unreadable".
     ///
@@ -207,6 +353,7 @@ public final class WakaUIModel {
     public func signOut() async {
         isBusy = true
         defer { isBusy = false }
+        refreshGeneration += 1
         // Clear presented data first: whatever happens to storage, the screen must
         // not keep showing the previous account's analytics.
         days = []
@@ -228,6 +375,7 @@ public final class WakaUIModel {
     public func clearCache() async {
         isBusy = true
         defer { isBusy = false }
+        refreshGeneration += 1
         try? await environment.repository.clearCache()
         environment.snapshots.clear()
         days = []
@@ -250,23 +398,30 @@ public final class WakaUIModel {
             state = .credentialUnavailable(Self.message(for: error))
             return
         }
+        refreshGeneration += 1
+        let generation = refreshGeneration
         isBusy = true
-        defer { isBusy = false }
+        defer {
+            if generation == refreshGeneration { isBusy = false }
+        }
         if days.isEmpty { state = .loading }
 
         let range = selectedRange.range(now: now(), timeZone: timeZone)
         do {
             let result = try await environment.repository.days(range: range, credential: credential, timeZone: timeZone)
+            guard generation == refreshGeneration, !Task.isCancelled else { return }
             apply(days: result.days, range: range)
             state = result.isStale
                 ? .stale(reason: "Showing your last saved data. The most recent refresh did not reach WakaTime.")
                 : (result.days.allSatisfy { $0.duration == 0 } ? .empty : .loaded)
             publishWidgetSnapshot()
         } catch let error as WakaTimeError {
+            guard generation == refreshGeneration else { return }
             state = Self.state(for: error, hasCachedData: !days.isEmpty)
         } catch is CancellationError {
             // The user moved on; leave whatever is on screen alone.
         } catch {
+            guard generation == refreshGeneration else { return }
             state = .failed("Something went wrong loading your analytics.")
         }
     }
