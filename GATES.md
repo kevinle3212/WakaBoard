@@ -446,13 +446,18 @@ so a detector that can never fail is caught at authoring time.
   found no secret in eight commits or the 554 MB working tree. Local agent state,
   build output, and render intermediates are ignored.
 
-- [ ] H34: `https://github.com/kevinle3212/WakaBoard` exists under the authenticated
+- [x] H34: `https://github.com/kevinle3212/WakaBoard` exists under the authenticated
       `kevinle3212` account, is public, uses `main` as its default branch, and its
       remote default-branch commit contains the complete verified local project.
       Local `origin` points to that repository and the working branch is synchronized
       after any required pull-request merge.
   CHECK: External GitHub metadata, remote refs, pull-request checks, and local/remote commit identity must all be inspected after publication.
   EXPECT: Repository visibility `public`; default branch `main`; local and remote commit identifiers match.
+  EVIDENCE: exits 0 — 2026-09-04. Authenticated repository metadata and the
+  unauthenticated public API both report `kevinle3212/WakaBoard`, `public`, and
+  default branch `main`. The unauthenticated raw README exposes the canonical
+  GitHub and LinkedIn credits. Local `HEAD` and `origin/main` matched, and GitHub
+  Actions run 33927875863 completed successfully before the ledger-only closeout.
 
 ## 2026-09-04 Resizable Comparison Charts and Compact Percentages
 
@@ -483,8 +488,14 @@ so a detector that can never fail is caught at authoring time.
 
 ## 2026-09-04 Public CI Environment
 
-- [ ] H37: GitHub Actions selects an installed Xcode whose Swift toolchain can
+- [x] H37: GitHub Actions selects an installed Xcode whose Swift toolchain can
       parse the package's Swift 6.2 manifest, and the acceptance-ledger job fetches
       enough Git history to verify every audited commit anchor.
   CHECK: node scripts/audit-checks.mjs ci && swift test
   EXPECT: CI_OK
+  EVIDENCE: exits 0 — 2026-09-04. The detector failed against the original
+  workflow, and GitHub Actions run 33927617102 independently reproduced both
+  defects: Swift 6.1 could not parse the 6.2 manifest, and depth-1 history hid
+  audited commit `031bd50`. After selecting the runner's documented Xcode 26.3
+  and fetching full history only in the ledger job, run 33927875863 completed
+  both jobs successfully.
