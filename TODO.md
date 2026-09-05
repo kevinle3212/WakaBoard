@@ -88,22 +88,3 @@ emailing WakaTime for approval before any public release.
 **Kevin must:** email WakaTime, describe the project, and ask whether the name is
 acceptable. If they object, rename rather than defend. Record the outcome in
 `ATTRIBUTION.md` — update the paragraph, do not delete it.
-
-## The live accessibility audit needs a terminal you have authorised
-
-Added 2026-08-29.
-
-`swift scripts/ax-audit.swift <pid> --all-screens` walks the running macOS app's real
-accessibility tree. In this session it inspected **zero** nodes and reached none of
-the five screens, because macOS grants Accessibility permission per application and
-the terminal this session runs in does not have it.
-
-Until 2026-08-29 the script printed `AX_AUDIT_OK` in exactly that situation: no nodes
-inspected means no violations found. That hole is now closed — the script fails when
-it inspects fewer than twenty nodes and says why — but closing it does not run the
-audit.
-
-**Kevin must:** grant Accessibility permission to the terminal (System Settings →
-Privacy & Security → Accessibility), then run `sh scripts/device-check.sh` and confirm
-it prints a real node count alongside `AX_AUDIT_OK`. Gate H20 in `GATES.md` stays open
-until it does.
